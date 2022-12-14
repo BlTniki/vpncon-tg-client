@@ -1,7 +1,7 @@
 package com.bitniki.VPNconTGclient.config;
 
 
-import com.bitniki.VPNconTGclient.bot.ChatEchoBot;
+import com.bitniki.VPNconTGclient.bot.VPNconBot;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -26,7 +26,7 @@ public class VPNconBotConfig {
     public TelegramBotsApi telegramBotsApiBean() throws TelegramApiException {
         try {
             TelegramBotsApi botsApi = new TelegramBotsApi(DefaultBotSession.class);
-            botsApi.registerBot(new ChatEchoBot(botToken, botUsername));
+            botsApi.registerBot(new VPNconBot(botToken, botUsername));
             return botsApi;
         } catch (TelegramApiException e) {
             e.printStackTrace();
