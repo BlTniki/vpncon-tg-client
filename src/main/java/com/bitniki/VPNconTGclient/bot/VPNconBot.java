@@ -30,7 +30,7 @@ public class VPNconBot extends BasicTelegramBot{
         //Bat realization
         //Get all responses
         Long chatId = responses.getChatId();
-        for(Response response : responses.getResponseList()) {
+        for(Response<?> response : responses.getResponseList()) {
             switch (response.getResponseType()) {
                 case SendText -> {
                     try {
@@ -39,7 +39,6 @@ public class VPNconBot extends BasicTelegramBot{
                         throw new RuntimeException(e);
                     }
                 }
-                //case SendText -> sendMessage(chatId, response);
             }
         }
     }

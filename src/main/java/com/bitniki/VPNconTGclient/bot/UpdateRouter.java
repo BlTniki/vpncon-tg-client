@@ -16,17 +16,20 @@ public class UpdateRouter {
     private final HashMap<Long, Branch> chatBranchMap;
 
     public UpdateRouter() {
-        this.chatBranchMap = new HashMap();
+        this.chatBranchMap = new HashMap<Long, Branch>();
     }
 
     public Responses handle(Update update) throws UpdateRouterException {
         if(!update.hasMessage())
             throw new UpdateRouterException("This is not a message!");
-        //get dialogue branch by chatId
-        Branch branch = chatBranchMap.get(update.getMessage().getChatId());
-        //if in HashMap no branch with this chatIp
-        //Create
-        if(branch == null) {
+
+        Branch branch;
+        if(chatBranchMap.containsKey(update.getMessage().getChatId())) {
+            //get dialogue branch by chatId
+            branch = chatBranchMap.get(update.getMessage().getChatId());
+        } else {
+            //if in HashMap no branch with this chatIp
+            //Create
             branch = new InitBranch(null);
             chatBranchMap.put(update.getMessage().getChatId(), branch);
         }

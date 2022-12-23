@@ -10,7 +10,6 @@ import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.ForceReplyKeyboard;
 
 import java.util.ArrayList;
-import java.util.StringJoiner;
 
 public class InitBranch extends Branch{
     private final String loginText = "Hi! Type your login";
@@ -24,30 +23,36 @@ public class InitBranch extends Branch{
 
     @Override
     public Responses handle(Update update) {
+        //Get message from update
         Message message = update.getMessage();
+        //Init Responses
         Responses responses = new Responses(message.getChatId());
         responses.setResponseList(new ArrayList<>());
-        if(userEntity == null) {
+
+        //init branch state
+        if(message.getReplyToMessage() == null) {
             SendMessage sendMessage = new SendMessage(message.getChatId().toString(), loginText);
             sendMessage.setReplyMarkup(new ForceReplyKeyboard(true));
             responses.getResponseList().add(new Response<SendMessage>(ResponseType.SendText, sendMessage));
             userEntity = new UserEntity();
+            return responses;
         }
-        if(message.getReplyToMessage() != null) {
-            if(message.getReplyToMessage().getText().equals(loginText)) {
-                userEntity.setUsername(message.getText());
-                SendMessage sendMessage = new SendMessage(message.getChatId().toString(), passwordText);
-                sendMessage.setReplyMarkup(new ForceReplyKeyboard(true));
-                responses.getResponseList().add(new Response<SendMessage>(ResponseType.SendText, sendMessage));
-            }
-            if(message.getReplyToMessage().getText().equals(passwordText)) {
-                userEntity.setPassword(message.getText());
-                SendMessage sendMessage = new SendMessage(message.getChatId().toString(), entityText
-                        + userEntity.getUsername()
-                        + "\n" + userEntity.getPassword());
-                responses.getResponseList().add(new Response<SendMessage>(ResponseType.SendText, sendMessage));
-            }
+        //login typed branch state
+        if(message.getReplyToMessage().getText().equals(loginText)) {
+            userEntity.setUsername(message.getText());
+            SendMessage sendMessage = new SendMessage(message.getChatId().toString(), passwordText);
+            sendMessage.setReplyMarkup(new ForceReplyKeyboard(true));
+            responses.getResponseList().add(new Response<SendMessage>(ResponseType.SendText, sendMessage));
         }
+        //password typed branch state
+        if(message.getReplyToMessage().getText().equals(passwordText)) {
+            userEntity.setPassword(message.getText());
+            SendMessage sendMessage = new SendMessage(message.getChatId().toString(), entityText
+                    + userEntity.getUsername()
+                    + "\n" + userEntity.getPassword());
+            responses.getResponseList().add(new Response<SendMessage>(ResponseType.SendText, sendMessage));
+        }
+
         return responses;
     }
 }
