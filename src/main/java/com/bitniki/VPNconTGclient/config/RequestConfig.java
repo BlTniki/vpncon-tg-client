@@ -1,0 +1,24 @@
+package com.bitniki.VPNconTGclient.config;
+
+import com.bitniki.VPNconTGclient.service.RequestService;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+
+@Configuration
+public class RequestConfig {
+    @Value("${VPNconServer.address}")
+    private String VPNconAddress;
+    @Value("${VPNconServer.login}")
+    private String botLogin;
+    @Value("${VPNconServer.password}")
+    private String botPassword;
+
+    /**
+     * Configure Request bean
+     */
+    @Bean
+    public RequestService requestServiceBean() {
+        return new RequestService(VPNconAddress, botLogin, botPassword);
+    }
+}

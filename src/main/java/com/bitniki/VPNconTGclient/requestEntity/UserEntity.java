@@ -1,16 +1,26 @@
 package com.bitniki.VPNconTGclient.requestEntity;
 
 public class UserEntity {
-    private String username;
+    private String login;
 
     private String password;
 
-    public String getUsername() {
-        return username;
+    private String telegramId;
+
+    public UserEntity() {
     }
 
-    public void setUsername(String username) {
-        this.username = username;
+    public UserEntity(String login, String password) {
+        this.login = login;
+        this.password = password;
+    }
+
+    public String getLogin() {
+        return login;
+    }
+
+    public void setLogin(String login) {
+        this.login = login;
     }
 
     public String getPassword() {
@@ -19,5 +29,13 @@ public class UserEntity {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public String getTelegramId() {
+        return telegramId;
+    }
+
+    public void setTelegramId(String telegramId) {
+        this.telegramId = telegramId;
     }
 }

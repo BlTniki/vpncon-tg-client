@@ -3,6 +3,7 @@ package com.bitniki.VPNconTGclient.bot;
 import com.bitniki.VPNconTGclient.bot.branch.Branch;
 import com.bitniki.VPNconTGclient.bot.branch.InitBranch;
 import com.bitniki.VPNconTGclient.exception.UpdateRouterException;
+import com.bitniki.VPNconTGclient.service.RequestService;
 import org.telegram.telegrambots.meta.api.objects.Update;
 
 import java.util.HashMap;
@@ -14,9 +15,10 @@ import java.util.HashMap;
  */
 public class UpdateRouter {
     private final HashMap<Long, Branch> chatBranchMap;
-
-    public UpdateRouter() {
+    private final RequestService requestService;
+    public UpdateRouter(RequestService requestService) {
         this.chatBranchMap = new HashMap<Long, Branch>();
+        this.requestService = requestService;
     }
 
     public Responses handle(Update update) throws UpdateRouterException {
@@ -30,7 +32,7 @@ public class UpdateRouter {
         } else {
             //if in HashMap no branch with this chatIp
             //Create
-            branch = new InitBranch(null);
+            branch = new InitBranch(null, requestService);
             chatBranchMap.put(update.getMessage().getChatId(), branch);
         }
         Responses responses = branch.handle(update);

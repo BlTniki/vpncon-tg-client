@@ -12,9 +12,9 @@ import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 public class VPNconBot extends BasicTelegramBot{
     private final UpdateRouter updateRouter;
 
-    public VPNconBot(String botToken, String botUsername) {
+    public VPNconBot(String botToken, String botUsername, UpdateRouter updateRouter) {
         super(botToken, botUsername);
-        this.updateRouter = new UpdateRouter();
+        this.updateRouter = updateRouter;
     }
 
     @Override
