@@ -1,7 +1,7 @@
 package com.bitniki.VPNconTGclient.bot;
 
 public enum ResponseType {
-    SendMessage(),
+    SendText(),
     Exception(),
     ChangeBranch();
 }

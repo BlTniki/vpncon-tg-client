@@ -1,6 +1,6 @@
 package com.bitniki.VPNconTGclient.bot.branch;
 
-import com.bitniki.VPNconTGclient.bot.Response;
+import com.bitniki.VPNconTGclient.bot.Responses;
 import org.telegram.telegrambots.meta.api.objects.Update;
 
 public abstract class Branch {
@@ -10,5 +10,5 @@ public abstract class Branch {
         this.prevBranch = prevBranch;
     }
 
-    public abstract Response handle(Update update);
+    public abstract Responses handle(Update update);
 }

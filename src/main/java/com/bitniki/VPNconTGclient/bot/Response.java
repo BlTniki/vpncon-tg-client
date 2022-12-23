@@ -1,31 +1,30 @@
 package com.bitniki.VPNconTGclient.bot;
 
-import java.util.HashMap;
+public class Response<T> {
+    private ResponseType responseType;
 
-public class Response {
-    public Long chatId;
+    private T data;
 
-    private HashMap<ResponseType, Object> responses;
 
-    public Response(Long chatId) {
-        this.chatId = chatId;
-        this.responses = new HashMap<>();
+
+    public Response(ResponseType responseType, T data) {
+        this.responseType = responseType;
+        this.data = data;
     }
 
-    public Long getChatId() {
-        return chatId;
+    public ResponseType getResponseType() {
+        return responseType;
     }
 
-    public void setChatId(Long chatId) {
-        this.chatId = chatId;
+    public void setResponseType(ResponseType responseType) {
+        this.responseType = responseType;
     }
 
-    public HashMap<ResponseType, Object> getResponses() {
-        return responses;
+    public T getData() {
+        return data;
     }
 
-    public void setResponses(HashMap<ResponseType, Object> responses) {
-        this.responses = responses;
+    public void setData(T data) {
+        this.data = data;
     }
-
 }

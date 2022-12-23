@@ -19,7 +19,7 @@ public class UpdateRouter {
         this.chatBranchMap = new HashMap();
     }
 
-    public Response handle(Update update) throws UpdateRouterException {
+    public Responses handle(Update update) throws UpdateRouterException {
         if(!update.hasMessage())
             throw new UpdateRouterException("This is not a message!");
         //get dialogue branch by chatId
@@ -30,11 +30,11 @@ public class UpdateRouter {
             branch = new InitBranch(null);
             chatBranchMap.put(update.getMessage().getChatId(), branch);
         }
-        Response response = branch.handle(update);
+        Responses responses = branch.handle(update);
         //if Dialogue want to change branch, change
-        if(response.getResponses().containsKey(ResponseType.ChangeBranch)) {
-            chatBranchMap.put(response.getChatId(), (Branch) response.getResponses().get(ResponseType.ChangeBranch));
+        if(responses.getNextBranch() != null) {
+            chatBranchMap.put(responses.getChatId(), responses.getNextBranch());
         }
-        return response;
+        return responses;
     }
 }

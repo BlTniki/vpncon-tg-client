@@ -3,6 +3,7 @@ package com.bitniki.VPNconTGclient.bot;
 import com.bitniki.VPNconTGclient.exception.UpdateRouterException;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Update;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.ForceReplyKeyboard;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
 /**
@@ -18,19 +19,20 @@ public class VPNconBot extends BasicTelegramBot{
 
     @Override
     public void onUpdateReceived(Update update) {
-        Response response;
+        Responses responses;
         try {
             //get the response that's needs to send
-            response = updateRouter.handle(update);
+            responses = updateRouter.handle(update);
         } catch (UpdateRouterException e) {
             //Placeholder
             throw new RuntimeException(e);
         }
         //Bat realization
         //Get all responses
-        for(ResponseType responseType: response.getResponses().keySet()) {
-            switch (responseType) {
-                case SendMessage -> sendMessage(response);
+        Long chatId = responses.getChatId();
+        for(Response response : responses.getResponseList()) {
+            switch (response.getResponseType()) {
+                case SendText -> sendMessage(chatId, response);
             }
         }
     }
@@ -38,12 +40,12 @@ public class VPNconBot extends BasicTelegramBot{
     /**
      * sendMessage to chat with given chatId in Response
      */
-    private void sendMessage(Response response) {
-        String responseData = (String) response.getResponses().get(ResponseType.SendMessage);
-        SendMessage message = new SendMessage(response.getChatId().toString(),
-                responseData);
+    private void sendMessage(Long chatId, Response<String> response) {
+        String messageData = response.getData();
+        SendMessage sendText = new SendMessage(chatId.toString(), messageData);
+        sendText.setReplyMarkup(new ForceReplyKeyboard(true));
         try {
-            execute(message);
+            execute(sendText);
         } catch (TelegramApiException e) {
             e.printStackTrace();
         }
