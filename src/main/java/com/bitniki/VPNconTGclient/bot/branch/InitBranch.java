@@ -4,8 +4,10 @@ import com.bitniki.VPNconTGclient.bot.Response;
 import com.bitniki.VPNconTGclient.bot.ResponseType;
 import com.bitniki.VPNconTGclient.bot.Responses;
 import com.bitniki.VPNconTGclient.requestEntity.UserEntity;
+import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.ForceReplyKeyboard;
 
 import java.util.ArrayList;
 import java.util.StringJoiner;
@@ -20,36 +22,30 @@ public class InitBranch extends Branch{
         super(prevBranch);
     }
 
-//    @Override
-//    public Responses handle(Update update) {
-//        Message message = update.getMessage();
-//        Responses responses = new Responses(message.getChatId());
-//        responses.setResponseList(new ArrayList<>());
-//        if(message.isCommand() && message.getText().equals("/start")) {
-//            responses.getResponseList().add(new Response<String>(ResponseType.SendText, "hi"));
-//        } else {
-//            responses.getResponseList().add(new Response<String>(ResponseType.SendText, message.getText()));
-//        }
-//        responses.setNextBranch(new PiBranch(this));
-//        return responses;
-//    }
     @Override
     public Responses handle(Update update) {
         Message message = update.getMessage();
         Responses responses = new Responses(message.getChatId());
         responses.setResponseList(new ArrayList<>());
         if(userEntity == null) {
-            responses.getResponseList().add(new Response<String>(ResponseType.SendText, loginText));
+            SendMessage sendMessage = new SendMessage(message.getChatId().toString(), loginText);
+            sendMessage.setReplyMarkup(new ForceReplyKeyboard(true));
+            responses.getResponseList().add(new Response<SendMessage>(ResponseType.SendText, sendMessage));
             userEntity = new UserEntity();
         }
         if(message.getReplyToMessage() != null) {
             if(message.getReplyToMessage().getText().equals(loginText)) {
                 userEntity.setUsername(message.getText());
-                responses.getResponseList().add(new Response<String>(ResponseType.SendText, passwordText));
+                SendMessage sendMessage = new SendMessage(message.getChatId().toString(), passwordText);
+                sendMessage.setReplyMarkup(new ForceReplyKeyboard(true));
+                responses.getResponseList().add(new Response<SendMessage>(ResponseType.SendText, sendMessage));
             }
             if(message.getReplyToMessage().getText().equals(passwordText)) {
                 userEntity.setPassword(message.getText());
-                responses.getResponseList().add(new Response<String>(ResponseType.SendText, entityText + userEntity.getUsername() + "\n" + userEntity.getPassword()));
+                SendMessage sendMessage = new SendMessage(message.getChatId().toString(), entityText
+                        + userEntity.getUsername()
+                        + "\n" + userEntity.getPassword());
+                responses.getResponseList().add(new Response<SendMessage>(ResponseType.SendText, sendMessage));
             }
         }
         return responses;
