@@ -41,9 +41,9 @@ public class InitBranch extends Branch{
         //send hi message and set nav buttons
         if(message.getText().equals("/start")) {
             try {
-                this.userEntity = getRequestService().getUserByTelegramId(message.getFrom().getUserName());
+                this.userEntity = getRequestService().getUserByTelegramId(message.getFrom().getId());
                 SendMessage sendMessage = new SendMessage(message.getChatId().toString(), entityText
-                        + userEntity.getLogin()
+                        + userEntity
                 );
                 responses.getResponseList().add(new Response<SendMessage>(ResponseType.SendText, sendMessage));
                 return responses;
@@ -78,7 +78,8 @@ public class InitBranch extends Branch{
         //password typed branch state
         if(message.getReplyToMessage()!= null && message.getReplyToMessage().getText().equals(passwordText)) {
             userEntity.setPassword(message.getText());
-            userEntity.setTelegramId(message.getFrom().getUserName());
+            userEntity.setTelegramId(message.getFrom().getId());
+            userEntity.setTelegramUsername(message.getFrom().getUserName());
             try {
                 getRequestService().associateTelegramIdWithUser(userEntity);
             } catch (HttpClientErrorException e) {
@@ -89,9 +90,8 @@ public class InitBranch extends Branch{
             }
 
             SendMessage sendMessage = new SendMessage(message.getChatId().toString(), entityText
-                    + userEntity.getLogin()
-                    + "\n" + userEntity.getPassword()
-                    + "\n" + userEntity.getTelegramId());
+                    + userEntity
+            );
             responses.getResponseList().add(new Response<SendMessage>(ResponseType.SendText, sendMessage));
         }
 

@@ -25,7 +25,7 @@ public class RequestService {
         this.botToken = SignInAndReturnToken();
     }
 
-    public UserEntity getUserByTelegramId(String telegramId) {
+    public UserEntity getUserByTelegramId(Long telegramId) {
         String uri = this.VPNconAddress + "/users/tg/" + telegramId;
         //Configure response entity
         ResponseEntity<UserEntity> response;
@@ -37,7 +37,7 @@ public class RequestService {
                     UserEntity.class
             );
         } catch (Exception e) {
-            System.out.println(e.getMessage());//400 BAD REQUEST: "Service answers like: This peerId has already taken"
+            System.out.println(e.getMessage());
             throw e;
         }
         return Objects.requireNonNull(response.getBody());
