@@ -39,6 +39,10 @@ public class UpdateRouter {
         //if Dialogue want to change branch, change
         if(responses.getNextBranch() != null) {
             chatBranchMap.put(responses.getChatId(), responses.getNextBranch());
+            //do init response
+            responses.getResponseList().addAll(
+                    this.handle(update).getResponseList()
+            );
         }
         return responses;
     }

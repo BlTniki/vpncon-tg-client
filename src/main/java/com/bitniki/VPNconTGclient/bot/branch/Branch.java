@@ -6,7 +6,7 @@ import org.telegram.telegrambots.meta.api.objects.Update;
 
 public abstract class Branch {
     private Branch prevBranch;
-    private RequestService requestService;
+    protected RequestService requestService;
 
     public Branch(Branch prevBranch, RequestService requestService) {
         this.prevBranch = prevBranch;
