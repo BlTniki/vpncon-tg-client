@@ -46,4 +46,21 @@ public class UserEntity {
     public void setTelegramId(Long telegramId) {
         this.telegramId = telegramId;
     }
+
+    public String getTelegramUsername() {
+        return telegramUsername;
+    }
+
+    public void setTelegramUsername(String telegramUsername) {
+        this.telegramUsername = telegramUsername;
+    }
+
+    @Override
+    public String toString() {
+        return  "id=" + id +
+                "\nlogin='" + login + '\'' +
+                "\ntelegramId=" + telegramId +
+                "\ntelegramUsername='" + telegramUsername + '\''
+                ;
+    }
 }
