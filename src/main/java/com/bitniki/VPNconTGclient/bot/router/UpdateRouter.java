@@ -16,10 +16,10 @@ import java.util.List;
  * and response to the chat
  */
 public class UpdateRouter {
-    private final HashMap<Long, Branch> chatBranchMap;
+    private final HashMap<Long, Tree> chatBranchMap;
     private final RequestService requestService;
     public UpdateRouter(RequestService requestService) {
-        this.chatBranchMap = new HashMap<Long, Branch>();
+        this.chatBranchMap = new HashMap<Long, Tree>();
         this.requestService = requestService;
     }
 
@@ -28,24 +28,17 @@ public class UpdateRouter {
             throw new UpdateRouterException("This is not a message!");
 
         Branch branch;
+        Tree tree;
         if(chatBranchMap.containsKey(update.getMessage().getChatId())) {
             //get dialogue branch by chatId
-            branch = chatBranchMap.get(update.getMessage().getChatId());
+            tree = chatBranchMap.get(update.getMessage().getChatId());
         } else {
             //if in HashMap no branch with this chatIp
             //Create
-            branch = new InitBranch(null, requestService);
-            chatBranchMap.put(update.getMessage().getChatId(), branch);
+            tree = new Tree(requestService);
+            chatBranchMap.put(update.getMessage().getChatId(), tree);
         }
-        Responses responses = branch.handle(update);
-        //if Dialogue want to change branch, change
-        if(responses.getNextBranch() != null) {
-            chatBranchMap.put(responses.getChatId(), responses.getNextBranch());
-            //do init response
-            responses.getResponseList().addAll(
-                    this.handle(update).getResponseList()
-            );
-        }
-        return responses;
+
+        return tree.handle(update);
     }
 }
