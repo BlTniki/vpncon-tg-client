@@ -14,12 +14,12 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.ForceReplyKeyboa
 import java.util.ArrayList;
 import java.util.List;
 
-public class AuthBranch extends BranchWithUser{
+public class SignInBranch extends BranchWithUser{
     private final String loginText = "Введи свой логин";
     private final String passwordText = "Так, а теперь пароль";
     private final String endText = "Нашёл твой аккаунт! вот он:\n";
 
-    public AuthBranch(Branch prevBranch, RequestService requestService) {
+    public SignInBranch(Branch prevBranch, RequestService requestService) {
         super(prevBranch, requestService);
     }
 
