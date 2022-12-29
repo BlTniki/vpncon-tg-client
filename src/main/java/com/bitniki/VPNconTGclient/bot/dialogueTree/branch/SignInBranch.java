@@ -1,13 +1,12 @@
-package com.bitniki.VPNconTGclient.bot.branch;
+package com.bitniki.VPNconTGclient.bot.dialogueTree.branch;
 
-import com.bitniki.VPNconTGclient.bot.Response;
-import com.bitniki.VPNconTGclient.bot.ResponseType;
-import com.bitniki.VPNconTGclient.bot.Responses;
+import com.bitniki.VPNconTGclient.bot.response.Response;
+import com.bitniki.VPNconTGclient.bot.response.ResponseType;
+import com.bitniki.VPNconTGclient.bot.response.Responses;
 import com.bitniki.VPNconTGclient.exception.RequestServiceException;
 import com.bitniki.VPNconTGclient.exception.notFoundException.UserNotFoundException;
-import com.bitniki.VPNconTGclient.exception.validationFailedException.UserValidationFailedException;
-import com.bitniki.VPNconTGclient.requestEntity.UserEntity;
-import com.bitniki.VPNconTGclient.service.RequestService;
+import com.bitniki.VPNconTGclient.bot.requestHandler.requestEntity.UserEntity;
+import com.bitniki.VPNconTGclient.bot.requestHandler.RequestService;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;

@@ -1,4 +1,4 @@
-package com.bitniki.VPNconTGclient.bot;
+package com.bitniki.VPNconTGclient.bot.response;
 
 public enum ResponseType {
     SendText(),

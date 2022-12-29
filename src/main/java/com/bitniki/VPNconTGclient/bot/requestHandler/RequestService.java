@@ -1,13 +1,11 @@
-package com.bitniki.VPNconTGclient.service;
+package com.bitniki.VPNconTGclient.bot.requestHandler;
 
-import com.bitniki.VPNconTGclient.exception.RequestService4xxException;
 import com.bitniki.VPNconTGclient.exception.RequestService5xxException;
 import com.bitniki.VPNconTGclient.exception.RequestServiceException;
 import com.bitniki.VPNconTGclient.exception.notFoundException.UserNotFoundException;
 import com.bitniki.VPNconTGclient.exception.validationFailedException.UserValidationFailedException;
-import com.bitniki.VPNconTGclient.requestEntity.TokenEntity;
-import com.bitniki.VPNconTGclient.requestEntity.UserEntity;
-import org.springframework.beans.factory.annotation.Value;
+import com.bitniki.VPNconTGclient.bot.requestHandler.requestEntity.TokenEntity;
+import com.bitniki.VPNconTGclient.bot.requestHandler.requestEntity.UserEntity;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -15,7 +13,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
-import java.util.HashMap;
 import java.util.Objects;
 
 public class RequestService {

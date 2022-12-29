@@ -1,6 +1,6 @@
-package com.bitniki.VPNconTGclient.bot;
+package com.bitniki.VPNconTGclient.bot.response;
 
-import com.bitniki.VPNconTGclient.bot.branch.Branch;
+import com.bitniki.VPNconTGclient.bot.dialogueTree.branch.Branch;
 
 import java.util.List;
 

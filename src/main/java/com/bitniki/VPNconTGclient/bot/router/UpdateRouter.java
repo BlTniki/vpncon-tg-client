@@ -1,12 +1,14 @@
-package com.bitniki.VPNconTGclient.bot;
+package com.bitniki.VPNconTGclient.bot.router;
 
-import com.bitniki.VPNconTGclient.bot.branch.Branch;
-import com.bitniki.VPNconTGclient.bot.branch.InitBranch;
+import com.bitniki.VPNconTGclient.bot.dialogueTree.branch.Branch;
+import com.bitniki.VPNconTGclient.bot.dialogueTree.Tree;
+import com.bitniki.VPNconTGclient.bot.response.Response;
 import com.bitniki.VPNconTGclient.exception.UpdateRouterException;
-import com.bitniki.VPNconTGclient.service.RequestService;
+import com.bitniki.VPNconTGclient.bot.requestHandler.RequestService;
 import org.telegram.telegrambots.meta.api.objects.Update;
 
 import java.util.HashMap;
+import java.util.List;
 
 /**
  * This class handle Update from bot,

@@ -1,4 +1,4 @@
-package com.bitniki.VPNconTGclient.requestEntity;
+package com.bitniki.VPNconTGclient.bot.requestHandler.requestEntity;
 
 public class TokenEntity {
     private String login;
