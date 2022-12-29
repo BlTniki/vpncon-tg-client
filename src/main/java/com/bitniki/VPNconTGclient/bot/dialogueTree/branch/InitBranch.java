@@ -2,7 +2,6 @@ package com.bitniki.VPNconTGclient.bot.dialogueTree.branch;
 
 import com.bitniki.VPNconTGclient.bot.response.Response;
 import com.bitniki.VPNconTGclient.bot.response.ResponseType;
-import com.bitniki.VPNconTGclient.bot.response.Responses;
 import com.bitniki.VPNconTGclient.bot.requestHandler.RequestService;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Message;
@@ -15,6 +14,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class InitBranch extends BranchWithUser{
+    private enum BranchState {
+        InitState(),
+        WaitingForAuthType();
+    }
+    private BranchState branchState;
     private final String unrecognizedInitText = "Привет! Представься пожалуста.";
     private final String recognizedInitText = "Привет, ";
 
