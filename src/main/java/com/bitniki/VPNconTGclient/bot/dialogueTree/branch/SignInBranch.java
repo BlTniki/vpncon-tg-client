@@ -29,7 +29,6 @@ public class SignInBranch extends BranchWithUser{
         //Get message from update
         Message message = update.getMessage();
 
-
         //ask login branch state
         if(message.getText().equals(signInButtonText)) {
             return askLogin(message);
@@ -87,7 +86,7 @@ public class SignInBranch extends BranchWithUser{
         userEntity.setTelegramUsername(message.getFrom().getUserName());
         //try associateTelegramIdWithUser
         try {
-            requestService.associateTelegramIdWithUser(userEntity);
+            this.userEntity = requestService.associateTelegramIdWithUser(userEntity);
         } catch (UserNotFoundException e) {
             SendMessage sendMessage = new SendMessage(message.getChatId().toString(),
                     "Юзера с такими логином и паролем не существует\n" +
