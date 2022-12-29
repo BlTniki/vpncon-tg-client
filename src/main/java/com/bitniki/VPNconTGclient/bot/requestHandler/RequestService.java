@@ -51,7 +51,7 @@ public class RequestService {
         }
         return Objects.requireNonNull(response.getBody());
     }
-    public void associateTelegramIdWithUser(UserEntity userEntity)
+    public UserEntity associateTelegramIdWithUser(UserEntity userEntity)
             throws UserNotFoundException, RequestService5xxException {
         String uri = this.VPNconAddress + "/auth/tg";
         //Configure request body
@@ -60,10 +60,10 @@ public class RequestService {
                 makeHttpHeaders()
         );
         //Configure response entity
-        ResponseEntity<String> response;
+        ResponseEntity<UserEntity> response;
         RestTemplate restTemplate = new RestTemplate();
         try {
-            response = restTemplate.postForEntity(uri, httpEntity, String.class);
+            response = restTemplate.postForEntity(uri, httpEntity, UserEntity.class);
             System.out.println(response);
         } catch (HttpClientErrorException e) {
             if(e.getStatusCode().value() == 404)
@@ -72,6 +72,7 @@ public class RequestService {
                 throw new RequestService5xxException("Problems with server occurred");
             throw e;
         }
+        return response.getBody();
     }
 
     private String SignInAndReturnToken() {
