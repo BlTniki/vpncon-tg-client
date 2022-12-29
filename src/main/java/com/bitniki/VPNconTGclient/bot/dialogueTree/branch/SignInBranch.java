@@ -2,7 +2,6 @@ package com.bitniki.VPNconTGclient.bot.dialogueTree.branch;
 
 import com.bitniki.VPNconTGclient.bot.response.Response;
 import com.bitniki.VPNconTGclient.bot.response.ResponseType;
-import com.bitniki.VPNconTGclient.bot.response.Responses;
 import com.bitniki.VPNconTGclient.exception.RequestServiceException;
 import com.bitniki.VPNconTGclient.exception.notFoundException.UserNotFoundException;
 import com.bitniki.VPNconTGclient.bot.requestHandler.requestEntity.UserEntity;
@@ -13,6 +12,7 @@ import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.ForceReplyKeyboard;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class AuthBranch extends BranchWithUser{
     private final String loginText = "Введи свой логин";
@@ -24,7 +24,7 @@ public class AuthBranch extends BranchWithUser{
     }
 
     @Override
-    public Responses handle(Update update) {
+    public List<Response<?>> handle(Update update) {
         //Get message from update
         Message message = update.getMessage();
 
@@ -43,46 +43,43 @@ public class AuthBranch extends BranchWithUser{
         }
         //if we got here send error
         //Init Responses
-        Responses responses = new Responses(message.getChatId());
-        responses.setResponseList(new ArrayList<>());
+        List<Response<?>> responses = new ArrayList<>();
         //Make Response
         SendMessage sendMessage = new SendMessage(message.getChatId().toString(),
                 "Что-то я не смог тебя понять. Давай кинем тебя в начало");
-        responses.getResponseList().add(new Response<SendMessage>(ResponseType.SendText, sendMessage));
-        responses.setNextBranch(new InitBranch(this, requestService));
+        responses.add(new Response<SendMessage>(ResponseType.SendText, sendMessage));
+        //route to InitBranch
+        this.setNextBranch(new InitBranch(this, requestService));
         return responses;
     }
 
-    private Responses askLogin(Message message) {
+    private List<Response<?>> askLogin(Message message) {
         //Init Responses
-        Responses responses = new Responses(message.getChatId());
-        responses.setResponseList(new ArrayList<>());
+        List<Response<?>> responses = new ArrayList<>();
 
         //Make Response
         SendMessage sendMessage = new SendMessage(message.getChatId().toString(), loginText);
         sendMessage.setReplyMarkup(new ForceReplyKeyboard(true));
-        responses.getResponseList().add(new Response<SendMessage>(ResponseType.SendText, sendMessage));
+        responses.add(new Response<SendMessage>(ResponseType.SendText, sendMessage));
         this.userEntity = new UserEntity();
         return responses;
     }
 
-    private Responses askPassword(Message message) {
+    private List<Response<?>> askPassword(Message message) {
         //Init Responses
-        Responses responses = new Responses(message.getChatId());
-        responses.setResponseList(new ArrayList<>());
+        List<Response<?>> responses = new ArrayList<>();
 
         //Make Response
         userEntity.setLogin(message.getText());
         SendMessage sendMessage = new SendMessage(message.getChatId().toString(), passwordText);
         sendMessage.setReplyMarkup(new ForceReplyKeyboard(true));
-        responses.getResponseList().add(new Response<SendMessage>(ResponseType.SendText, sendMessage));
+        responses.add(new Response<SendMessage>(ResponseType.SendText, sendMessage));
         return responses;
     }
 
-    private Responses associateUser(Message message) {
+    private List<Response<?>> associateUser(Message message) {
         //Init Responses
-        Responses responses = new Responses(message.getChatId());
-        responses.setResponseList(new ArrayList<>());
+        List<Response<?>> responses = new ArrayList<>();
 
         //end build entity
         userEntity.setTelegramId(message.getFrom().getId());
@@ -95,8 +92,9 @@ public class AuthBranch extends BranchWithUser{
                     "Юзера с такими логином и паролем не существует\n" +
                             "Попробуй ещё раз или создай нового\n" +
                             "Накрайняк пиши сюда: @BITniki");
-            responses.getResponseList().add(new Response<SendMessage>(ResponseType.SendText, sendMessage));
-            responses.setNextBranch(new InitBranch(this, requestService));
+            responses.add(new Response<SendMessage>(ResponseType.SendText, sendMessage));
+            //route to InitBranch
+            this.setNextBranch(new InitBranch(this, requestService));
             return responses;
 //            } catch (UserValidationFailedException e) {
 //                SendMessage sendMessage = new SendMessage(message.getChatId().toString(),
@@ -108,14 +106,16 @@ public class AuthBranch extends BranchWithUser{
         } catch (RequestServiceException e) {
             SendMessage sendMessage = new SendMessage(message.getChatId().toString(),
                     "Похоже на ошбику приложения, напиши мне: @BITniki");
-            responses.getResponseList().add(new Response<SendMessage>(ResponseType.SendText, sendMessage));
-            responses.setNextBranch(new InitBranch(this, requestService));
+            responses.add(new Response<SendMessage>(ResponseType.SendText, sendMessage));
+            //route to InitBranch
+            this.setNextBranch(new InitBranch(this, requestService));
             return responses;
         }
         SendMessage sendMessage = new SendMessage(message.getChatId().toString(),
                 endText + "\n" + userEntity);
-        responses.getResponseList().add(new Response<SendMessage>(ResponseType.SendText, sendMessage));
-        responses.setNextBranch(new InitBranch(this, requestService));
+        responses.add(new Response<SendMessage>(ResponseType.SendText, sendMessage));
+        //route to InitBranch
+        this.setNextBranch(new InitBranch(this, requestService));
         return responses;
     }
 }

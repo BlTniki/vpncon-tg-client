@@ -1,7 +1,6 @@
 package com.bitniki.VPNconTGclient.bot.dialogueTree.branch;
 
 import com.bitniki.VPNconTGclient.bot.response.Response;
-import com.bitniki.VPNconTGclient.bot.response.Responses;
 import com.bitniki.VPNconTGclient.bot.requestHandler.RequestService;
 import org.telegram.telegrambots.meta.api.objects.Update;
 
@@ -22,7 +21,7 @@ public abstract class Branch {
         this.requestService = requestService;
     }
 
-    public abstract Responses handle(Update update);
+    public abstract List<Response<?>> handle(Update update);
 
     public Branch getPrevBranch() {
         return prevBranch;

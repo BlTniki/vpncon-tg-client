@@ -23,7 +23,7 @@ public class InitBranch extends BranchWithUser{
     }
 
     @Override
-    public Responses handle(Update update) {
+    public List<Response<?>> handle(Update update) {
         //Get message from update
         Message message = update.getMessage();
         //Init Responses
@@ -48,42 +48,31 @@ public class InitBranch extends BranchWithUser{
             responses.getResponseList().add(new Response<SendMessage>(ResponseType.SendText, sendMessage));
             return responses;
 
-        } else {
-            //greet unrecognized user
-            //make hi message
-            SendMessage sendMessage = new SendMessage(message.getChatId().toString(),
-                    unrecognizedInitText
-            );
-            //set nav buttons
-            KeyboardRow keyboardRow = new KeyboardRow(List.of(
-                    new KeyboardButton("Регистрация"),
-                    new KeyboardButton("Авторизация")
-            ));
-            ReplyKeyboardMarkup replyKeyboardMarkup = new ReplyKeyboardMarkup(List.of(keyboardRow));
-            sendMessage.setReplyMarkup(replyKeyboardMarkup);
-            responses.getResponseList().add(new Response<SendMessage>(ResponseType.SendText, sendMessage));
-
-            return responses;
-        }
-
+        //If we got here send error
+        //Init Responses
+        List<Response<?>> responses = new ArrayList<>();
+        //make response
+        SendMessage sendMessage = new SendMessage(message.getChatId().toString(), errorText);
+        responses.add(new Response<SendMessage>(ResponseType.SendText, sendMessage));
+        //reinitialize branch
+        this.setNextBranch(new InitBranch(null, requestService));
+        return responses;
     }
 
-    private Responses greetRecognizedUser(Message message) {
+    private List<Response<?>> greetRecognizedUser(Message message) {
         //Init Responses
-        Responses responses = new Responses(message.getChatId());
-        responses.setResponseList(new ArrayList<>());
+        List<Response<?>> responses = new ArrayList<>();
         //make hi message
         SendMessage sendMessage = new SendMessage(message.getChatId().toString(),
                 recognizedInitText + userEntity.getTelegramUsername()
         );
-        responses.getResponseList().add(new Response<SendMessage>(ResponseType.SendText, sendMessage));
+        responses.add(new Response<SendMessage>(ResponseType.SendText, sendMessage));
         return responses;
     }
 
-    private Responses greetUnrecognizedUser(Message message) {
+    private List<Response<?>> greetUnrecognizedUser(Message message) {
         //Init Responses
-        Responses responses = new Responses(message.getChatId());
-        responses.setResponseList(new ArrayList<>());
+        List<Response<?>> responses = new ArrayList<>();
 
         //make hi message
         SendMessage sendMessage = new SendMessage(message.getChatId().toString(),

@@ -6,6 +6,8 @@ import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.ForceReplyKeyboard;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
+import java.util.List;
+
 /**
  * Class that's manipulate with Telegram bot api
  */
@@ -19,7 +21,7 @@ public class VPNconBot extends BasicTelegramBot{
 
     @Override
     public void onUpdateReceived(Update update) {
-        Responses responses;
+        List<Response<?>> responses;
         try {
             //get the response that's needs to send
             responses = updateRouter.handle(update);

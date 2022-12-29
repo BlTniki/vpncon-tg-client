@@ -23,7 +23,7 @@ public class UpdateRouter {
         this.requestService = requestService;
     }
 
-    public Responses handle(Update update) throws UpdateRouterException {
+    public List<Response<?>> handle(Update update) throws UpdateRouterException {
         if(!update.hasMessage())
             throw new UpdateRouterException("This is not a message!");
 
