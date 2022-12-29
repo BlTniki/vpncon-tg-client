@@ -22,35 +22,35 @@ public class InitBranch extends BranchWithUser{
     private final String unrecognizedInitText = "Привет! Представься пожалуста.";
     private final String recognizedInitText = "Привет, ";
 
+    private final String errorText = "Похоже на внутренюю ошибку бота" +
+                                     "Напиши мне: @BITniki";
+    private final String regButtonText = "Регистрация";
+    private final String authButtonText = "Авторизация";
+
     public InitBranch(Branch prevBranch, RequestService requestService) {
         super(prevBranch, requestService);
+        this.branchState = BranchState.InitState;
     }
 
     @Override
     public List<Response<?>> handle(Update update) {
         //Get message from update
         Message message = update.getMessage();
-        //Init Responses
-        Responses responses = new Responses(message.getChatId());
-        responses.setResponseList(new ArrayList<>());
 
-        // Try load user
-        boolean isUserLoaded;
-        try {
-            this.userEntity = loadUserByTelegramId(message.getFrom().getId());
-            isUserLoaded = true;
-        } catch (Exception e) {
-            isUserLoaded = false;
+        // Try load user and send hi
+        if(branchState.equals(BranchState.InitState)) {
+            try {
+                this.userEntity = loadUserByTelegramId(message.getFrom().getId());
+                return greetRecognizedUser(message);
+            } catch (Exception e) {
+                return greetUnrecognizedUser(message);
+            }
         }
 
-        //greet recognized user
-        if(isUserLoaded) {
-            //make hi message
-            SendMessage sendMessage = new SendMessage(message.getChatId().toString(),
-                    recognizedInitText + userEntity.getTelegramUsername()
-            );
-            responses.getResponseList().add(new Response<SendMessage>(ResponseType.SendText, sendMessage));
-            return responses;
+        if(branchState.equals(BranchState.WaitingForAuthType)) {
+            if(message.getText().equals(authButtonText))
+                return routeToAuthorization(message);
+        }
 
         //If we got here send error
         //Init Responses
@@ -84,13 +84,25 @@ public class InitBranch extends BranchWithUser{
         );
         //set nav buttons
         KeyboardRow keyboardRow = new KeyboardRow(List.of(
-                new KeyboardButton("Регистрация"),
-                new KeyboardButton("Авторизация")
+                new KeyboardButton(regButtonText),
+                new KeyboardButton(authButtonText)
         ));
         ReplyKeyboardMarkup replyKeyboardMarkup = new ReplyKeyboardMarkup(List.of(keyboardRow));
         sendMessage.setReplyMarkup(replyKeyboardMarkup);
-        responses.getResponseList().add(new Response<SendMessage>(ResponseType.SendText, sendMessage));
+        responses.add(new Response<SendMessage>(ResponseType.SendText, sendMessage));
 
+        //change branch state
+        branchState = BranchState.WaitingForAuthType;
+
+        return responses;
+    }
+
+    private List<Response<?>> routeToAuthorization(Message message) {
+        //Init Responses
+        List<Response<?>> responses = new ArrayList<>();
+
+        //Make new branch and put in responses
+        this.setNextBranch(new SignInBranch(this, requestService));
         return responses;
     }
 }
