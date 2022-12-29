@@ -18,6 +18,7 @@ public class SignInBranch extends BranchWithUser{
     private final String loginText = "Введи свой логин";
     private final String passwordText = "Так, а теперь пароль";
     private final String endText = "Нашёл твой аккаунт! вот он:\n";
+    private final String signInButtonText = "Авторизация";
 
     public SignInBranch(Branch prevBranch, RequestService requestService) {
         super(prevBranch, requestService);
@@ -30,7 +31,7 @@ public class SignInBranch extends BranchWithUser{
 
 
         //ask login branch state
-        if(message.getText().equals("Авторизация")) {
+        if(message.getText().equals(signInButtonText)) {
             return askLogin(message);
         }
         //ask password branch state
