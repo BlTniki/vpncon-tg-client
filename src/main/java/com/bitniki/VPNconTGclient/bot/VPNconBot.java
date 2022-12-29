@@ -31,10 +31,8 @@ public class VPNconBot extends BasicTelegramBot{
             //Placeholder
             throw new RuntimeException(e);
         }
-        //Bat realization
         //Get all responses
-        Long chatId = responses.getChatId();
-        for(Response<?> response : responses.getResponseList()) {
+        for(Response<?> response : responses) {
             switch (response.getResponseType()) {
                 case SendText -> {
                     try {
