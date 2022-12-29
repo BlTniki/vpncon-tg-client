@@ -1,5 +1,7 @@
 package com.bitniki.VPNconTGclient.bot;
 
+import com.bitniki.VPNconTGclient.bot.response.Response;
+import com.bitniki.VPNconTGclient.bot.router.UpdateRouter;
 import com.bitniki.VPNconTGclient.exception.UpdateRouterException;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Update;
