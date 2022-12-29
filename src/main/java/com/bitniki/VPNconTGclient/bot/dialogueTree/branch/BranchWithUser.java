@@ -8,9 +8,21 @@ import com.bitniki.VPNconTGclient.bot.requestHandler.RequestService;
 
 public abstract class BranchWithUser extends Branch{
     protected UserEntity userEntity;
+
+    public BranchWithUser(RequestService requestService) {
+        super(requestService);
+    }
+
     public BranchWithUser(Branch prevBranch, RequestService requestService) {
         super(prevBranch, requestService);
     }
+
+    public BranchWithUser(BranchWithUser branch, RequestService requestService) {
+        super(requestService);
+        setPrevBranch(branch);
+        this.userEntity = branch.userEntity;
+    }
+
 
     public UserEntity getUserEntity() {
         return userEntity;
