@@ -75,6 +75,32 @@ public class RequestService {
         return response.getBody();
     }
 
+    public UserEntity createUserOnServer(UserEntity userEntity)
+            throws UserValidationFailedException, UserNotFoundException, RequestService5xxException {
+        String uri = this.VPNconAddress + "/users";
+        //Configure request body
+        HttpEntity<UserEntity> httpEntity = new HttpEntity<>(
+                userEntity,
+                makeHttpHeaders()
+        );
+        //Configure response entity
+        ResponseEntity<UserEntity> response;
+        RestTemplate restTemplate = new RestTemplate();
+        try {
+            response = restTemplate.postForEntity(uri, httpEntity, UserEntity.class);
+            System.out.println(response);
+        } catch (HttpClientErrorException e) {
+            if (e.getStatusCode().value() == 404)
+                throw new UserValidationFailedException(e.getMessage());
+            if(e.getStatusCode().value() == 404)
+                throw new UserNotFoundException(e.getMessage());
+            if(e.getStatusCode().is5xxServerError())
+                throw new RequestService5xxException("Problems with server occurred");
+            throw e;
+        }
+        return response.getBody();
+    }
+
     private String SignInAndReturnToken() {
         String uri = this.VPNconAddress + "/auth/login";
         //Configure request body
