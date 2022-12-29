@@ -5,9 +5,17 @@ import com.bitniki.VPNconTGclient.bot.response.Responses;
 import com.bitniki.VPNconTGclient.bot.requestHandler.RequestService;
 import org.telegram.telegrambots.meta.api.objects.Update;
 
+import java.util.List;
+
 public abstract class Branch {
     private Branch prevBranch;
+    private Branch nextBranch;
+    private boolean isBranchWantChangeBranch;
     protected RequestService requestService;
+
+    public Branch(RequestService requestService) {
+        this.requestService = requestService;
+    }
 
     public Branch(Branch prevBranch, RequestService requestService) {
         this.prevBranch = prevBranch;
@@ -22,6 +30,19 @@ public abstract class Branch {
 
     public void setPrevBranch(Branch prevBranch) {
         this.prevBranch = prevBranch;
+    }
+
+    public Branch getNextBranch() {
+        return nextBranch;
+    }
+
+    public void setNextBranch(Branch nextBranch) {
+        this.nextBranch = nextBranch;
+        this.isBranchWantChangeBranch = true;
+    }
+
+    public boolean isBranchWantChangeBranch() {
+        return isBranchWantChangeBranch;
     }
 
     public RequestService getRequestService() {

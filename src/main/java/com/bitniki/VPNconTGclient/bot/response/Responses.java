@@ -9,45 +9,26 @@ import java.util.List;
  * and chat id
  */
 public class Responses {
-    private Long chatId;
-    private Branch nextBranch;
 
-    private List<Response> responseList;
+
+    private List<Response<?>> responseList;
 
     public Responses() {
     }
 
     public Responses(Long chatId) {
-        this.chatId = chatId;
+
     }
 
-    public Responses(Long chatId, Branch nextBranch, List<Response> messageEntities) {
-        this.chatId = chatId;
-        this.nextBranch = nextBranch;
+    public Responses(Long chatId, Branch nextBranch, List<Response<?>> messageEntities) {
         this.responseList = messageEntities;
     }
 
-    public Long getChatId() {
-        return chatId;
-    }
-
-    public void setChatId(Long chatId) {
-        this.chatId = chatId;
-    }
-
-    public Branch getNextBranch() {
-        return nextBranch;
-    }
-
-    public void setNextBranch(Branch nextBranch) {
-        this.nextBranch = nextBranch;
-    }
-
-    public List<Response> getResponseList() {
+    public List<Response<?>> getResponseList() {
         return responseList;
     }
 
-    public void setResponseList(List<Response> messageEntities) {
+    public void setResponseList(List<Response<?>> messageEntities) {
         this.responseList = messageEntities;
     }
 }
