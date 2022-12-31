@@ -6,4 +6,9 @@ public class EntityValidationFailedException extends BranchBadUpdateProvidedExce
     public EntityValidationFailedException(String message) {
         super(message);
     }
+
+    @Override
+    public String getMessage() {
+        return super.getMessage().replace("400 : ","").replace("<EOL>", "\n");
+    }
 }
