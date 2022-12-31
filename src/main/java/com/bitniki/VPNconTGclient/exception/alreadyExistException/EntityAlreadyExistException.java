@@ -1,6 +1,8 @@
 package com.bitniki.VPNconTGclient.exception.alreadyExistException;
 
-public class EntityAlreadyExistException extends Exception {
+import com.bitniki.VPNconTGclient.exception.BranchBadUpdateProvidedException;
+
+public class EntityAlreadyExistException extends BranchBadUpdateProvidedException {
     public EntityAlreadyExistException(String message) {
         super(message);
     }
