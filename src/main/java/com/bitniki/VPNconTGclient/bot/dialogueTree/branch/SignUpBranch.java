@@ -4,6 +4,11 @@ import com.bitniki.VPNconTGclient.bot.requestHandler.RequestService;
 import com.bitniki.VPNconTGclient.bot.requestHandler.requestEntity.UserEntity;
 import com.bitniki.VPNconTGclient.bot.response.Response;
 import com.bitniki.VPNconTGclient.bot.response.ResponseType;
+import com.bitniki.VPNconTGclient.exception.BranchBadUpdateProvidedException;
+import com.bitniki.VPNconTGclient.exception.RequestService5xxException;
+import com.bitniki.VPNconTGclient.exception.RequestServiceException;
+import com.bitniki.VPNconTGclient.exception.notFoundException.UserNotFoundException;
+import com.bitniki.VPNconTGclient.exception.validationFailedException.UserValidationFailedException;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
@@ -41,7 +46,8 @@ public class SignUpBranch extends BranchWithUser{
     }
 
     @Override
-    public List<Response<?>> handle(Update update) {
+    public List<Response<?>> handle(Update update)
+            throws RequestServiceException, BranchBadUpdateProvidedException {
         //Get message from update
         Message message = update.getMessage();
 
@@ -58,15 +64,9 @@ public class SignUpBranch extends BranchWithUser{
             return createUser(message);
         }
         //if we got here send error
-        //Init Responses
-        List<Response<?>> responses = new ArrayList<>();
-        //Make Response
-        SendMessage sendMessage = new SendMessage(message.getChatId().toString(),
-                "Что-то я не смог тебя понять. Давай кинем тебя в начало");
-        responses.add(new Response<SendMessage>(ResponseType.SendText, sendMessage));
-        //route to InitBranch
-        this.setNextBranch(new InitBranch(this, requestService));
-        return responses;
+        throw new BranchBadUpdateProvidedException(
+                "Что-то я не смог тебя понять. Давай кинем тебя в начало"
+        );
     }
 
     private List<Response<?>> askLogin(Message message) {
@@ -93,7 +93,8 @@ public class SignUpBranch extends BranchWithUser{
         return responses;
     }
 
-    private List<Response<?>> createUser(Message message) {
+    private List<Response<?>> createUser(Message message)
+            throws UserValidationFailedException, RequestService5xxException {
         //Init Responses
         List<Response<?>> responses = new ArrayList<>();
 
@@ -102,6 +103,19 @@ public class SignUpBranch extends BranchWithUser{
         userEntity.setTelegramUsername(message.getFrom().getUserName());
 
         //try to create user on server
-        return null;
+        try {
+            this.userEntity = requestService.createUserOnServer(this.userEntity);
+        } catch (UserValidationFailedException e) {
+            throw new UserValidationFailedException("Похоже ты накосячил, у тебя:\n" +
+                                                    e.getMessage() +
+                                                    "Попробуй ещё раз");
+        }
+        //Make Response
+        SendMessage sendMessage = new SendMessage(message.getChatId().toString(),
+                endText + "\n" + userEntity);
+        responses.add(new Response<SendMessage>(ResponseType.SendText, sendMessage));
+        //route to InitBranch
+        this.setNextBranch(new InitBranch(this, requestService));
+        return responses;
     }
 }
