@@ -2,6 +2,7 @@ package com.bitniki.VPNconTGclient.bot.dialogueTree.branch;
 
 import com.bitniki.VPNconTGclient.bot.response.Response;
 import com.bitniki.VPNconTGclient.bot.response.ResponseType;
+import com.bitniki.VPNconTGclient.exception.BranchBadUpdateProvidedException;
 import com.bitniki.VPNconTGclient.exception.RequestServiceException;
 import com.bitniki.VPNconTGclient.exception.notFoundException.UserNotFoundException;
 import com.bitniki.VPNconTGclient.bot.requestHandler.requestEntity.UserEntity;
@@ -25,7 +26,8 @@ public class SignInBranch extends BranchWithUser{
     }
 
     @Override
-    public List<Response<?>> handle(Update update) {
+    public List<Response<?>> handle(Update update)
+            throws RequestServiceException, BranchBadUpdateProvidedException {
         //Get message from update
         Message message = update.getMessage();
 
@@ -42,15 +44,9 @@ public class SignInBranch extends BranchWithUser{
             return associateUser(message);
         }
         //if we got here send error
-        //Init Responses
-        List<Response<?>> responses = new ArrayList<>();
-        //Make Response
-        SendMessage sendMessage = new SendMessage(message.getChatId().toString(),
-                "Что-то я не смог тебя понять. Давай кинем тебя в начало");
-        responses.add(new Response<SendMessage>(ResponseType.SendText, sendMessage));
-        //route to InitBranch
-        this.setNextBranch(new InitBranch(this, requestService));
-        return responses;
+        throw new BranchBadUpdateProvidedException(
+                "Что-то я не смог тебя понять. Давай кинем тебя в начало"
+        );
     }
 
     private List<Response<?>> askLogin(Message message) {
@@ -77,7 +73,7 @@ public class SignInBranch extends BranchWithUser{
         return responses;
     }
 
-    private List<Response<?>> associateUser(Message message) {
+    private List<Response<?>> associateUser(Message message) throws UserNotFoundException, RequestServiceException {
         //Init Responses
         List<Response<?>> responses = new ArrayList<>();
 
@@ -88,29 +84,19 @@ public class SignInBranch extends BranchWithUser{
         try {
             this.userEntity = requestService.associateTelegramIdWithUser(userEntity);
         } catch (UserNotFoundException e) {
-            SendMessage sendMessage = new SendMessage(message.getChatId().toString(),
-                    "Юзера с такими логином и паролем не существует\n" +
-                            "Попробуй ещё раз или создай нового\n" +
-                            "Накрайняк пиши сюда: @BITniki");
-            responses.add(new Response<SendMessage>(ResponseType.SendText, sendMessage));
-            //route to InitBranch
-            this.setNextBranch(new InitBranch(this, requestService));
-            return responses;
-//            } catch (UserValidationFailedException e) {
-//                SendMessage sendMessage = new SendMessage(message.getChatId().toString(),
-//                        "Использовались некоректные символы:\n" +
-//                                e.getMessage() +
-//                                "\nПопробуй ещё раз\n" +
-//                                "Накрайняк пиши сюда: @BITniki");
-//                responses.getResponseList().add(new Response(ResponseType.SendText, sendMessage));
+            throw new UserNotFoundException(
+                    """
+                        Юзера с такими логином и паролем не существует
+                        Попробуй ещё раз или создай нового
+                        Накрайняк пиши сюда: @BITniki
+                    """
+            );
         } catch (RequestServiceException e) {
-            SendMessage sendMessage = new SendMessage(message.getChatId().toString(),
-                    "Похоже на ошбику приложения, напиши мне: @BITniki");
-            responses.add(new Response<SendMessage>(ResponseType.SendText, sendMessage));
-            //route to InitBranch
-            this.setNextBranch(new InitBranch(this, requestService));
-            return responses;
+            throw new RequestServiceException(
+                    "Похоже на ошбику приложения, напиши мне: @BITniki"
+            );
         }
+        //Make Response
         SendMessage sendMessage = new SendMessage(message.getChatId().toString(),
                 endText + "\n" + userEntity);
         responses.add(new Response<SendMessage>(ResponseType.SendText, sendMessage));

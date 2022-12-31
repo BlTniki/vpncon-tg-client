@@ -76,7 +76,7 @@ public class RequestService {
     }
 
     public UserEntity createUserOnServer(UserEntity userEntity)
-            throws UserValidationFailedException, UserNotFoundException, RequestService5xxException {
+            throws UserValidationFailedException, RequestService5xxException {
         String uri = this.VPNconAddress + "/users";
         //Configure request body
         HttpEntity<UserEntity> httpEntity = new HttpEntity<>(
@@ -90,10 +90,8 @@ public class RequestService {
             response = restTemplate.postForEntity(uri, httpEntity, UserEntity.class);
             System.out.println(response);
         } catch (HttpClientErrorException e) {
-            if (e.getStatusCode().value() == 404)
+            if (e.getStatusCode().value() == 400)
                 throw new UserValidationFailedException(e.getMessage());
-            if(e.getStatusCode().value() == 404)
-                throw new UserNotFoundException(e.getMessage());
             if(e.getStatusCode().is5xxServerError())
                 throw new RequestService5xxException("Problems with server occurred");
             throw e;

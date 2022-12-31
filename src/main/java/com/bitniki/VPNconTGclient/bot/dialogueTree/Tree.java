@@ -5,8 +5,14 @@ import com.bitniki.VPNconTGclient.bot.dialogueTree.branch.Branch;
 import com.bitniki.VPNconTGclient.bot.dialogueTree.branch.InitBranch;
 import com.bitniki.VPNconTGclient.bot.requestHandler.requestEntity.UserEntity;
 import com.bitniki.VPNconTGclient.bot.requestHandler.RequestService;
+import com.bitniki.VPNconTGclient.bot.response.ResponseType;
+import com.bitniki.VPNconTGclient.exception.BranchBadUpdateProvidedException;
+import com.bitniki.VPNconTGclient.exception.RequestServiceException;
+import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Update;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class Tree {
@@ -21,7 +27,21 @@ public class Tree {
 
     public List<Response<?>> handle(Update update) {
         // Get responses from branch
-        List<Response<?>> responses = this.currentBranch.handle(update);
+        List<Response<?>> responses;
+        try {
+            responses = this.currentBranch.handle(update);
+        } catch (RequestServiceException | BranchBadUpdateProvidedException e) {
+            //Init Response
+            SendMessage sendMessage = new SendMessage(
+                    update.getMessage().getChatId().toString(),
+                    e.getMessage());
+            //route to InitBranch
+            this.currentBranch = new InitBranch(currentBranch, requestService);
+            return Collections.singletonList(
+                    new Response<SendMessage>(ResponseType.SendText, sendMessage)
+            );
+        }
+
 
         //if branch want change branch — change
         if(this.currentBranch.isBranchWantChangeBranch()) {
