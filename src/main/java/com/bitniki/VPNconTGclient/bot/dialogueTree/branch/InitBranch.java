@@ -3,6 +3,7 @@ package com.bitniki.VPNconTGclient.bot.dialogueTree.branch;
 import com.bitniki.VPNconTGclient.bot.response.Response;
 import com.bitniki.VPNconTGclient.bot.response.ResponseType;
 import com.bitniki.VPNconTGclient.bot.requestHandler.RequestService;
+import com.bitniki.VPNconTGclient.exception.BranchBadUpdateProvidedException;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
@@ -22,7 +23,7 @@ public class InitBranch extends BranchWithUser{
     private final String unrecognizedInitText = "Привет! Представься пожалуста.";
     private final String recognizedInitText = "Привет, ";
 
-    private final String errorText = "Похоже на внутренюю ошибку бота" +
+    private final String errorText = "Похоже на внутренюю ошибку бота. " +
                                      "Напиши мне: @BITniki";
     private final String regButtonText = "Регистрация";
     private final String authButtonText = "Авторизация";
@@ -33,7 +34,8 @@ public class InitBranch extends BranchWithUser{
     }
 
     @Override
-    public List<Response<?>> handle(Update update) {
+    public List<Response<?>> handle(Update update)
+            throws BranchBadUpdateProvidedException {
         //Get message from update
         Message message = update.getMessage();
 
@@ -50,17 +52,15 @@ public class InitBranch extends BranchWithUser{
         if(branchState.equals(BranchState.WaitingForAuthType)) {
             if(message.getText().equals(authButtonText))
                 return routeToAuthorization(message);
+            if(message.getText().equals(regButtonText))
+                return routeToRegistration(message);
         }
 
         //If we got here send error
-        //Init Responses
-        List<Response<?>> responses = new ArrayList<>();
-        //make response
-        SendMessage sendMessage = new SendMessage(message.getChatId().toString(), errorText);
-        responses.add(new Response<SendMessage>(ResponseType.SendText, sendMessage));
-        //reinitialize branch
-        this.setNextBranch(new InitBranch(null, requestService));
-        return responses;
+        //if we got here send error
+        throw new BranchBadUpdateProvidedException(
+                errorText
+        );
     }
 
     private List<Response<?>> greetRecognizedUser(Message message) {
@@ -103,6 +103,15 @@ public class InitBranch extends BranchWithUser{
 
         //Make new branch and put in responses
         this.setNextBranch(new SignInBranch(this, requestService));
+        return responses;
+    }
+
+    private List<Response<?>> routeToRegistration(Message message) {
+        //Init Responses
+        List<Response<?>> responses = new ArrayList<>();
+
+        //Make new branch and put in responses
+        this.setNextBranch(new SignUpBranch(this, requestService));
         return responses;
     }
 }

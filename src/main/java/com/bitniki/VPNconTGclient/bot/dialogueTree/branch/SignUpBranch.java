@@ -18,18 +18,16 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class SignUpBranch extends BranchWithUser{
-    private final String loginText =    """
-                                            Придумай себе логин. Он должен быть длиной от 1 до 20 и может состоять из:
-                                            Строчного или прописного латинского алфавита
-                                            Цифр
-                                            Знаков: - _ .
-                                        """;
-    private final String passwordText = """
-                                            Так, а теперь пароль: Он должен быть длиной от 3 символов и должен состоять из:
-                                            Строчного и прописного латинского алфавита
-                                            Цифр
-                                            А также можно добавить другие символы
-                                        """;
+    private final String loginText =    "Придумай себе логин. Он должен быть длиной от 1 до 20 и может состоять из:\n" +
+                                        "Строчного или прописного латинского алфавита\n" +
+                                        "Цифр\n" +
+                                        "Знаков: - _ ."
+                                        ;
+    private final String passwordText = "Так, а теперь пароль: Он должен быть длиной от 3 символов и должен состоять из:\n" +
+                                        "Строчного и прописного латинского алфавита\n" +
+                                        "Цифр\n" +
+                                        "А также можно добавить другие символы"
+                                        ;
     private final String endText = "Создал тебе аккаунт! вот он:\n";
     private final String signUpButtonText = "Регистрация";
 
@@ -99,6 +97,7 @@ public class SignUpBranch extends BranchWithUser{
         List<Response<?>> responses = new ArrayList<>();
 
         //end build entity
+        userEntity.setPassword(message.getText());
         userEntity.setTelegramId(message.getFrom().getId());
         userEntity.setTelegramUsername(message.getFrom().getUserName());
 
@@ -108,7 +107,7 @@ public class SignUpBranch extends BranchWithUser{
         } catch (UserValidationFailedException e) {
             throw new UserValidationFailedException("Похоже ты накосячил, у тебя:\n" +
                                                     e.getMessage() +
-                                                    "Попробуй ещё раз");
+                                                    "\nПопробуй ещё раз");
         }
         //Make Response
         SendMessage sendMessage = new SendMessage(message.getChatId().toString(),

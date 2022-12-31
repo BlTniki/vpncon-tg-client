@@ -32,14 +32,17 @@ public class Tree {
             responses = this.currentBranch.handle(update);
         } catch (RequestServiceException | BranchBadUpdateProvidedException e) {
             //Init Response
+            responses = new ArrayList<>();
             SendMessage sendMessage = new SendMessage(
                     update.getMessage().getChatId().toString(),
-                    e.getMessage());
-            //route to InitBranch
-            this.currentBranch = new InitBranch(currentBranch, requestService);
-            return Collections.singletonList(
+                    e.getMessage()
+            );
+            responses.add(
                     new Response<SendMessage>(ResponseType.SendText, sendMessage)
             );
+
+            //route to InitBranch
+            this.currentBranch.setNextBranch(new InitBranch(currentBranch, requestService));
         }
 
 
