@@ -17,10 +17,10 @@ public abstract class BranchWithUser extends Branch{
         super(prevBranch, requestService);
     }
 
-    public BranchWithUser(BranchWithUser branch, RequestService requestService) {
+    public BranchWithUser(BranchWithUser prevBranch, RequestService requestService) {
         super(requestService);
-        setPrevBranch(branch);
-        this.userEntity = branch.userEntity;
+        setPrevBranch(prevBranch);
+        this.userEntity = prevBranch.userEntity;
     }
 
 
