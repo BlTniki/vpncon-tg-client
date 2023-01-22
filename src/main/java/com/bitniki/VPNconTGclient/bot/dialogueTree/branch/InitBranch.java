@@ -14,10 +14,12 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.Keyboard
 import java.util.ArrayList;
 import java.util.List;
 
+
+@SuppressWarnings({"FieldCanBeLocal", "unused"})
 public class InitBranch extends BranchWithUser{
     private enum BranchState {
         InitState(),
-        WaitingForAuthType();
+        WaitingForAuthType()
     }
     private BranchState branchState;
     private final String unrecognizedInitText = "Привет! Представься пожалуста.";
@@ -39,6 +41,7 @@ public class InitBranch extends BranchWithUser{
         //Get message from update
         Message message = update.getMessage();
 
+        //Init state
         // Try load user and send hi
         if(branchState.equals(BranchState.InitState)) {
             try {
@@ -49,6 +52,7 @@ public class InitBranch extends BranchWithUser{
             }
         }
 
+        //WaitingForAuthType State
         if(branchState.equals(BranchState.WaitingForAuthType)) {
             if(message.getText().equals(authButtonText))
                 return routeToAuthorization(message);
@@ -57,7 +61,6 @@ public class InitBranch extends BranchWithUser{
         }
 
         //If we got here send error
-        //if we got here send error
         throw new BranchBadUpdateProvidedException(
                 errorText
         );
@@ -70,7 +73,9 @@ public class InitBranch extends BranchWithUser{
         SendMessage sendMessage = new SendMessage(message.getChatId().toString(),
                 recognizedInitText + userEntity.getTelegramUsername()
         );
-        responses.add(new Response<SendMessage>(ResponseType.SendText, sendMessage));
+        responses.add(new Response<>(ResponseType.SendText, sendMessage));
+        //route to main menu
+        setNextBranch(new MainMenuBranch(this, requestService));
         return responses;
     }
 
@@ -89,7 +94,7 @@ public class InitBranch extends BranchWithUser{
         ));
         ReplyKeyboardMarkup replyKeyboardMarkup = new ReplyKeyboardMarkup(List.of(keyboardRow));
         sendMessage.setReplyMarkup(replyKeyboardMarkup);
-        responses.add(new Response<SendMessage>(ResponseType.SendText, sendMessage));
+        responses.add(new Response<>(ResponseType.SendText, sendMessage));
 
         //change branch state
         branchState = BranchState.WaitingForAuthType;
