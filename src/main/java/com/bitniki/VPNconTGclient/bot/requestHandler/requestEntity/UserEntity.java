@@ -1,11 +1,15 @@
 package com.bitniki.VPNconTGclient.bot.requestHandler.requestEntity;
 
+import java.util.List;
+
+@SuppressWarnings("unused")
 public class UserEntity {
     private Long id;
     private String login;
     private String password;
     private Long telegramId;
     private String telegramUsername;
+    private List<PeerEntity> peers;
 
     public UserEntity() {
     }
@@ -53,6 +57,14 @@ public class UserEntity {
 
     public void setTelegramUsername(String telegramUsername) {
         this.telegramUsername = telegramUsername;
+    }
+
+    public List<PeerEntity> getPeers() {
+        return peers;
+    }
+
+    public void setPeers(List<PeerEntity> peers) {
+        this.peers = peers;
     }
 
     @Override
