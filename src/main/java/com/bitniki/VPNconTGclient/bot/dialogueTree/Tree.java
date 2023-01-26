@@ -18,6 +18,7 @@ public class Tree {
     private UserEntity userEntity;
     private Branch currentBranch;
     private final RequestService requestService;
+    private int badRequestCount;
 
     public Tree(RequestService requestService) {
         this.requestService = requestService;
@@ -29,9 +30,9 @@ public class Tree {
         List<Response<?>> responses = new ArrayList<>();
         try {
             responses.addAll(this.currentBranch.handle(update));
+            //Reset the counter
+            badRequestCount = 0;
         } catch (RequestServiceException | BranchBadUpdateProvidedException e) {
-            //Init Response
-            responses = new ArrayList<>();
             SendMessage sendMessage = new SendMessage(
                     update.getMessage().getChatId().toString(),
                     e.getMessage()
@@ -40,8 +41,11 @@ public class Tree {
                     new Response<>(ResponseType.SendText, sendMessage)
             );
 
-            //route to InitBranch
-            this.currentBranch.setNextBranch(new InitBranch(currentBranch, requestService));
+            if(badRequestCount++ % 4 == 3) {
+                badRequestCount = 0;
+                //route to InitBranch
+                this.currentBranch.setNextBranch(new InitBranch(currentBranch, requestService));
+            }
         }
 
         //if branch want change branch — change
