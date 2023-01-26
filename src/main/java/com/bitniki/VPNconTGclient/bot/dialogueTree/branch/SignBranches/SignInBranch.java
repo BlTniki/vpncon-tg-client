@@ -1,5 +1,8 @@
-package com.bitniki.VPNconTGclient.bot.dialogueTree.branch;
+package com.bitniki.VPNconTGclient.bot.dialogueTree.branch.SignBranches;
 
+import com.bitniki.VPNconTGclient.bot.dialogueTree.branch.Branch;
+import com.bitniki.VPNconTGclient.bot.dialogueTree.branch.BranchWithUser;
+import com.bitniki.VPNconTGclient.bot.dialogueTree.branch.InitBranch;
 import com.bitniki.VPNconTGclient.bot.response.Response;
 import com.bitniki.VPNconTGclient.bot.response.ResponseType;
 import com.bitniki.VPNconTGclient.bot.exception.BranchBadUpdateProvidedException;
@@ -16,7 +19,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @SuppressWarnings("FieldCanBeLocal")
-public class SignInBranch extends BranchWithUser{
+public class SignInBranch extends BranchWithUser {
     private final String loginText = "Введи свой логин";
     private final String passwordText = "Так, а теперь пароль";
     private final String endText = "Нашёл твой аккаунт! вот он:\n";

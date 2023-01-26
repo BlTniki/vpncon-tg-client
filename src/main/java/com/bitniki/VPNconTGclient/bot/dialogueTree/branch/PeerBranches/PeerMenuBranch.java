@@ -1,5 +1,6 @@
-package com.bitniki.VPNconTGclient.bot.dialogueTree.branch;
+package com.bitniki.VPNconTGclient.bot.dialogueTree.branch.PeerBranches;
 
+import com.bitniki.VPNconTGclient.bot.dialogueTree.branch.BranchWithUser;
 import com.bitniki.VPNconTGclient.bot.requestHandler.RequestService;
 import com.bitniki.VPNconTGclient.bot.response.Response;
 import com.bitniki.VPNconTGclient.bot.response.ResponseType;
@@ -12,7 +13,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @SuppressWarnings({"FieldCanBeLocal", "FieldMayBeFinal"})
-public class PeerMenuBranch extends BranchWithUser{
+public class PeerMenuBranch extends BranchWithUser {
     private enum BranchState {
         InitState()
     }

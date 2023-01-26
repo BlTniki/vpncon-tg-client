@@ -1,5 +1,8 @@
-package com.bitniki.VPNconTGclient.bot.dialogueTree.branch;
+package com.bitniki.VPNconTGclient.bot.dialogueTree.branch.SignBranches;
 
+import com.bitniki.VPNconTGclient.bot.dialogueTree.branch.Branch;
+import com.bitniki.VPNconTGclient.bot.dialogueTree.branch.BranchWithUser;
+import com.bitniki.VPNconTGclient.bot.dialogueTree.branch.InitBranch;
 import com.bitniki.VPNconTGclient.bot.requestHandler.RequestService;
 import com.bitniki.VPNconTGclient.bot.requestHandler.requestEntity.UserEntity;
 import com.bitniki.VPNconTGclient.bot.response.Response;
@@ -17,7 +20,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @SuppressWarnings({"TextBlockMigration", "FieldCanBeLocal", "unused"})
-public class SignUpBranch extends BranchWithUser{
+public class SignUpBranch extends BranchWithUser {
     private final String loginText =    "Придумай себе логин. Он должен быть длиной от 1 до 20 и может состоять из:\n" +
                                         "Строчного или прописного латинского алфавита\n" +
                                         "Цифр\n" +
