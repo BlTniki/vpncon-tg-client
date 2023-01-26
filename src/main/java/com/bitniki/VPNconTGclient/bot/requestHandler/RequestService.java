@@ -20,6 +20,7 @@ public class RequestService {
     private final String botLogin;
     private final String botPassword;
     private final String botToken;
+    private final HttpHeaders httpHeaders;
     private final RestTemplate restTemplate;
 
     public RequestService(String VPNconAddress, String botLogin, String botPassword) {
@@ -28,6 +29,7 @@ public class RequestService {
         this.botPassword = botPassword;
         this.restTemplate = new RestTemplate();
         this.botToken = SignInAndReturnToken();
+        this.httpHeaders = makeHttpHeaders();
     }
 
     public UserEntity getUserByTelegramId(Long telegramId)
@@ -40,7 +42,7 @@ public class RequestService {
         try {
             response = restTemplate.exchange(uri,
                     HttpMethod.GET,
-                    new HttpEntity<>(makeHttpHeaders()),
+                    new HttpEntity<>(httpHeaders),
                     UserEntity.class
             );
         } catch (HttpClientErrorException e) {
@@ -139,7 +141,7 @@ public class RequestService {
     private HttpEntity<UserEntity> makeHttpEntity(UserEntity userEntity) {
         return new HttpEntity<>(
                 userEntity,
-                makeHttpHeaders()
+                httpHeaders
         );
     }
 }
