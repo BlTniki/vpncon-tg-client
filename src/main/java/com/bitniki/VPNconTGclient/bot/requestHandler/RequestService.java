@@ -68,7 +68,6 @@ public class RequestService {
         //Make request
         try {
             response = restTemplate.postForEntity(uri, httpEntity, UserEntity.class);
-            System.out.println(response);
         } catch (HttpClientErrorException e) {
             if(e.getStatusCode().value() == 404)
                 throw new UserNotFoundException(e.getMessage());
@@ -94,7 +93,6 @@ public class RequestService {
                     httpEntity,
                     UserEntity.class
             );
-            System.out.println(response);
         } catch (HttpClientErrorException e) {
             if (e.getStatusCode().value() == 400)
                 throw new UserValidationFailedException(e.getMessage());
@@ -120,7 +118,6 @@ public class RequestService {
         //Make request
         try {
             response = restTemplate.postForEntity(uri, httpEntity, TokenEntity.class);
-            System.out.println(response);
         } catch (Exception e) {
             System.out.println(e.getMessage());
             throw e;
