@@ -9,6 +9,7 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMar
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardButton;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardRow;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @SuppressWarnings({"FieldCanBeLocal", "unused"})
@@ -33,6 +34,14 @@ public abstract class Branch {
 
     public List<Response<?>> handle(Update update)
             throws RequestServiceException, BranchBadUpdateProvidedException{
+        if(update.getMessage().getText().equals(returnText)) {
+            //route to main menu chain
+            this.setNextBranch(new MainMenuBranch(this, requestService));
+            //clear message text or it will fall in endless cycle
+            update.getMessage().setText("");
+            //return empty list
+            return new ArrayList<>();
+        }
         List<Response<?>> responses = makeResponses(update);
         if(responses == null) throw new BranchBadUpdateProvidedException(errorText);
         return responses;
