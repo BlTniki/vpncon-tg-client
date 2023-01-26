@@ -20,11 +20,13 @@ public class RequestService {
     private final String botLogin;
     private final String botPassword;
     private final String botToken;
+    private final RestTemplate restTemplate;
 
     public RequestService(String VPNconAddress, String botLogin, String botPassword) {
         this.VPNconAddress = VPNconAddress;
         this.botLogin = botLogin;
         this.botPassword = botPassword;
+        this.restTemplate = new RestTemplate();
         this.botToken = SignInAndReturnToken();
     }
 
@@ -33,7 +35,8 @@ public class RequestService {
         String uri = this.VPNconAddress + "/users/tg/" + telegramId;
         //Configure response entity
         ResponseEntity<UserEntity> response;
-        RestTemplate restTemplate = new RestTemplate();
+
+        //Make request
         try {
             response = restTemplate.exchange(uri,
                     HttpMethod.GET,
@@ -58,7 +61,7 @@ public class RequestService {
         HttpEntity<UserEntity> httpEntity = makeHttpEntity(userEntity);
         //Configure response entity
         ResponseEntity<UserEntity> response;
-        RestTemplate restTemplate = new RestTemplate();
+
 
         //Make request
         try {
@@ -81,7 +84,6 @@ public class RequestService {
         HttpEntity<UserEntity> httpEntity = makeHttpEntity(userEntity);
         //Configure response entity
         ResponseEntity<UserEntity> response;
-        RestTemplate restTemplate = new RestTemplate();
 
         //Make request
         try {
@@ -112,7 +114,8 @@ public class RequestService {
         );
         //Configure response entity
         ResponseEntity<TokenEntity> response;
-        RestTemplate restTemplate = new RestTemplate();
+
+        //Make request
         try {
             response = restTemplate.postForEntity(uri, httpEntity, TokenEntity.class);
             System.out.println(response);
