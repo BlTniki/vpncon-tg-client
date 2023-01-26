@@ -4,7 +4,6 @@ import com.bitniki.VPNconTGclient.bot.requestHandler.RequestService;
 import com.bitniki.VPNconTGclient.bot.response.Response;
 import com.bitniki.VPNconTGclient.bot.response.ResponseType;
 import com.bitniki.VPNconTGclient.bot.exception.BranchBadUpdateProvidedException;
-import com.bitniki.VPNconTGclient.bot.exception.requestHandlerException.RequestServiceException;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
@@ -12,6 +11,7 @@ import org.telegram.telegrambots.meta.api.objects.Update;
 import java.util.ArrayList;
 import java.util.List;
 
+@SuppressWarnings({"FieldCanBeLocal", "FieldMayBeFinal"})
 public class PeerMenuBranch extends BranchWithUser{
     private enum BranchState {
         InitState()
@@ -26,7 +26,7 @@ public class PeerMenuBranch extends BranchWithUser{
     }
 
     @Override
-    public List<Response<?>> handle(Update update) throws RequestServiceException, BranchBadUpdateProvidedException {
+    public List<Response<?>> makeResponses(Update update) throws BranchBadUpdateProvidedException {
         //Get message from update
         Message message = update.getMessage();
 
@@ -35,10 +35,8 @@ public class PeerMenuBranch extends BranchWithUser{
             return returnPeersList(message);
         }
 
-        //If we got here send error
-        throw new BranchBadUpdateProvidedException(
-                errorText
-        );
+        //If we got here return null
+        return null;
     }
 
     private List<Response<?>> returnPeersList(Message message) throws BranchBadUpdateProvidedException {

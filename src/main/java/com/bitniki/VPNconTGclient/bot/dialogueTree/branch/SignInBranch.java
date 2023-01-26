@@ -27,7 +27,7 @@ public class SignInBranch extends BranchWithUser{
     }
 
     @Override
-    public List<Response<?>> handle(Update update)
+    public List<Response<?>> makeResponses(Update update)
             throws RequestServiceException, BranchBadUpdateProvidedException {
         //Get message from update
         Message message = update.getMessage();
@@ -44,10 +44,8 @@ public class SignInBranch extends BranchWithUser{
         if(message.getReplyToMessage() != null && message.getReplyToMessage().getText().equals(passwordText)) {
             return associateUser(message);
         }
-        //if we got here send error
-        throw new BranchBadUpdateProvidedException(
-                "Что-то я не смог тебя понять. Давай кинем тебя в начало"
-        );
+        //If we got here return null
+        return null;
     }
 
     private List<Response<?>> askLogin(Message message) {

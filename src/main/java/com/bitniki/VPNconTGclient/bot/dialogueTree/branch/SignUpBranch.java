@@ -16,7 +16,7 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.ForceReplyKeyboa
 import java.util.ArrayList;
 import java.util.List;
 
-@SuppressWarnings({"TextBlockMigration", "FieldCanBeLocal"})
+@SuppressWarnings({"TextBlockMigration", "FieldCanBeLocal", "unused"})
 public class SignUpBranch extends BranchWithUser{
     private final String loginText =    "Придумай себе логин. Он должен быть длиной от 1 до 20 и может состоять из:\n" +
                                         "Строчного или прописного латинского алфавита\n" +
@@ -44,7 +44,7 @@ public class SignUpBranch extends BranchWithUser{
     }
 
     @Override
-    public List<Response<?>> handle(Update update)
+    public List<Response<?>> makeResponses(Update update)
             throws RequestServiceException, BranchBadUpdateProvidedException {
         //Get message from update
         Message message = update.getMessage();
@@ -61,10 +61,8 @@ public class SignUpBranch extends BranchWithUser{
         if(message.getReplyToMessage() != null && message.getReplyToMessage().getText().equals(passwordText)) {
             return createUser(message);
         }
-        //if we got here send error
-        throw new BranchBadUpdateProvidedException(
-                "Что-то я не смог тебя понять. Давай кинем тебя в начало"
-        );
+        //If we got here return null
+        return null;
     }
 
     private List<Response<?>> askLogin(Message message) {
