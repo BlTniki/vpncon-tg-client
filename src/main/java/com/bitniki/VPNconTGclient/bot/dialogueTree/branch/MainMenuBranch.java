@@ -3,14 +3,9 @@ package com.bitniki.VPNconTGclient.bot.dialogueTree.branch;
 import com.bitniki.VPNconTGclient.bot.requestHandler.RequestService;
 import com.bitniki.VPNconTGclient.bot.response.Response;
 import com.bitniki.VPNconTGclient.bot.response.ResponseType;
-import com.bitniki.VPNconTGclient.bot.exception.BranchBadUpdateProvidedException;
-import com.bitniki.VPNconTGclient.bot.exception.requestHandlerException.RequestServiceException;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
-import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMarkup;
-import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardButton;
-import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardRow;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,8 +18,6 @@ public class MainMenuBranch extends BranchWithUser{
     }
     private BranchState branchState;
     private final String initText = "Выбери ченибуть:";
-    private final String errorText = "Похоже на внутренюю ошибку бота. " +
-            "Напиши мне: @BITniki";
     private final String editUserText = "Настрока профиля";
     private final String editPeersText = "Настройка VPN";
 
@@ -34,7 +27,7 @@ public class MainMenuBranch extends BranchWithUser{
     }
 
     @Override
-    public List<Response<?>> handle(Update update) throws RequestServiceException, BranchBadUpdateProvidedException {
+    public List<Response<?>> makeResponses(Update update) {
         //Get message from update
         Message message = update.getMessage();
 
@@ -45,18 +38,16 @@ public class MainMenuBranch extends BranchWithUser{
 
         //WaitingForButtonChoose State
         if(branchState.equals(BranchState.WaitingForButtonChoose)) {
-            if(message.getText().equals(editUserText)){
-
-            }
+//            if(message.getText().equals(editUserText)){
+//
+//            }
             if(message.getText().equals(editPeersText)){
-                return routeToPeersMenu(message);
+                return routeToPeersMenu();
             }
         }
 
-        //If we got here send error
-        throw new BranchBadUpdateProvidedException(
-                errorText
-        );
+        //If we got here return null
+        return null;
     }
 
     private List<Response<?>> provideMainMenuButtons(Message message) {
@@ -82,7 +73,7 @@ public class MainMenuBranch extends BranchWithUser{
         return  responses;
     }
 
-    private List<Response<?>> routeToPeersMenu(Message message) {
+    private List<Response<?>> routeToPeersMenu() {
         //Init Responses
         List<Response<?>> responses = new ArrayList<>();
 

@@ -3,13 +3,10 @@ package com.bitniki.VPNconTGclient.bot.dialogueTree.branch;
 import com.bitniki.VPNconTGclient.bot.response.Response;
 import com.bitniki.VPNconTGclient.bot.response.ResponseType;
 import com.bitniki.VPNconTGclient.bot.requestHandler.RequestService;
-import com.bitniki.VPNconTGclient.bot.exception.BranchBadUpdateProvidedException;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
-import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMarkup;
-import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardButton;
-import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardRow;
+
 
 import java.util.ArrayList;
 import java.util.List;
@@ -36,8 +33,7 @@ public class InitBranch extends BranchWithUser{
     }
 
     @Override
-    public List<Response<?>> handle(Update update)
-            throws BranchBadUpdateProvidedException {
+    public List<Response<?>> makeResponses(Update update) {
         //Get message from update
         Message message = update.getMessage();
 
@@ -60,10 +56,8 @@ public class InitBranch extends BranchWithUser{
                 return routeToRegistration(message);
         }
 
-        //If we got here send error
-        throw new BranchBadUpdateProvidedException(
-                errorText
-        );
+        //If we got here return null
+        return null;
     }
 
     private List<Response<?>> greetRecognizedUser(Message message) {
@@ -87,6 +81,7 @@ public class InitBranch extends BranchWithUser{
         SendMessage sendMessage = new SendMessage(message.getChatId().toString(),
                 unrecognizedInitText
         );
+
         //set nav buttons
         KeyboardRow keyboardRow = new KeyboardRow(List.of(
                 new KeyboardButton(regButtonText),
