@@ -1,4 +1,4 @@
-package com.bitniki.VPNconTGclient.exception.notFoundException;
+package com.bitniki.VPNconTGclient.bot.exception.notFoundException;
 
 public class UserNotFoundException extends EntityNotFoundException {
     public UserNotFoundException(String message) {

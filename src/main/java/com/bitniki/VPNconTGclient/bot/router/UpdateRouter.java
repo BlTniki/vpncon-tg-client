@@ -3,7 +3,7 @@ package com.bitniki.VPNconTGclient.bot.router;
 import com.bitniki.VPNconTGclient.bot.dialogueTree.branch.Branch;
 import com.bitniki.VPNconTGclient.bot.dialogueTree.Tree;
 import com.bitniki.VPNconTGclient.bot.response.Response;
-import com.bitniki.VPNconTGclient.exception.UpdateRouterException;
+import com.bitniki.VPNconTGclient.bot.exception.UpdateRouterException;
 import com.bitniki.VPNconTGclient.bot.requestHandler.RequestService;
 import org.telegram.telegrambots.meta.api.objects.Update;
 

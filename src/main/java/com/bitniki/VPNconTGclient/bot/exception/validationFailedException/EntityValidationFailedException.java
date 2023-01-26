@@ -1,6 +1,6 @@
-package com.bitniki.VPNconTGclient.exception.validationFailedException;
+package com.bitniki.VPNconTGclient.bot.exception.validationFailedException;
 
-import com.bitniki.VPNconTGclient.exception.BranchBadUpdateProvidedException;
+import com.bitniki.VPNconTGclient.bot.exception.BranchBadUpdateProvidedException;
 
 public class EntityValidationFailedException extends BranchBadUpdateProvidedException {
     public EntityValidationFailedException(String message) {

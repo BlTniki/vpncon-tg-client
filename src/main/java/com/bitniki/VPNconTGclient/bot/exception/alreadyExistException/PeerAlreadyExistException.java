@@ -1,4 +1,4 @@
-package com.bitniki.VPNconTGclient.exception.alreadyExistException;
+package com.bitniki.VPNconTGclient.bot.exception.alreadyExistException;
 
 public class PeerAlreadyExistException extends EntityAlreadyExistException {
     public PeerAlreadyExistException(String message) {

@@ -1,4 +1,4 @@
-package com.bitniki.VPNconTGclient.exception;
+package com.bitniki.VPNconTGclient.bot.exception;
 
 public class BranchBadUpdateProvidedException extends Exception {
     public BranchBadUpdateProvidedException(String message) {

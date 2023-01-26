@@ -1,4 +1,4 @@
-package com.bitniki.VPNconTGclient.exception;
+package com.bitniki.VPNconTGclient.bot.exception.requestHandlerException;
 
 public class RequestService4xxException extends RequestServiceException{
     public RequestService4xxException(String message) {

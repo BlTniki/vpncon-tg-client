@@ -1,8 +1,8 @@
 package com.bitniki.VPNconTGclient.bot.dialogueTree.branch;
 
-import com.bitniki.VPNconTGclient.exception.RequestServiceException;
-import com.bitniki.VPNconTGclient.exception.notFoundException.UserNotFoundException;
-import com.bitniki.VPNconTGclient.exception.validationFailedException.UserValidationFailedException;
+import com.bitniki.VPNconTGclient.bot.exception.requestHandlerException.RequestServiceException;
+import com.bitniki.VPNconTGclient.bot.exception.notFoundException.UserNotFoundException;
+import com.bitniki.VPNconTGclient.bot.exception.validationFailedException.UserValidationFailedException;
 import com.bitniki.VPNconTGclient.bot.requestHandler.requestEntity.UserEntity;
 import com.bitniki.VPNconTGclient.bot.requestHandler.RequestService;
 

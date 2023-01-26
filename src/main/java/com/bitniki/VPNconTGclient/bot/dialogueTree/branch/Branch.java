@@ -2,8 +2,8 @@ package com.bitniki.VPNconTGclient.bot.dialogueTree.branch;
 
 import com.bitniki.VPNconTGclient.bot.response.Response;
 import com.bitniki.VPNconTGclient.bot.requestHandler.RequestService;
-import com.bitniki.VPNconTGclient.exception.BranchBadUpdateProvidedException;
-import com.bitniki.VPNconTGclient.exception.RequestServiceException;
+import com.bitniki.VPNconTGclient.bot.exception.BranchBadUpdateProvidedException;
+import com.bitniki.VPNconTGclient.bot.exception.requestHandlerException.RequestServiceException;
 import org.telegram.telegrambots.meta.api.objects.Update;
 
 import java.util.List;
