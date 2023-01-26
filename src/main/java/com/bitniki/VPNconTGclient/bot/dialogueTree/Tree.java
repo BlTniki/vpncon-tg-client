@@ -26,9 +26,9 @@ public class Tree {
 
     public List<Response<?>> handle(Update update) {
         // Get responses from branch
-        List<Response<?>> responses;
+        List<Response<?>> responses = new ArrayList<>();
         try {
-            responses = this.currentBranch.handle(update);
+            responses.addAll(this.currentBranch.handle(update));
         } catch (RequestServiceException | BranchBadUpdateProvidedException e) {
             //Init Response
             responses = new ArrayList<>();
