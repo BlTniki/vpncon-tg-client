@@ -15,6 +15,7 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.ForceReplyKeyboa
 import java.util.ArrayList;
 import java.util.List;
 
+@SuppressWarnings("FieldCanBeLocal")
 public class SignInBranch extends BranchWithUser{
     private final String loginText = "Введи свой логин";
     private final String passwordText = "Так, а теперь пароль";
@@ -56,7 +57,7 @@ public class SignInBranch extends BranchWithUser{
         //Make Response
         SendMessage sendMessage = new SendMessage(message.getChatId().toString(), loginText);
         sendMessage.setReplyMarkup(new ForceReplyKeyboard(true));
-        responses.add(new Response<SendMessage>(ResponseType.SendText, sendMessage));
+        responses.add(new Response<>(ResponseType.SendText, sendMessage));
         this.userEntity = new UserEntity();
         return responses;
     }
@@ -69,7 +70,7 @@ public class SignInBranch extends BranchWithUser{
         userEntity.setLogin(message.getText());
         SendMessage sendMessage = new SendMessage(message.getChatId().toString(), passwordText);
         sendMessage.setReplyMarkup(new ForceReplyKeyboard(true));
-        responses.add(new Response<SendMessage>(ResponseType.SendText, sendMessage));
+        responses.add(new Response<>(ResponseType.SendText, sendMessage));
         return responses;
     }
 
@@ -79,7 +80,7 @@ public class SignInBranch extends BranchWithUser{
 
         //end build entity
         userEntity.setTelegramId(message.getFrom().getId());
-        userEntity.setTelegramUsername(message.getFrom().getUserName());
+        userEntity.setTelegramUsername(message.getFrom().getFirstName());
         //try associateTelegramIdWithUser
         try {
             this.userEntity = requestService.associateTelegramIdWithUser(userEntity);
@@ -99,7 +100,7 @@ public class SignInBranch extends BranchWithUser{
         //Make Response
         SendMessage sendMessage = new SendMessage(message.getChatId().toString(),
                 endText + "\n" + userEntity);
-        responses.add(new Response<SendMessage>(ResponseType.SendText, sendMessage));
+        responses.add(new Response<>(ResponseType.SendText, sendMessage));
         //route to InitBranch
         this.setNextBranch(new InitBranch(this, requestService));
         return responses;
