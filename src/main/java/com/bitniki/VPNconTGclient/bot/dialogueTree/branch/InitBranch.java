@@ -83,12 +83,8 @@ public class InitBranch extends BranchWithUser{
         );
 
         //set nav buttons
-        KeyboardRow keyboardRow = new KeyboardRow(List.of(
-                new KeyboardButton(regButtonText),
-                new KeyboardButton(authButtonText)
-        ));
-        ReplyKeyboardMarkup replyKeyboardMarkup = new ReplyKeyboardMarkup(List.of(keyboardRow));
-        sendMessage.setReplyMarkup(replyKeyboardMarkup);
+        sendMessage.setReplyMarkup(makeKeyboardMarkup(regButtonText, authButtonText));
+
         responses.add(new Response<>(ResponseType.SendText, sendMessage));
 
         //change branch state

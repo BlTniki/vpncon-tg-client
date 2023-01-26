@@ -59,12 +59,8 @@ public class MainMenuBranch extends BranchWithUser{
         );
 
         //set nav buttons
-        KeyboardRow keyboardRow = new KeyboardRow(List.of(
-                new KeyboardButton(editUserText),
-                new KeyboardButton(editPeersText)
-        ));
-        ReplyKeyboardMarkup replyKeyboardMarkup = new ReplyKeyboardMarkup(List.of(keyboardRow));
-        sendMessage.setReplyMarkup(replyKeyboardMarkup);
+        sendMessage.setReplyMarkup(makeKeyboardMarkup(editUserText, editPeersText));
+
         responses.add(new Response<>(ResponseType.SendText, sendMessage));
 
         //Change branch state
