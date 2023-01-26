@@ -20,6 +20,7 @@ public abstract class Branch {
 
     private final String errorText = "Что-то я не смог тебя понять. Попробуй ещё раз. " +
             "Ну или напиши мне: @BITniki";
+    protected final String returnText = "Главная";
 
     public Branch(RequestService requestService) {
         this.requestService = requestService;
@@ -82,7 +83,7 @@ public abstract class Branch {
             keyboardRow.add(new KeyboardButton(button));
         }
         KeyboardRow mainKeyboardRow = new KeyboardRow();
-        mainKeyboardRow.add("Главная");
+        mainKeyboardRow.add(returnText);
         return new ReplyKeyboardMarkup(List.of(keyboardRow, mainKeyboardRow));
     }
 }
