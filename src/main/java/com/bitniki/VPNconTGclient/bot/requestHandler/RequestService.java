@@ -19,7 +19,7 @@ public class RequestService {
     private final String VPNconAddress;
     private final String botLogin;
     private final String botPassword;
-    private String botToken;
+    private final String botToken;
 
     public RequestService(String VPNconAddress, String botLogin, String botPassword) {
         this.VPNconAddress = VPNconAddress;
@@ -55,13 +55,12 @@ public class RequestService {
             throws UserNotFoundException, RequestService5xxException {
         String uri = this.VPNconAddress + "/auth/tg";
         //Configure request body
-        HttpEntity<UserEntity> httpEntity = new HttpEntity<>(
-                userEntity,
-                makeHttpHeaders()
-        );
+        HttpEntity<UserEntity> httpEntity = makeHttpEntity(userEntity);
         //Configure response entity
         ResponseEntity<UserEntity> response;
         RestTemplate restTemplate = new RestTemplate();
+
+        //Make request
         try {
             response = restTemplate.postForEntity(uri, httpEntity, UserEntity.class);
             System.out.println(response);
@@ -79,15 +78,18 @@ public class RequestService {
             throws UserValidationFailedException, RequestService5xxException {
         String uri = this.VPNconAddress + "/users";
         //Configure request body
-        HttpEntity<UserEntity> httpEntity = new HttpEntity<>(
-                userEntity,
-                makeHttpHeaders()
-        );
+        HttpEntity<UserEntity> httpEntity = makeHttpEntity(userEntity);
         //Configure response entity
         ResponseEntity<UserEntity> response;
         RestTemplate restTemplate = new RestTemplate();
+
+        //Make request
         try {
-            response = restTemplate.postForEntity(uri, httpEntity, UserEntity.class);
+            response = restTemplate.postForEntity(
+                    uri,
+                    httpEntity,
+                    UserEntity.class
+            );
             System.out.println(response);
         } catch (HttpClientErrorException e) {
             if (e.getStatusCode().value() == 400)
@@ -99,6 +101,9 @@ public class RequestService {
         return response.getBody();
     }
 
+    /*
+    Make request for auth token and save it
+     */
     private String SignInAndReturnToken() {
         String uri = this.VPNconAddress + "/auth/login";
         //Configure request body
@@ -117,10 +122,21 @@ public class RequestService {
         }
         return Objects.requireNonNull(response.getBody()).getToken();
     }
+
     private HttpHeaders makeHttpHeaders() {
-        //set auth header
         HttpHeaders headers = new HttpHeaders();
+        //set auth header
         headers.set("Authorization", "Bearer " + this.botToken);
         return headers;
+    }
+
+    /*
+    Configure request body for user entity
+     */
+    private HttpEntity<UserEntity> makeHttpEntity(UserEntity userEntity) {
+        return new HttpEntity<>(
+                userEntity,
+                makeHttpHeaders()
+        );
     }
 }
