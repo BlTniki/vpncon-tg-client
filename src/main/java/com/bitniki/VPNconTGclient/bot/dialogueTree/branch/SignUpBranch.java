@@ -16,6 +16,7 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.ForceReplyKeyboa
 import java.util.ArrayList;
 import java.util.List;
 
+@SuppressWarnings({"TextBlockMigration", "FieldCanBeLocal"})
 public class SignUpBranch extends BranchWithUser{
     private final String loginText =    "Придумай себе логин. Он должен быть длиной от 1 до 20 и может состоять из:\n" +
                                         "Строчного или прописного латинского алфавита\n" +
@@ -73,7 +74,7 @@ public class SignUpBranch extends BranchWithUser{
         //Make Response
         SendMessage sendMessage = new SendMessage(message.getChatId().toString(), loginText);
         sendMessage.setReplyMarkup(new ForceReplyKeyboard(true));
-        responses.add(new Response<SendMessage>(ResponseType.SendText, sendMessage));
+        responses.add(new Response<>(ResponseType.SendText, sendMessage));
         this.userEntity = new UserEntity();
         return responses;
     }
@@ -86,7 +87,7 @@ public class SignUpBranch extends BranchWithUser{
         userEntity.setLogin(message.getText());
         SendMessage sendMessage = new SendMessage(message.getChatId().toString(), passwordText);
         sendMessage.setReplyMarkup(new ForceReplyKeyboard(true));
-        responses.add(new Response<SendMessage>(ResponseType.SendText, sendMessage));
+        responses.add(new Response<>(ResponseType.SendText, sendMessage));
         return responses;
     }
 
@@ -98,7 +99,7 @@ public class SignUpBranch extends BranchWithUser{
         //end build entity
         userEntity.setPassword(message.getText());
         userEntity.setTelegramId(message.getFrom().getId());
-        userEntity.setTelegramUsername(message.getFrom().getUserName());
+        userEntity.setTelegramUsername(message.getFrom().getFirstName());
 
         //try to create user on server
         try {
@@ -111,7 +112,7 @@ public class SignUpBranch extends BranchWithUser{
         //Make Response
         SendMessage sendMessage = new SendMessage(message.getChatId().toString(),
                 endText + "\n" + userEntity);
-        responses.add(new Response<SendMessage>(ResponseType.SendText, sendMessage));
+        responses.add(new Response<>(ResponseType.SendText, sendMessage));
         //route to InitBranch
         this.setNextBranch(new InitBranch(this, requestService));
         return responses;
