@@ -17,7 +17,7 @@ import java.util.List;
 public class Tree {
     private UserEntity userEntity;
     private Branch currentBranch;
-    private RequestService requestService;
+    private final RequestService requestService;
 
     public Tree(RequestService requestService) {
         this.requestService = requestService;
@@ -37,13 +37,12 @@ public class Tree {
                     e.getMessage()
             );
             responses.add(
-                    new Response<SendMessage>(ResponseType.SendText, sendMessage)
+                    new Response<>(ResponseType.SendText, sendMessage)
             );
 
             //route to InitBranch
             this.currentBranch.setNextBranch(new InitBranch(currentBranch, requestService));
         }
-
 
         //if branch want change branch — change
         if(this.currentBranch.isBranchWantChangeBranch()) {
