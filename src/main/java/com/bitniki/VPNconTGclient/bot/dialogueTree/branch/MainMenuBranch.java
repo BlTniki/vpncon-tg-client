@@ -22,6 +22,11 @@ public class MainMenuBranch extends BranchWithUser{
     private final String editUserText = "Настрока профиля";
     private final String editPeersText = "Настройка VPN";
 
+    public MainMenuBranch(Branch prevBranch, RequestService requestService) {
+        super(prevBranch, requestService);
+        this.branchState = BranchState.InitState;
+    }
+
     public MainMenuBranch(BranchWithUser prevBranch, RequestService requestService) {
         super(prevBranch, requestService);
         this.branchState = BranchState.InitState;
