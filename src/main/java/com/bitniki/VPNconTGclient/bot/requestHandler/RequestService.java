@@ -128,8 +128,9 @@ public class RequestService {
             throw e;
         }
 
-        //Wrap array in List
+        //return wrapped array in List
         if(response.getBody() == null) {
+            //Just empty list
             return new ArrayList<>();
         }
         return List.of(response.getBody());
