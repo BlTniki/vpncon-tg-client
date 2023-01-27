@@ -6,6 +6,7 @@ import com.bitniki.VPNconTGclient.bot.exception.requestHandlerException.RequestS
 import com.bitniki.VPNconTGclient.bot.exception.notFoundException.UserNotFoundException;
 import com.bitniki.VPNconTGclient.bot.exception.validationFailedException.EntityValidationFailedException;
 import com.bitniki.VPNconTGclient.bot.exception.validationFailedException.UserValidationFailedException;
+import com.bitniki.VPNconTGclient.bot.requestHandler.requestEntity.HostEntity;
 import com.bitniki.VPNconTGclient.bot.requestHandler.requestEntity.PeerEntity;
 import com.bitniki.VPNconTGclient.bot.requestHandler.requestEntity.TokenEntity;
 import com.bitniki.VPNconTGclient.bot.requestHandler.requestEntity.UserEntity;
@@ -16,6 +17,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 public class RequestService {
@@ -104,6 +107,32 @@ public class RequestService {
             throw e;
         }
         return response.getBody();
+    }
+
+    public List<HostEntity> getHostsFromServer() throws RequestService5xxException {
+        String uri = this.VPNconAddress + "/hosts";
+        //Configure response entity
+        ResponseEntity<HostEntity[]> response;
+
+        //Make request
+        try {
+            response = restTemplate.exchange(
+                    uri,
+                    HttpMethod.GET,
+                    new HttpEntity<>(httpHeaders),
+                    HostEntity[].class
+            );
+        } catch (HttpClientErrorException e) {
+            if(e.getStatusCode().is5xxServerError())
+                throw new RequestService5xxException("Problems with server occurred");
+            throw e;
+        }
+
+        //Wrap array in List
+        if(response.getBody() == null) {
+            return new ArrayList<>();
+        }
+        return List.of(response.getBody());
     }
 
     public PeerEntity createPeerOnServer(PeerEntity peerEntity, Long userId, Long hostId)
