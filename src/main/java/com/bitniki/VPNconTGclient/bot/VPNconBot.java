@@ -3,6 +3,7 @@ package com.bitniki.VPNconTGclient.bot;
 import com.bitniki.VPNconTGclient.bot.response.Response;
 import com.bitniki.VPNconTGclient.bot.router.UpdateRouter;
 import com.bitniki.VPNconTGclient.bot.exception.UpdateRouterException;
+import org.telegram.telegrambots.meta.api.methods.send.SendDocument;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.ForceReplyKeyboard;
@@ -31,12 +32,20 @@ public class VPNconBot extends BasicTelegramBot{
             //Placeholder
             throw new RuntimeException(e);
         }
+
         //Get all responses
         for(Response<?> response : responses) {
             switch (response.getResponseType()) {
                 case SendText -> {
                     try {
                         execute((SendMessage)response.getData());
+                    } catch (TelegramApiException e) {
+                        throw new RuntimeException(e);
+                    }
+                }
+                case SendDoc -> {
+                    try {
+                        execute((SendDocument) response.getData());
                     } catch (TelegramApiException e) {
                         throw new RuntimeException(e);
                     }
