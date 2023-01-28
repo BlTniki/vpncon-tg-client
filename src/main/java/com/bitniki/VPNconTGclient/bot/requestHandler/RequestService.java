@@ -1,22 +1,21 @@
 package com.bitniki.VPNconTGclient.bot.requestHandler;
 
-import com.bitniki.VPNconTGclient.bot.exception.notFoundException.EntityNotFoundException;
-import com.bitniki.VPNconTGclient.bot.exception.requestHandlerException.RequestService5xxException;
-import com.bitniki.VPNconTGclient.bot.exception.requestHandlerException.RequestServiceException;
-import com.bitniki.VPNconTGclient.bot.exception.notFoundException.UserNotFoundException;
-import com.bitniki.VPNconTGclient.bot.exception.validationFailedException.EntityValidationFailedException;
-import com.bitniki.VPNconTGclient.bot.exception.validationFailedException.UserValidationFailedException;
-import com.bitniki.VPNconTGclient.bot.requestHandler.requestEntity.HostEntity;
-import com.bitniki.VPNconTGclient.bot.requestHandler.requestEntity.PeerEntity;
-import com.bitniki.VPNconTGclient.bot.requestHandler.requestEntity.TokenEntity;
-import com.bitniki.VPNconTGclient.bot.requestHandler.requestEntity.UserEntity;
+import com.bitniki.VPNconTGclient.bot.exception.notFoundException.*;
+import com.bitniki.VPNconTGclient.bot.exception.requestHandlerException.*;
+import com.bitniki.VPNconTGclient.bot.exception.validationFailedException.*;
+import com.bitniki.VPNconTGclient.bot.requestHandler.requestEntity.*;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
+import org.telegram.telegrambots.meta.api.objects.InputFile;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -163,6 +162,36 @@ public class RequestService {
         return response.getBody();
     }
 
+    public InputFile getFileFromServer(PeerEntity peerEntity)
+            throws RequestService5xxException, PeerNotFoundException {
+        //Get token for download
+        String confToken = getTokenForDownload(peerEntity);
+
+        //Build URL
+        URL url;
+        try {
+            url = new URL(
+                    "http://"
+                            + peerEntity.getHost().getIpadress()
+                            + "/api/1.0/conf/"
+                            + confToken
+                    );
+        } catch (MalformedURLException e) {
+            throw new RuntimeException(e);
+        }
+
+        //Open stream to config file
+        InputStream inputStream;
+        try {
+            inputStream = url.openStream();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
+        //Return file
+        return new InputFile(inputStream, peerEntity.getPeerConfName());
+    }
+
     /*
     Make request for auth token and save it
      */
@@ -206,5 +235,27 @@ public class RequestService {
                 entity,
                 httpHeaders
         );
+    }
+
+    private String getTokenForDownload(PeerEntity peerEntity) throws PeerNotFoundException, RequestService5xxException {
+        String uri = this.VPNconAddress + "/peers/conf/" + peerEntity.getId();
+        //Configure response entity
+        ResponseEntity<String> response;
+
+        //Make request
+        try {
+            response = restTemplate.exchange(uri,
+                    HttpMethod.GET,
+                    new HttpEntity<>(httpHeaders),
+                    String.class
+            );
+        } catch (HttpClientErrorException e) {
+            if(e.getStatusCode().value() == 404)
+                throw new PeerNotFoundException(e.getMessage());
+            if(e.getStatusCode().is5xxServerError())
+                throw new RequestService5xxException("Problems with server occurred");
+            throw e;
+        }
+        return response.getBody();
     }
 }
