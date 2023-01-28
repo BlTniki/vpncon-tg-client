@@ -3,6 +3,7 @@ package com.bitniki.VPNconTGclient.bot.requestHandler.requestEntity;
 @SuppressWarnings("unused")
 public class HostEntity {
     private Long id;
+    private String name;
     private String ipadress;
     private String serverPublicKey;
     private String dns;
@@ -16,6 +17,14 @@ public class HostEntity {
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
     public String getIpadress() {
@@ -46,6 +55,7 @@ public class HostEntity {
     public String toString() {
         return "HostEntity{" +
                 "\nid=" + id +
+                "\nname=" + name +
                 "\nipadress='" + ipadress + '\'' +
                 "\nserverPublicKey='" + serverPublicKey + '\'' +
                 "\ndns='" + dns + '\'' +
