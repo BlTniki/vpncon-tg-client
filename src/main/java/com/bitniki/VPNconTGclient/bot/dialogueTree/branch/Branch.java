@@ -34,7 +34,11 @@ public abstract class Branch {
 
     public List<Response<?>> handle(Update update)
             throws RequestServiceException, BranchBadUpdateProvidedException{
-        if(update.getMessage().getText().equals(returnText)) {
+        //If returnToMainMenu button were pressed
+        if(
+            update.getMessage().hasText()
+                && update.getMessage().getText().equals(returnText)
+        ) {
             //route to main menu chain
             this.setNextBranch(new MainMenuBranch(this, requestService));
             //clear message text or it will fall in endless cycle
@@ -42,6 +46,7 @@ public abstract class Branch {
             //return empty list
             return new ArrayList<>();
         }
+
         List<Response<?>> responses = makeResponses(update);
         if(responses == null) throw new BranchBadUpdateProvidedException(errorText);
         return responses;
