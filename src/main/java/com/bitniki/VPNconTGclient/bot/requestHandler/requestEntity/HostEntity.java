@@ -1,5 +1,7 @@
 package com.bitniki.VPNconTGclient.bot.requestHandler.requestEntity;
 
+import java.util.List;
+
 @SuppressWarnings("unused")
 public class HostEntity {
     private Long id;
@@ -7,6 +9,7 @@ public class HostEntity {
     private String ipadress;
     private String serverPublicKey;
     private String dns;
+    private List<PeerEntity> peers;
 
     public HostEntity() {
     }
@@ -49,6 +52,21 @@ public class HostEntity {
 
     public void setDns(String dns) {
         this.dns = dns;
+    }
+
+    public List<PeerEntity> getPeers() {
+        return peers;
+    }
+
+    public void setPeers(List<PeerEntity> peers) {
+        this.peers = peers;
+    }
+
+    public int getAvailablePeersCount() {
+        if(peers != null) {
+            return 254 - peers.size();
+        }
+        return 0;
     }
 
     @Override
