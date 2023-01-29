@@ -22,7 +22,9 @@ import java.util.List;
 public class CreatePeerBranch extends BranchWithUser {
     private enum BranchState {
         InitState(),
-        WaitingForHostChoose()
+        WaitingForHostChoose(),
+        WaitingForPeerIp(),
+        WaitingForConfName()
     }
     private BranchState branchState;
 
@@ -30,9 +32,11 @@ public class CreatePeerBranch extends BranchWithUser {
 
     private final String hostListText = "Выбери локацию сервера:";
     private final String availablePeersText ="/254 доступно";
-    private final String askPeerIpText = "Веберем тебе айпишник." +
+    private final String askPeerIpText = "Веберем тебе айпишник:" +
             "\nНапиши число 0, если тебе неважно." +
             "\nНапиши число от 2 до 254 и мы проверим доступность.";
+    private final String wrongOctetText = "Число не 0 и не в промежутке от 2 до 254";
+    private final String askConfNameText = "Отлично!\nА теперь придумай название конфигу.\nПодойдёт имя состоящие из латиницы и цифр";
 
     public CreatePeerBranch(Branch prevBranch, RequestService requestService) {
         super(prevBranch, requestService);
@@ -59,6 +63,13 @@ public class CreatePeerBranch extends BranchWithUser {
         if(branchState.equals(BranchState.WaitingForHostChoose)) {
             return askPeerIp(message);
         }
+
+        //WaitingForPeerIp State
+        if(branchState.equals(BranchState.WaitingForPeerIp)) {
+            return askConfName(message);
+        }
+
+        //WaitingForConfName State
 
         //if we got here
         return null;
@@ -103,6 +114,7 @@ public class CreatePeerBranch extends BranchWithUser {
         HostEntity hostEntity = requestService.getHostsFromServer().stream()
                 .filter(host -> host.getName().equals(hostName)).findFirst()
                 .orElseThrow(() -> new BranchBadUpdateProvidedException("No such host"));
+
         //init peerEntity and set host
         peerEntity = new PeerEntity();
         peerEntity.setHost(hostEntity);
@@ -111,6 +123,40 @@ public class CreatePeerBranch extends BranchWithUser {
         //Force reply
         sendMessage.setReplyMarkup(new ForceReplyKeyboard());
         responses.add(new Response<>(ResponseType.SendText, sendMessage));
+
+        //change state
+        branchState = BranchState.WaitingForPeerIp;
+        return responses;
+    }
+
+    private List<Response<?>> askConfName(Message message) throws BranchBadUpdateProvidedException {
+        //Init Responses
+        List<Response<?>> responses = new ArrayList<>();
+
+        //Get peerIp from message and validate
+        int lastOctet;
+        try {
+            lastOctet = Integer.parseInt(getTextFrom(message));
+        } catch (NumberFormatException e) {
+            throw new BranchBadUpdateProvidedException("This is not a number");
+        }
+        if(lastOctet == 0) {
+            //peerIp will be generated on server
+            peerEntity.setPeerIp(null);
+        } else if (lastOctet >= 2 && lastOctet <= 254) {
+            //Build peerIp and set to peerEntity
+            peerEntity.setPeerIp("10.8.0." + lastOctet);
+        } else {
+            throw new BranchBadUpdateProvidedException(wrongOctetText);
+        }
+
+        SendMessage sendMessage = new SendMessage(message.getChatId().toString(), askConfNameText);
+        //Force reply
+        sendMessage.setReplyMarkup(new ForceReplyKeyboard());
+        responses.add(new Response<>(ResponseType.SendText, sendMessage));
+
+        //change state
+        branchState = BranchState.WaitingForConfName;
         return responses;
     }
 }
