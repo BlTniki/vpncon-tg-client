@@ -2,6 +2,7 @@ package com.bitniki.VPNconTGclient.bot.dialogueTree.branch;
 
 import com.bitniki.VPNconTGclient.bot.dialogueTree.branch.SignBranches.SignInBranch;
 import com.bitniki.VPNconTGclient.bot.dialogueTree.branch.SignBranches.SignUpBranch;
+import com.bitniki.VPNconTGclient.bot.exception.BranchBadUpdateProvidedException;
 import com.bitniki.VPNconTGclient.bot.response.Response;
 import com.bitniki.VPNconTGclient.bot.response.ResponseType;
 import com.bitniki.VPNconTGclient.bot.requestHandler.RequestService;
@@ -35,7 +36,8 @@ public class InitBranch extends BranchWithUser{
     }
 
     @Override
-    public List<Response<?>> makeResponses(Update update) {
+    public List<Response<?>> makeResponses(Update update)
+            throws BranchBadUpdateProvidedException {
         //Get message from update
         Message message = update.getMessage();
 
@@ -52,9 +54,9 @@ public class InitBranch extends BranchWithUser{
 
         //WaitingForAuthType State
         if(branchState.equals(BranchState.WaitingForAuthType)) {
-            if(message.getText().equals(authButtonText))
+            if(getTextFrom(message).equals(authButtonText))
                 return routeToAuthorization(message);
-            if(message.getText().equals(regButtonText))
+            if(getTextFrom(message).equals(regButtonText))
                 return routeToRegistration(message);
         }
 

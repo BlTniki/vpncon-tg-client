@@ -95,9 +95,9 @@ public class CreatePeerBranch extends BranchWithUser {
         List<Response<?>> responses = new ArrayList<>();
 
         //Validate host name and get host entity
-        String hostName = message.getText().substring(
+        String hostName = getTextFrom(message).substring(
                 0,
-                message.getText().indexOf('\n') // Cut available peers text
+                getTextFrom(message).indexOf('\n') // Cut available peers text
                 );
         //load host list and find host with given hostName or throw exception
         HostEntity hostEntity = requestService.getHostsFromServer().stream()

@@ -53,7 +53,7 @@ public class SignUpBranch extends BranchWithUser {
         Message message = update.getMessage();
 
         //ask login branch state
-        if(message.getText().equals(signUpButtonText)) {
+        if(getTextFrom(message).equals(signUpButtonText)) {
             return askLogin(message);
         }
         //ask password branch state
@@ -80,12 +80,12 @@ public class SignUpBranch extends BranchWithUser {
         return responses;
     }
 
-    private List<Response<?>> askPassword(Message message) {
+    private List<Response<?>> askPassword(Message message) throws BranchBadUpdateProvidedException {
         //Init Responses
         List<Response<?>> responses = new ArrayList<>();
 
         //Make Response
-        userEntity.setLogin(message.getText());
+        userEntity.setLogin(getTextFrom(message));
         SendMessage sendMessage = new SendMessage(message.getChatId().toString(), passwordText);
         sendMessage.setReplyMarkup(new ForceReplyKeyboard(true));
         responses.add(new Response<>(ResponseType.SendText, sendMessage));
@@ -93,12 +93,12 @@ public class SignUpBranch extends BranchWithUser {
     }
 
     private List<Response<?>> createUser(Message message)
-            throws UserValidationFailedException, RequestService5xxException {
+            throws BranchBadUpdateProvidedException, RequestService5xxException {
         //Init Responses
         List<Response<?>> responses = new ArrayList<>();
 
         //end build entity
-        userEntity.setPassword(message.getText());
+        userEntity.setPassword(getTextFrom(message));
         userEntity.setTelegramId(message.getFrom().getId());
         userEntity.setTelegramUsername(message.getFrom().getFirstName());
 

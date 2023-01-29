@@ -192,8 +192,9 @@ public class RequestService {
         return new InputFile(inputStream, peerEntity.getPeerConfName());
     }
 
-    /*
-    Make request for auth token and save it
+    /**
+     * Make request for auth token and save it
+     * @return token
      */
     private String SignInAndReturnToken() {
         String uri = this.VPNconAddress + "/auth/login";
@@ -214,6 +215,10 @@ public class RequestService {
         return Objects.requireNonNull(response.getBody()).getToken();
     }
 
+    /**
+     * Build headers with auth header
+     * @return HttpHeader with auth header
+     */
     private HttpHeaders makeHttpHeaders() {
         HttpHeaders headers = new HttpHeaders();
         //set auth header
@@ -221,8 +226,10 @@ public class RequestService {
         return headers;
     }
 
-    /*
-    Configure request body for user entity
+    /**
+     * Configure request body for user entity
+     * @param entity — UserEntity
+     * @return Built HttpEntity
      */
     private HttpEntity<UserEntity> makeHttpEntity(UserEntity entity) {
         return new HttpEntity<>(
@@ -230,6 +237,11 @@ public class RequestService {
                 httpHeaders
         );
     }
+    /**
+     * Configure request body for peer entity
+     * @param entity — peerEntity
+     * @return Built HttpEntity
+     */
     private HttpEntity<PeerEntity> makeHttpEntity(PeerEntity entity) {
         return new HttpEntity<>(
                 entity,

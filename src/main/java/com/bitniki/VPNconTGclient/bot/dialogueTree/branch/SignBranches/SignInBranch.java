@@ -36,7 +36,7 @@ public class SignInBranch extends BranchWithUser {
         Message message = update.getMessage();
 
         //ask login branch state
-        if(message.getText().equals(signInButtonText)) {
+        if(getTextFrom(message).equals(signInButtonText)) {
             return askLogin(message);
         }
         //ask password branch state
@@ -63,12 +63,12 @@ public class SignInBranch extends BranchWithUser {
         return responses;
     }
 
-    private List<Response<?>> askPassword(Message message) {
+    private List<Response<?>> askPassword(Message message) throws BranchBadUpdateProvidedException {
         //Init Responses
         List<Response<?>> responses = new ArrayList<>();
 
         //Make Response
-        userEntity.setLogin(message.getText());
+        userEntity.setLogin(getTextFrom(message));
         SendMessage sendMessage = new SendMessage(message.getChatId().toString(), passwordText);
         sendMessage.setReplyMarkup(new ForceReplyKeyboard(true));
         responses.add(new Response<>(ResponseType.SendText, sendMessage));

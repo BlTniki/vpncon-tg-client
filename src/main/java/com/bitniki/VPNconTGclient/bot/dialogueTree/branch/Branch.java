@@ -4,6 +4,7 @@ import com.bitniki.VPNconTGclient.bot.response.Response;
 import com.bitniki.VPNconTGclient.bot.requestHandler.RequestService;
 import com.bitniki.VPNconTGclient.bot.exception.BranchBadUpdateProvidedException;
 import com.bitniki.VPNconTGclient.bot.exception.requestHandlerException.RequestServiceException;
+import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardButton;
@@ -81,6 +82,17 @@ public abstract class Branch {
 
     public void setRequestService(RequestService requestService) {
         this.requestService = requestService;
+    }
+
+    /**
+     * Save way to get text from message
+     * @param message — Message object
+     * @return Text from message
+     * @throws BranchBadUpdateProvidedException if there is no text
+     */
+    protected String getTextFrom(Message message) throws BranchBadUpdateProvidedException {
+        if(message.hasText()) return message.getText();
+        else throw new BranchBadUpdateProvidedException("there no text!");
     }
 
     public ReplyKeyboardMarkup makeKeyboardMarkup(String... buttons) {

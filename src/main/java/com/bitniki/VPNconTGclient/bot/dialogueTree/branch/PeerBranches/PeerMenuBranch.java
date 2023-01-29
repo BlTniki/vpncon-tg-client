@@ -37,7 +37,8 @@ public class PeerMenuBranch extends BranchWithUser {
     }
 
     @Override
-    public List<Response<?>> makeResponses(Update update) {
+    public List<Response<?>> makeResponses(Update update)
+            throws BranchBadUpdateProvidedException {
         //Get message from update
         Message message = update.getMessage();
 
@@ -48,7 +49,7 @@ public class PeerMenuBranch extends BranchWithUser {
 
         //WaitingForButtonChoose state
         if(branchState.equals(BranchState.WaitingForButtonChoose)) {
-            if(message.getText().equals(createText)) {
+            if(getTextFrom(message).equals(createText)) {
                 return routeToCreateBranch();
             }
 

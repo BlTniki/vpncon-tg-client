@@ -62,9 +62,10 @@ public class HostEntity {
         this.peers = peers;
     }
 
-    /*
-    Count number of peers and subtracts from 254 — maximum possible number
-    peers can be null, in this case method return zero
+    /**
+     * Count number of peers and subtracts from 254 — maximum possible number
+     *     peers can be null, in this case method return zero
+     * @return number of available peers
      */
     public int getAvailablePeersCount() {
         if(peers != null) {

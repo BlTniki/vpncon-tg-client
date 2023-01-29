@@ -1,6 +1,7 @@
 package com.bitniki.VPNconTGclient.bot.dialogueTree.branch;
 
 import com.bitniki.VPNconTGclient.bot.dialogueTree.branch.PeerBranches.PeerMenuBranch;
+import com.bitniki.VPNconTGclient.bot.exception.BranchBadUpdateProvidedException;
 import com.bitniki.VPNconTGclient.bot.requestHandler.RequestService;
 import com.bitniki.VPNconTGclient.bot.response.Response;
 import com.bitniki.VPNconTGclient.bot.response.ResponseType;
@@ -33,7 +34,8 @@ public class MainMenuBranch extends BranchWithUser{
     }
 
     @Override
-    public List<Response<?>> makeResponses(Update update) {
+    public List<Response<?>> makeResponses(Update update)
+            throws BranchBadUpdateProvidedException {
         //Get message from update
         Message message = update.getMessage();
 
@@ -47,7 +49,7 @@ public class MainMenuBranch extends BranchWithUser{
 //            if(message.getText().equals(editUserText)){
 //
 //            }
-            if(message.getText().equals(editPeersText)){
+            if(getTextFrom(message).equals(editPeersText)){
                 return routeToPeersMenu();
             }
         }
