@@ -10,6 +10,7 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMar
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardButton;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardRow;
 
+import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -34,7 +35,7 @@ public abstract class Branch {
     }
 
     public List<Response<?>> handle(Update update)
-            throws BranchCriticalException, BranchBadUpdateProvidedException{
+            throws BranchCriticalException{
         //If returnToMainMenu button were pressed
         if(
             update.getMessage().hasText()
@@ -47,14 +48,15 @@ public abstract class Branch {
             //return empty list
             return new ArrayList<>();
         }
-
+        //Try to make responses
         List<Response<?>> responses = makeResponses(update);
-
+        //makeResponses can return null, in this case — throw exception
         if(responses == null) throw new BranchBadUpdateProvidedException(errorText);
         return responses;
     }
-    protected abstract List<Response<?>> makeResponses(Update update)
-            throws BranchCriticalException, BranchBadUpdateProvidedException;
+
+    protected abstract @Nullable List<Response<?>> makeResponses(Update update)
+            throws BranchCriticalException;
 
     public Branch getPrevBranch() {
         return prevBranch;
