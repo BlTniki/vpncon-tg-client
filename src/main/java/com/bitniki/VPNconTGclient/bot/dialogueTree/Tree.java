@@ -1,6 +1,5 @@
 package com.bitniki.VPNconTGclient.bot.dialogueTree;
 
-import com.bitniki.VPNconTGclient.bot.dialogueTree.branch.BranchWithUser;
 import com.bitniki.VPNconTGclient.bot.exception.BranchCriticalException;
 import com.bitniki.VPNconTGclient.bot.exception.validationFailedException.EntityValidationFailedException;
 import com.bitniki.VPNconTGclient.bot.response.Response;

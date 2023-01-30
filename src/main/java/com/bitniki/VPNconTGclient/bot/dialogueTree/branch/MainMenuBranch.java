@@ -13,7 +13,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @SuppressWarnings("FieldCanBeLocal")
-public class MainMenuBranch extends BranchWithUser{
+public class MainMenuBranch extends Branch {
     private enum BranchState {
         InitState(),
         WaitingForButtonChoose()
@@ -24,11 +24,6 @@ public class MainMenuBranch extends BranchWithUser{
     private final String editPeersText = "Настройка VPN";
 
     public MainMenuBranch(Branch prevBranch, RequestService requestService) {
-        super(prevBranch, requestService);
-        this.branchState = BranchState.InitState;
-    }
-
-    public MainMenuBranch(BranchWithUser prevBranch, RequestService requestService) {
         super(prevBranch, requestService);
         this.branchState = BranchState.InitState;
     }

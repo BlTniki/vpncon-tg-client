@@ -1,7 +1,6 @@
 package com.bitniki.VPNconTGclient.bot.dialogueTree.branch.PeerBranches;
 
 import com.bitniki.VPNconTGclient.bot.dialogueTree.branch.Branch;
-import com.bitniki.VPNconTGclient.bot.dialogueTree.branch.BranchWithUser;
 import com.bitniki.VPNconTGclient.bot.exception.BranchBadUpdateProvidedException;
 import com.bitniki.VPNconTGclient.bot.exception.BranchCriticalException;
 import com.bitniki.VPNconTGclient.bot.exception.requestHandlerException.RequestService5xxException;
@@ -19,7 +18,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @SuppressWarnings({"FieldCanBeLocal", "TextBlockMigration"})
-public class CreatePeerBranch extends BranchWithUser {
+public class CreatePeerBranch extends Branch {
     private enum BranchState {
         InitState(),
         WaitingForHostChoose(),
@@ -39,11 +38,6 @@ public class CreatePeerBranch extends BranchWithUser {
     private final String askConfNameText = "Отлично!\nА теперь придумай название конфигу.\nПодойдёт имя состоящие из латиницы и цифр";
 
     public CreatePeerBranch(Branch prevBranch, RequestService requestService) {
-        super(prevBranch, requestService);
-        this.branchState = BranchState.InitState;
-    }
-
-    public CreatePeerBranch(BranchWithUser prevBranch, RequestService requestService) {
         super(prevBranch, requestService);
         this.branchState = BranchState.InitState;
     }

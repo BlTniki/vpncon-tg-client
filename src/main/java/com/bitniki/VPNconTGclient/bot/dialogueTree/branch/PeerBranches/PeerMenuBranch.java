@@ -1,7 +1,6 @@
 package com.bitniki.VPNconTGclient.bot.dialogueTree.branch.PeerBranches;
 
 import com.bitniki.VPNconTGclient.bot.dialogueTree.branch.Branch;
-import com.bitniki.VPNconTGclient.bot.dialogueTree.branch.BranchWithUser;
 import com.bitniki.VPNconTGclient.bot.requestHandler.RequestService;
 import com.bitniki.VPNconTGclient.bot.response.Response;
 import com.bitniki.VPNconTGclient.bot.response.ResponseType;
@@ -14,7 +13,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @SuppressWarnings({"FieldCanBeLocal", "FieldMayBeFinal"})
-public class PeerMenuBranch extends BranchWithUser {
+public class PeerMenuBranch extends Branch {
     private enum BranchState {
         InitState(),
         WaitingForButtonChoose()
@@ -27,11 +26,6 @@ public class PeerMenuBranch extends BranchWithUser {
             "Напиши мне: @BITniki";
 
     public PeerMenuBranch(Branch prevBranch, RequestService requestService) {
-        super(prevBranch, requestService);
-        this.branchState = BranchState.InitState;
-    }
-
-    public PeerMenuBranch(BranchWithUser prevBranch, RequestService requestService) {
         super(prevBranch, requestService);
         this.branchState = BranchState.InitState;
     }
@@ -52,7 +46,6 @@ public class PeerMenuBranch extends BranchWithUser {
             if(getTextFrom(message).equals(createText)) {
                 return routeToCreateBranch();
             }
-
         }
 
         //If we got here return null
@@ -86,24 +79,24 @@ public class PeerMenuBranch extends BranchWithUser {
         return responses;
     }
 
-    private List<Response<?>> returnPeersList(Message message) throws BranchBadUpdateProvidedException {
-        //Init Responses
-        List<Response<?>> responses = new ArrayList<>();
-
-        // Try load user peers
-        try {
-            this.userEntity = loadUserByTelegramId(message.getFrom().getId());
-        } catch (Exception e) {
-            throw new BranchBadUpdateProvidedException(
-                    errorText
-            );
-        }
-
-        //Make message
-        SendMessage sendMessage = new SendMessage(message.getChatId().toString(),
-                userEntity.getPeers().toString()
-        );
-        responses.add(new Response<>(ResponseType.SendText, sendMessage));
-        return responses;
-    }
+//    private List<Response<?>> returnPeersList(Message message) throws BranchBadUpdateProvidedException {
+//        //Init Responses
+//        List<Response<?>> responses = new ArrayList<>();
+//
+//        // Try load user peers
+//        try {
+//            this.userEntity = loadUserByTelegramId(message.getFrom().getId());
+//        } catch (Exception e) {
+//            throw new BranchBadUpdateProvidedException(
+//                    errorText
+//            );
+//        }
+//
+//        //Make message
+//        SendMessage sendMessage = new SendMessage(message.getChatId().toString(),
+//                userEntity.getPeers().toString()
+//        );
+//        responses.add(new Response<>(ResponseType.SendText, sendMessage));
+//        return responses;
+//    }
 }

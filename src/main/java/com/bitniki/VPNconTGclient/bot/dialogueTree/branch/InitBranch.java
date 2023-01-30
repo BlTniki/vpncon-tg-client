@@ -3,6 +3,7 @@ package com.bitniki.VPNconTGclient.bot.dialogueTree.branch;
 import com.bitniki.VPNconTGclient.bot.dialogueTree.branch.SignBranches.SignInBranch;
 import com.bitniki.VPNconTGclient.bot.dialogueTree.branch.SignBranches.SignUpBranch;
 import com.bitniki.VPNconTGclient.bot.exception.BranchBadUpdateProvidedException;
+import com.bitniki.VPNconTGclient.bot.requestHandler.requestEntity.UserEntity;
 import com.bitniki.VPNconTGclient.bot.response.Response;
 import com.bitniki.VPNconTGclient.bot.response.ResponseType;
 import com.bitniki.VPNconTGclient.bot.requestHandler.RequestService;
@@ -16,12 +17,13 @@ import java.util.List;
 
 
 @SuppressWarnings({"FieldCanBeLocal", "unused"})
-public class InitBranch extends BranchWithUser{
+public class InitBranch extends Branch{
     private enum BranchState {
         InitState(),
         WaitingForAuthType()
     }
     private BranchState branchState;
+    private UserEntity userEntity;
     private final String unrecognizedInitText = "Привет! Представься пожалуста.";
     private final String recognizedInitText = "Привет, ";
 

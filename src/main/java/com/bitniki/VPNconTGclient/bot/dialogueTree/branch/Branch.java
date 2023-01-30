@@ -1,6 +1,10 @@
 package com.bitniki.VPNconTGclient.bot.dialogueTree.branch;
 
 import com.bitniki.VPNconTGclient.bot.exception.BranchCriticalException;
+import com.bitniki.VPNconTGclient.bot.exception.notFoundException.UserNotFoundException;
+import com.bitniki.VPNconTGclient.bot.exception.requestHandlerException.RequestServiceException;
+import com.bitniki.VPNconTGclient.bot.exception.validationFailedException.UserValidationFailedException;
+import com.bitniki.VPNconTGclient.bot.requestHandler.requestEntity.UserEntity;
 import com.bitniki.VPNconTGclient.bot.response.Response;
 import com.bitniki.VPNconTGclient.bot.requestHandler.RequestService;
 import com.bitniki.VPNconTGclient.bot.exception.BranchBadUpdateProvidedException;
@@ -114,5 +118,10 @@ public abstract class Branch {
         KeyboardRow mainKeyboardRow = new KeyboardRow();
         mainKeyboardRow.add(returnText);
         return new ReplyKeyboardMarkup(List.of(keyboardRow, mainKeyboardRow));
+    }
+
+    public UserEntity loadUserByTelegramId(Long telegramId)
+            throws RequestServiceException, UserNotFoundException, UserValidationFailedException {
+        return requestService.getUserByTelegramId(telegramId);
     }
 }
