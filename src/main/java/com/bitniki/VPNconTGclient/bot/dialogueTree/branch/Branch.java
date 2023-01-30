@@ -1,9 +1,9 @@
 package com.bitniki.VPNconTGclient.bot.dialogueTree.branch;
 
+import com.bitniki.VPNconTGclient.bot.exception.BranchCriticalException;
 import com.bitniki.VPNconTGclient.bot.response.Response;
 import com.bitniki.VPNconTGclient.bot.requestHandler.RequestService;
 import com.bitniki.VPNconTGclient.bot.exception.BranchBadUpdateProvidedException;
-import com.bitniki.VPNconTGclient.bot.exception.requestHandlerException.RequestServiceException;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMarkup;
@@ -34,7 +34,7 @@ public abstract class Branch {
     }
 
     public List<Response<?>> handle(Update update)
-            throws RequestServiceException, BranchBadUpdateProvidedException{
+            throws BranchCriticalException, BranchBadUpdateProvidedException{
         //If returnToMainMenu button were pressed
         if(
             update.getMessage().hasText()
@@ -49,11 +49,12 @@ public abstract class Branch {
         }
 
         List<Response<?>> responses = makeResponses(update);
+
         if(responses == null) throw new BranchBadUpdateProvidedException(errorText);
         return responses;
     }
     protected abstract List<Response<?>> makeResponses(Update update)
-            throws RequestServiceException, BranchBadUpdateProvidedException;
+            throws BranchCriticalException, BranchBadUpdateProvidedException;
 
     public Branch getPrevBranch() {
         return prevBranch;

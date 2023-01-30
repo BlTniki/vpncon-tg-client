@@ -3,8 +3,8 @@ package com.bitniki.VPNconTGclient.bot.dialogueTree.branch.PeerBranches;
 import com.bitniki.VPNconTGclient.bot.dialogueTree.branch.Branch;
 import com.bitniki.VPNconTGclient.bot.dialogueTree.branch.BranchWithUser;
 import com.bitniki.VPNconTGclient.bot.exception.BranchBadUpdateProvidedException;
+import com.bitniki.VPNconTGclient.bot.exception.BranchCriticalException;
 import com.bitniki.VPNconTGclient.bot.exception.requestHandlerException.RequestService5xxException;
-import com.bitniki.VPNconTGclient.bot.exception.requestHandlerException.RequestServiceException;
 import com.bitniki.VPNconTGclient.bot.requestHandler.RequestService;
 import com.bitniki.VPNconTGclient.bot.requestHandler.requestEntity.HostEntity;
 import com.bitniki.VPNconTGclient.bot.requestHandler.requestEntity.PeerEntity;
@@ -50,7 +50,7 @@ public class CreatePeerBranch extends BranchWithUser {
 
     @Override
     protected List<Response<?>> makeResponses(Update update)
-            throws RequestServiceException, BranchBadUpdateProvidedException {
+            throws BranchCriticalException, BranchBadUpdateProvidedException {
         //Get message from update
         Message message = update.getMessage();
 
@@ -70,13 +70,15 @@ public class CreatePeerBranch extends BranchWithUser {
         }
 
         //WaitingForConfName State
-
+        if(branchState.equals(BranchState.WaitingForConfName)) {
+            return createPeerAndRouteToPeerMenu(message);
+        }
         //if we got here
         return null;
     }
 
     private List<Response<?>> provideHostList(Message message)
-            throws RequestService5xxException {
+            throws BranchCriticalException {
         //Init Responses
         List<Response<?>> responses = new ArrayList<>();
         SendMessage sendMessage = new SendMessage(message.getChatId().toString(),
@@ -84,7 +86,12 @@ public class CreatePeerBranch extends BranchWithUser {
         );
 
         //Get host list
-        List<HostEntity> hostList = requestService.getHostsFromServer();
+        List<HostEntity> hostList ;
+        try {
+            hostList = requestService.getHostsFromServer();
+        } catch (RequestService5xxException e) {
+            throw new BranchCriticalException(e.getMessage());
+        }
         String[] hostListNames = hostList
                 .stream()
                 .map(host -> host.getName() + "\n" + host.getAvailablePeersCount() + availablePeersText)
@@ -101,7 +108,7 @@ public class CreatePeerBranch extends BranchWithUser {
         return responses;
     }
     private List<Response<?>> askPeerIp(Message message)
-            throws RequestService5xxException, BranchBadUpdateProvidedException {
+            throws BranchCriticalException, BranchBadUpdateProvidedException {
         //Init Responses
         List<Response<?>> responses = new ArrayList<>();
 
@@ -111,9 +118,14 @@ public class CreatePeerBranch extends BranchWithUser {
                 getTextFrom(message).indexOf('\n') // Cut available peers text
                 );
         //load host list and find host with given hostName or throw exception
-        HostEntity hostEntity = requestService.getHostsFromServer().stream()
-                .filter(host -> host.getName().equals(hostName)).findFirst()
-                .orElseThrow(() -> new BranchBadUpdateProvidedException("No such host"));
+        HostEntity hostEntity;
+        try {
+            hostEntity = requestService.getHostsFromServer().stream()
+                    .filter(host -> host.getName().equals(hostName)).findFirst()
+                    .orElseThrow(() -> new BranchBadUpdateProvidedException("No such host"));
+        } catch (RequestService5xxException e) {
+            throw new BranchCriticalException(e.getMessage());
+        }
 
         //init peerEntity and set host
         peerEntity = new PeerEntity();
@@ -158,5 +170,28 @@ public class CreatePeerBranch extends BranchWithUser {
         //change state
         branchState = BranchState.WaitingForConfName;
         return responses;
+    }
+
+    private List<Response<?>> createPeerAndRouteToPeerMenu(Message message)
+            throws BranchBadUpdateProvidedException, BranchCriticalException {
+//        //Init Responses
+//        List<Response<?>> responses = new ArrayList<>();
+//
+//        //Set conf name to peerEntity
+//        peerEntity.setPeerConfName(getTextFrom(message));
+//
+//        //try to create peer on server
+//        try {
+//            PeerEntity createdPeer = requestService.createPeerOnServer(
+//                    peerEntity,
+//                    peerEntity.getHost().getId(), //Host ID
+//                    requestService.getUserByTelegramId(message.getFrom().getId()).getId() //User ID
+//            );
+//        } catch (E)
+//
+//
+//
+
+        return null;
     }
 }
