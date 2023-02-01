@@ -20,6 +20,7 @@ import java.util.List;
 
 @SuppressWarnings({"FieldCanBeLocal", "unused"})
 public abstract class Branch {
+    private UserEntity userEntity;
     private Branch prevBranch;
     private Branch nextBranch;
     private boolean isBranchWantChangeBranch;
@@ -40,11 +41,11 @@ public abstract class Branch {
 
     public List<Response<?>> handle(Update update)
             throws BranchCriticalException{
+        //Authorize user
+        authorizeUser(update);
         //If returnToMainMenu button were pressed
-        if(
-            update.getMessage().hasText()
-                && update.getMessage().getText().equals(returnText)
-        ) {
+        if(update.getMessage().hasText()
+                && update.getMessage().getText().equals(returnText)) {
             //route to main menu chain
             this.setNextBranch(new MainMenuBranch(this, requestService));
             //clear message text or it will fall in endless cycle
@@ -61,6 +62,14 @@ public abstract class Branch {
 
     protected abstract @Nullable List<Response<?>> makeResponses(Update update)
             throws BranchCriticalException;
+
+    public UserEntity getUserEntity() {
+        return userEntity;
+    }
+
+    public void setUserEntity(UserEntity userEntity) {
+        this.userEntity = userEntity;
+    }
 
     public Branch getPrevBranch() {
         return prevBranch;
@@ -102,7 +111,7 @@ public abstract class Branch {
         else throw new BranchBadUpdateProvidedException("there no text!");
     }
 
-    public ReplyKeyboardMarkup makeKeyboardMarkup(String... buttons) {
+    protected ReplyKeyboardMarkup makeKeyboardMarkup(String... buttons) {
         KeyboardRow keyboardRow = new KeyboardRow();
         for (String button: buttons) {
             keyboardRow.add(new KeyboardButton(button));
@@ -110,7 +119,7 @@ public abstract class Branch {
         return new ReplyKeyboardMarkup(List.of(keyboardRow));
     }
 
-    public ReplyKeyboardMarkup makeKeyboardMarkupWithMainButton(String... buttons) {
+    protected ReplyKeyboardMarkup makeKeyboardMarkupWithMainButton(String... buttons) {
         KeyboardRow keyboardRow = new KeyboardRow();
         for (String button: buttons) {
             keyboardRow.add(new KeyboardButton(button));
@@ -120,8 +129,16 @@ public abstract class Branch {
         return new ReplyKeyboardMarkup(List.of(keyboardRow, mainKeyboardRow));
     }
 
-    public UserEntity loadUserByTelegramId(Long telegramId)
+    protected UserEntity loadUserByTelegramId(Long telegramId)
             throws RequestServiceException, UserNotFoundException, UserValidationFailedException {
         return requestService.getUserByTelegramId(telegramId);
+    }
+
+    protected void authorizeUser(Update update) throws BranchCriticalException {
+        try {
+            userEntity = loadUserByTelegramId(update.getMessage().getFrom().getId());
+        } catch (BranchBadUpdateProvidedException | RequestServiceException e) {
+            throw new BranchCriticalException("Cant authenticate");
+        }
     }
 }

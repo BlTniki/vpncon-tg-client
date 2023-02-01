@@ -5,7 +5,6 @@ import com.bitniki.VPNconTGclient.bot.exception.validationFailedException.Entity
 import com.bitniki.VPNconTGclient.bot.response.Response;
 import com.bitniki.VPNconTGclient.bot.dialogueTree.branch.Branch;
 import com.bitniki.VPNconTGclient.bot.dialogueTree.branch.InitBranch;
-import com.bitniki.VPNconTGclient.bot.requestHandler.requestEntity.UserEntity;
 import com.bitniki.VPNconTGclient.bot.requestHandler.RequestService;
 import com.bitniki.VPNconTGclient.bot.response.ResponseType;
 import com.bitniki.VPNconTGclient.bot.exception.BranchBadUpdateProvidedException;
@@ -16,8 +15,8 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
 
+@SuppressWarnings("FieldCanBeLocal")
 public class Tree {
-    private UserEntity userEntity;
     private Branch currentBranch;
     private final RequestService requestService;
     private int badRequestCount;
@@ -42,9 +41,7 @@ public class Tree {
                     update.getMessage().getChatId().toString(),
                     e.getMessage()
             );
-            responses.add(
-                    new Response<>(ResponseType.SendText, sendMessage)
-            );
+            responses.add(new Response<>(ResponseType.SendText, sendMessage));
             //Restart branch
             try {
                 currentBranch.setNextBranch(

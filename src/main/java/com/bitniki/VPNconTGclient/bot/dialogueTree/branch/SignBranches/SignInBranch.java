@@ -1,8 +1,10 @@
 package com.bitniki.VPNconTGclient.bot.dialogueTree.branch.SignBranches;
 
+import com.bitniki.VPNconTGclient.bot.dialogueTree.branch.AuthBranch;
 import com.bitniki.VPNconTGclient.bot.dialogueTree.branch.Branch;
-import com.bitniki.VPNconTGclient.bot.dialogueTree.branch.BranchWithUser;
 import com.bitniki.VPNconTGclient.bot.dialogueTree.branch.InitBranch;
+import com.bitniki.VPNconTGclient.bot.exception.BranchCriticalException;
+import com.bitniki.VPNconTGclient.bot.exception.validationFailedException.EntityValidationFailedException;
 import com.bitniki.VPNconTGclient.bot.response.Response;
 import com.bitniki.VPNconTGclient.bot.response.ResponseType;
 import com.bitniki.VPNconTGclient.bot.exception.BranchBadUpdateProvidedException;
@@ -13,38 +15,44 @@ import com.bitniki.VPNconTGclient.bot.requestHandler.RequestService;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
-import org.telegram.telegrambots.meta.api.objects.replykeyboard.ForceReplyKeyboard;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @SuppressWarnings("FieldCanBeLocal")
-public class SignInBranch extends BranchWithUser {
+public class SignInBranch extends AuthBranch {
+    private enum BranchState {
+        InitState(),
+        WaitForLogin(),
+        WaitForPassword()
+    }
+    private BranchState branchState;
+    private UserEntity userEntity;
     private final String loginText = "Введи свой логин";
     private final String passwordText = "Так, а теперь пароль";
     private final String endText = "Нашёл твой аккаунт! вот он:\n";
-    private final String signInButtonText = "Авторизация";
 
     public SignInBranch(Branch prevBranch, RequestService requestService) {
         super(prevBranch, requestService);
+        this.branchState = BranchState.InitState;
     }
 
     @Override
     public List<Response<?>> makeResponses(Update update)
-            throws RequestServiceException, BranchBadUpdateProvidedException {
+            throws BranchCriticalException {
         //Get message from update
         Message message = update.getMessage();
 
-        //ask login branch state
-        if(getTextFrom(message).equals(signInButtonText)) {
+        //InitState State
+        if(branchState.equals(BranchState.InitState)) {
             return askLogin(message);
         }
         //ask password branch state
-        if(message.getReplyToMessage() != null && message.getReplyToMessage().getText().equals(loginText)) {
+        if(branchState.equals(BranchState.WaitForLogin)) {
             return askPassword(message);
         }
         //associateUser branch state
-        if(message.getReplyToMessage() != null && message.getReplyToMessage().getText().equals(passwordText)) {
+        if(branchState.equals(BranchState.WaitForPassword)) {
             return associateUser(message);
         }
         //If we got here return null
@@ -57,9 +65,12 @@ public class SignInBranch extends BranchWithUser {
 
         //Make Response
         SendMessage sendMessage = new SendMessage(message.getChatId().toString(), loginText);
-        sendMessage.setReplyMarkup(new ForceReplyKeyboard(true));
+        sendMessage.setReplyMarkup(makeKeyboardMarkupWithMainButton());
         responses.add(new Response<>(ResponseType.SendText, sendMessage));
         this.userEntity = new UserEntity();
+
+        //Change Branch state
+        branchState = BranchState.WaitForLogin;
         return responses;
     }
 
@@ -70,12 +81,16 @@ public class SignInBranch extends BranchWithUser {
         //Make Response
         userEntity.setLogin(getTextFrom(message));
         SendMessage sendMessage = new SendMessage(message.getChatId().toString(), passwordText);
-        sendMessage.setReplyMarkup(new ForceReplyKeyboard(true));
+        sendMessage.setReplyMarkup(makeKeyboardMarkupWithMainButton());
         responses.add(new Response<>(ResponseType.SendText, sendMessage));
+
+        //Change Branch state
+        branchState = BranchState.WaitForPassword;
         return responses;
     }
 
-    private List<Response<?>> associateUser(Message message) throws UserNotFoundException, RequestServiceException {
+    private List<Response<?>> associateUser(Message message)
+            throws BranchCriticalException {
         //Init Responses
         List<Response<?>> responses = new ArrayList<>();
 
@@ -86,7 +101,7 @@ public class SignInBranch extends BranchWithUser {
         try {
             this.userEntity = requestService.associateTelegramIdWithUser(userEntity);
         } catch (UserNotFoundException e) {
-            throw new UserNotFoundException(
+            throw new EntityValidationFailedException(
                     """
                         Юзера с такими логином и паролем не существует
                         Попробуй ещё раз или создай нового
@@ -94,7 +109,7 @@ public class SignInBranch extends BranchWithUser {
                     """
             );
         } catch (RequestServiceException e) {
-            throw new RequestServiceException(
+            throw new BranchCriticalException(
                     "Похоже на ошбику приложения, напиши мне: @BITniki"
             );
         }

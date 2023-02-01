@@ -17,7 +17,7 @@ import java.util.List;
 
 
 @SuppressWarnings({"FieldCanBeLocal", "unused"})
-public class InitBranch extends Branch{
+public class InitBranch extends AuthBranch {
     private enum BranchState {
         InitState(),
         WaitingForAuthType()

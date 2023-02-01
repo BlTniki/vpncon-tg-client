@@ -1,26 +1,32 @@
 package com.bitniki.VPNconTGclient.bot.dialogueTree.branch.SignBranches;
 
+import com.bitniki.VPNconTGclient.bot.dialogueTree.branch.AuthBranch;
 import com.bitniki.VPNconTGclient.bot.dialogueTree.branch.Branch;
-import com.bitniki.VPNconTGclient.bot.dialogueTree.branch.BranchWithUser;
 import com.bitniki.VPNconTGclient.bot.dialogueTree.branch.InitBranch;
+import com.bitniki.VPNconTGclient.bot.exception.BranchCriticalException;
 import com.bitniki.VPNconTGclient.bot.requestHandler.RequestService;
 import com.bitniki.VPNconTGclient.bot.requestHandler.requestEntity.UserEntity;
 import com.bitniki.VPNconTGclient.bot.response.Response;
 import com.bitniki.VPNconTGclient.bot.response.ResponseType;
 import com.bitniki.VPNconTGclient.bot.exception.BranchBadUpdateProvidedException;
 import com.bitniki.VPNconTGclient.bot.exception.requestHandlerException.RequestService5xxException;
-import com.bitniki.VPNconTGclient.bot.exception.requestHandlerException.RequestServiceException;
 import com.bitniki.VPNconTGclient.bot.exception.validationFailedException.UserValidationFailedException;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
-import org.telegram.telegrambots.meta.api.objects.replykeyboard.ForceReplyKeyboard;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @SuppressWarnings({"TextBlockMigration", "FieldCanBeLocal", "unused"})
-public class SignUpBranch extends BranchWithUser {
+public class SignUpBranch extends AuthBranch {
+    private enum BranchState {
+        InitState(),
+        WaitForLogin(),
+        WaitForPassword()
+    }
+    private BranchState branchState = BranchState.InitState;
+    private UserEntity userEntity;
     private final String loginText =    "Придумай себе логин. Он должен быть длиной от 1 до 20 и может состоять из:\n" +
                                         "Строчного или прописного латинского алфавита\n" +
                                         "Цифр\n" +
@@ -32,36 +38,27 @@ public class SignUpBranch extends BranchWithUser {
                                         "А также можно добавить другие символы"
                                         ;
     private final String endText = "Создал тебе аккаунт! вот он:\n";
-    private final String signUpButtonText = "Регистрация";
-
-    public SignUpBranch(RequestService requestService) {
-        super(requestService);
-    }
 
     public SignUpBranch(Branch prevBranch, RequestService requestService) {
         super(prevBranch, requestService);
     }
 
-    public SignUpBranch(BranchWithUser branch, RequestService requestService) {
-        super(branch, requestService);
-    }
-
     @Override
     public List<Response<?>> makeResponses(Update update)
-            throws RequestServiceException, BranchBadUpdateProvidedException {
+            throws BranchCriticalException {
         //Get message from update
         Message message = update.getMessage();
 
         //ask login branch state
-        if(getTextFrom(message).equals(signUpButtonText)) {
+        if(branchState.equals(BranchState.InitState)) {
             return askLogin(message);
         }
         //ask password branch state
-        if(message.getReplyToMessage() != null && message.getReplyToMessage().getText().equals(loginText)) {
+        if(branchState.equals(BranchState.WaitForLogin)) {
             return askPassword(message);
         }
         //associateUser branch state
-        if(message.getReplyToMessage() != null && message.getReplyToMessage().getText().equals(passwordText)) {
+        if(branchState.equals(BranchState.WaitForPassword)) {
             return createUser(message);
         }
         //If we got here return null
@@ -74,9 +71,12 @@ public class SignUpBranch extends BranchWithUser {
 
         //Make Response
         SendMessage sendMessage = new SendMessage(message.getChatId().toString(), loginText);
-        sendMessage.setReplyMarkup(new ForceReplyKeyboard(true));
+        sendMessage.setReplyMarkup(makeKeyboardMarkupWithMainButton());
         responses.add(new Response<>(ResponseType.SendText, sendMessage));
         this.userEntity = new UserEntity();
+
+        //Change Branch state
+        branchState = BranchState.WaitForLogin;
         return responses;
     }
 
@@ -87,13 +87,16 @@ public class SignUpBranch extends BranchWithUser {
         //Make Response
         userEntity.setLogin(getTextFrom(message));
         SendMessage sendMessage = new SendMessage(message.getChatId().toString(), passwordText);
-        sendMessage.setReplyMarkup(new ForceReplyKeyboard(true));
+        sendMessage.setReplyMarkup(makeKeyboardMarkupWithMainButton());
         responses.add(new Response<>(ResponseType.SendText, sendMessage));
+
+        //Change Branch state
+        branchState = BranchState.WaitForPassword;
         return responses;
     }
 
     private List<Response<?>> createUser(Message message)
-            throws BranchBadUpdateProvidedException, RequestService5xxException {
+            throws BranchCriticalException {
         //Init Responses
         List<Response<?>> responses = new ArrayList<>();
 
@@ -109,6 +112,8 @@ public class SignUpBranch extends BranchWithUser {
             throw new UserValidationFailedException("Похоже ты накосячил, у тебя:\n" +
                                                     e.getMessage() +
                                                     "\nПопробуй ещё раз");
+        } catch (RequestService5xxException e) {
+            throw new BranchCriticalException(e.getMessage());
         }
         //Make Response
         SendMessage sendMessage = new SendMessage(message.getChatId().toString(),
