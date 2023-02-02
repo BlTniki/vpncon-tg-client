@@ -14,6 +14,7 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMar
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardButton;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardRow;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
@@ -111,22 +112,50 @@ public abstract class Branch {
         else throw new BranchBadUpdateProvidedException("there no text!");
     }
 
-    protected ReplyKeyboardMarkup makeKeyboardMarkup(String... buttons) {
-        KeyboardRow keyboardRow = new KeyboardRow();
-        for (String button: buttons) {
-            keyboardRow.add(new KeyboardButton(button));
+    protected ReplyKeyboardMarkup makeKeyboardMarkup(@Nonnull String... buttons) {
+        List<String> buttonList = List.of(buttons);
+        List<KeyboardRow> keyboardRowList = new ArrayList<>();
+
+        //Make rows of 3 elements
+        for (int i = 0; i < buttons.length; i+=3) {
+            KeyboardRow keyboardRow = new KeyboardRow();
+
+            //If i+3 > buttons.length — rightRange = buttons.length
+            int rightRange = Math.min((i + 3), buttons.length);
+
+            //iterate by sublist from i to right list
+            for (String button: buttonList.subList(i, rightRange)) {
+                keyboardRow.add(new KeyboardButton(button));
+            }
+
+            keyboardRowList.add(keyboardRow);
         }
-        return new ReplyKeyboardMarkup(List.of(keyboardRow));
+        return new ReplyKeyboardMarkup(keyboardRowList);
     }
 
     protected ReplyKeyboardMarkup makeKeyboardMarkupWithMainButton(String... buttons) {
-        KeyboardRow keyboardRow = new KeyboardRow();
-        for (String button: buttons) {
-            keyboardRow.add(new KeyboardButton(button));
+        List<String> buttonList = List.of(buttons);
+        List<KeyboardRow> keyboardRowList = new ArrayList<>();
+
+        //Make rows of 3 elements
+        for (int i = 0; i < buttons.length; i+=3) {
+            KeyboardRow keyboardRow = new KeyboardRow();
+
+            //If i+3 > buttons.length — rightRange = buttons.length
+            int rightRange = Math.min((i + 3), buttons.length);
+
+            //iterate by sublist from i to right list
+            for (String button: buttonList.subList(i, rightRange)) {
+                keyboardRow.add(new KeyboardButton(button));
+            }
+
+            keyboardRowList.add(keyboardRow);
         }
+        //add main menu button
         KeyboardRow mainKeyboardRow = new KeyboardRow();
         mainKeyboardRow.add(returnText);
-        return new ReplyKeyboardMarkup(List.of(keyboardRow, mainKeyboardRow));
+        keyboardRowList.add(mainKeyboardRow);
+        return new ReplyKeyboardMarkup(keyboardRowList);
     }
 
     protected UserEntity loadUserByTelegramId(Long telegramId)
