@@ -189,7 +189,7 @@ public class RequestService {
         }
 
         //Return file
-        return new InputFile(inputStream, peerEntity.getPeerConfName());
+        return new InputFile(inputStream, peerEntity.getPeerConfName()+".conf");
     }
 
     /**
