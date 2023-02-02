@@ -192,6 +192,30 @@ public class RequestService {
         return new InputFile(inputStream, peerEntity.getPeerConfName()+".conf");
     }
 
+    public void deletePeerOnServer(PeerEntity peerEntity)
+            throws EntityNotFoundException, RequestService5xxException {
+        String uri = this.VPNconAddress + "/peers/" + peerEntity.getId();
+
+        //Configure request body
+        HttpEntity<PeerEntity> httpEntity = makeHttpEntity(peerEntity);
+
+        //Make request
+        try {
+            restTemplate.exchange(
+                    uri,
+                    HttpMethod.DELETE,
+                    httpEntity,
+                    PeerEntity.class
+            );
+        } catch (HttpClientErrorException e) {
+            if(e.getStatusCode().value() == 404)
+                throw new EntityNotFoundException(e.getMessage());
+            if(e.getStatusCode().is5xxServerError())
+                throw new RequestService5xxException("Problems with server occurred");
+            throw e;
+        }
+    }
+
     /**
      * Make request for auth token and save it
      * @return token
