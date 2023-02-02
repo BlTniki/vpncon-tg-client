@@ -68,7 +68,7 @@ public class PeerEntity {
                 "\npeerPrivateKey = " + peerPrivateKey +
                 "\npeerPublicKey = " + peerPublicKey +
                 "\npeerConfName = " + peerConfName +
-                "\nhost = " + host +
+                "\nhost = " + host.getName() +
                 "\n}";
     }
 }
