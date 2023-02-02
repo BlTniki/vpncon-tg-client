@@ -63,12 +63,12 @@ public class PeerEntity {
     @Override
     public String toString() {
         return "\nPeerEntity{" +
-                "\nid=" + id +
-                "\npeerIp='" + peerIp + '\'' +
-                "\npeerPrivateKey='" + peerPrivateKey + '\'' +
-                "\npeerPublicKey='" + peerPublicKey + '\'' +
-                "\npeerConfName='" + peerConfName + '\'' +
-                "\nhost=" + host +
+                "\nid = " + id +
+                "\npeerIp = " + peerIp +
+                "\npeerPrivateKey = " + peerPrivateKey +
+                "\npeerPublicKey = " + peerPublicKey +
+                "\npeerConfName = " + peerConfName +
+                "\nhost = " + host +
                 "\n}";
     }
 }
