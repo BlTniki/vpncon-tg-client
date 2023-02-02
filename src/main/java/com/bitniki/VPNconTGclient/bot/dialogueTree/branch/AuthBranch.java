@@ -5,16 +5,13 @@ import com.bitniki.VPNconTGclient.bot.exception.BranchCriticalException;
 import com.bitniki.VPNconTGclient.bot.requestHandler.RequestService;
 import com.bitniki.VPNconTGclient.bot.response.Response;
 import org.telegram.telegrambots.meta.api.objects.Update;
-import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMarkup;
-import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardButton;
-import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardRow;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @SuppressWarnings("FieldCanBeLocal")
 public abstract class AuthBranch extends Branch{
-    private final String returnText = "Назад";
+    private final String returnText = "Главная";
     private final String errorText = "Что-то я не смог тебя понять. Попробуй ещё раз. " +
             "Ну или напиши мне: @BITniki";
     public AuthBranch(Branch prevBranch, RequestService requestService) {
@@ -38,17 +35,5 @@ public abstract class AuthBranch extends Branch{
         //makeResponses can return null, in this case — throw exception
         if(responses == null) throw new BranchBadUpdateProvidedException(this.errorText);
         return responses;
-    }
-
-    @Override
-    protected ReplyKeyboardMarkup makeKeyboardMarkupWithMainButton(String... buttons) {
-        //change return text
-        KeyboardRow keyboardRow = new KeyboardRow();
-        for (String button: buttons) {
-            keyboardRow.add(new KeyboardButton(button));
-        }
-        KeyboardRow mainKeyboardRow = new KeyboardRow();
-        mainKeyboardRow.add(returnText);
-        return new ReplyKeyboardMarkup(List.of(keyboardRow, mainKeyboardRow));
     }
 }
