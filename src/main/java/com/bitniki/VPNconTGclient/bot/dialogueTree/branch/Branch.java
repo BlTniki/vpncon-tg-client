@@ -20,7 +20,7 @@ import java.util.List;
 
 @SuppressWarnings({"FieldCanBeLocal", "unused"})
 public abstract class Branch {
-    private UserEntity userEntity;
+    protected UserEntity userEntity;
     private Branch prevBranch;
     private Branch nextBranch;
     private boolean isBranchWantChangeBranch;
