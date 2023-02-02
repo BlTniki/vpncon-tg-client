@@ -22,8 +22,6 @@ public class PeerMenuBranch extends Branch {
     private final String initText = "Итак меню VPN:";
     private final String createText = "Создать новый конфиг";
     private final String editText = "Показать созданные";
-    private final String errorText = "Похоже на внутренюю ошибку бота. " +
-            "Напиши мне: @BITniki";
 
     public PeerMenuBranch(Branch prevBranch, RequestService requestService) {
         super(prevBranch, requestService);
@@ -45,6 +43,9 @@ public class PeerMenuBranch extends Branch {
         if(branchState.equals(BranchState.WaitingForButtonChoose)) {
             if(getTextFrom(message).equals(createText)) {
                 return routeToCreateBranch();
+            }
+            if(getTextFrom(message).equals(editText)) {
+                return routeToEditPeersBranch();
             }
         }
 
@@ -79,24 +80,13 @@ public class PeerMenuBranch extends Branch {
         return responses;
     }
 
-//    private List<Response<?>> returnPeersList(Message message) throws BranchBadUpdateProvidedException {
-//        //Init Responses
-//        List<Response<?>> responses = new ArrayList<>();
-//
-//        // Try load user peers
-//        try {
-//            this.userEntity = loadUserByTelegramId(message.getFrom().getId());
-//        } catch (Exception e) {
-//            throw new BranchBadUpdateProvidedException(
-//                    errorText
-//            );
-//        }
-//
-//        //Make message
-//        SendMessage sendMessage = new SendMessage(message.getChatId().toString(),
-//                userEntity.getPeers().toString()
-//        );
-//        responses.add(new Response<>(ResponseType.SendText, sendMessage));
-//        return responses;
-//    }
+    private List<Response<?>> routeToEditPeersBranch() {
+        //Init Responses
+        List<Response<?>> responses = new ArrayList<>();
+
+        //Change branch
+        setNextBranch(new EditPeersBranch(this, requestService));
+
+        return responses;
+    }
 }
