@@ -3,16 +3,18 @@ package com.bitniki.VPNconTGclient.bot.dialogueTree.branch.PeerBranches;
 import com.bitniki.VPNconTGclient.bot.dialogueTree.branch.Branch;
 import com.bitniki.VPNconTGclient.bot.exception.BranchBadUpdateProvidedException;
 import com.bitniki.VPNconTGclient.bot.exception.BranchCriticalException;
+import com.bitniki.VPNconTGclient.bot.exception.notFoundException.EntityNotFoundException;
 import com.bitniki.VPNconTGclient.bot.exception.requestHandlerException.RequestService5xxException;
+import com.bitniki.VPNconTGclient.bot.exception.validationFailedException.EntityValidationFailedException;
 import com.bitniki.VPNconTGclient.bot.requestHandler.RequestService;
 import com.bitniki.VPNconTGclient.bot.requestHandler.requestEntity.HostEntity;
 import com.bitniki.VPNconTGclient.bot.requestHandler.requestEntity.PeerEntity;
 import com.bitniki.VPNconTGclient.bot.response.Response;
 import com.bitniki.VPNconTGclient.bot.response.ResponseType;
+import org.telegram.telegrambots.meta.api.methods.send.SendDocument;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
-import org.telegram.telegrambots.meta.api.objects.replykeyboard.ForceReplyKeyboard;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -36,6 +38,7 @@ public class CreatePeerBranch extends Branch {
             "\nНапиши число от 2 до 254 и мы проверим доступность.";
     private final String wrongOctetText = "Число не 0 и не в промежутке от 2 до 254";
     private final String askConfNameText = "Отлично!\nА теперь придумай название конфигу.\nПодойдёт имя состоящие из латиницы и цифр";
+    private final String showConfText = "Создал! вот он:\n";
 
     public CreatePeerBranch(Branch prevBranch, RequestService requestService) {
         super(prevBranch, requestService);
@@ -44,7 +47,7 @@ public class CreatePeerBranch extends Branch {
 
     @Override
     protected List<Response<?>> makeResponses(Update update)
-            throws BranchCriticalException, BranchBadUpdateProvidedException {
+            throws BranchCriticalException {
         //Get message from update
         Message message = update.getMessage();
 
@@ -102,7 +105,7 @@ public class CreatePeerBranch extends Branch {
         return responses;
     }
     private List<Response<?>> askPeerIp(Message message)
-            throws BranchCriticalException, BranchBadUpdateProvidedException {
+            throws BranchCriticalException {
         //Init Responses
         List<Response<?>> responses = new ArrayList<>();
 
@@ -126,8 +129,7 @@ public class CreatePeerBranch extends Branch {
         peerEntity.setHost(hostEntity);
 
         SendMessage sendMessage = new SendMessage(message.getChatId().toString(), askPeerIpText);
-        //Force reply
-        sendMessage.setReplyMarkup(new ForceReplyKeyboard());
+        sendMessage.setReplyMarkup(makeKeyboardMarkupWithMainButton());
         responses.add(new Response<>(ResponseType.SendText, sendMessage));
 
         //change state
@@ -157,8 +159,7 @@ public class CreatePeerBranch extends Branch {
         }
 
         SendMessage sendMessage = new SendMessage(message.getChatId().toString(), askConfNameText);
-        //Force reply
-        sendMessage.setReplyMarkup(new ForceReplyKeyboard());
+        sendMessage.setReplyMarkup(makeKeyboardMarkupWithMainButton());
         responses.add(new Response<>(ResponseType.SendText, sendMessage));
 
         //change state
@@ -167,25 +168,43 @@ public class CreatePeerBranch extends Branch {
     }
 
     private List<Response<?>> createPeerAndRouteToPeerMenu(Message message)
-            throws BranchBadUpdateProvidedException, BranchCriticalException {
-//        //Init Responses
-//        List<Response<?>> responses = new ArrayList<>();
-//
-//        //Set conf name to peerEntity
-//        peerEntity.setPeerConfName(getTextFrom(message));
-//
-//        //try to create peer on server
-//        try {
-//            PeerEntity createdPeer = requestService.createPeerOnServer(
-//                    peerEntity,
-//                    peerEntity.getHost().getId(), //Host ID
-//                    requestService.getUserByTelegramId(message.getFrom().getId()).getId() //User ID
-//            );
-//        } catch (E)
-//
-//
-//
+            throws BranchCriticalException {
+        //Init Responses
+        List<Response<?>> responses = new ArrayList<>();
 
-        return null;
+        //Set conf name to peerEntity
+        peerEntity.setPeerConfName(getTextFrom(message));
+
+        //try to create peer on server
+        try {
+            peerEntity = requestService.createPeerOnServer(
+                    peerEntity,
+                    userEntity.getId(), //User ID
+                    peerEntity.getHost().getId() //Host ID
+            );
+        } catch (EntityValidationFailedException | EntityNotFoundException e) {
+            throw new EntityValidationFailedException("Похоже ты накосячил, у тебя:\n" +
+                                                        e.getMessage() +
+                                                        "\nПопробуй ещё раз");
+        } catch (RequestService5xxException e) {
+            throw new BranchCriticalException("Server fails");
+        }
+
+        SendMessage sendMessage = new SendMessage(message.getChatId().toString(), showConfText);
+        responses.add(new Response<>(ResponseType.SendText, sendMessage));
+        //Provide conf file
+        SendDocument sendDocument;
+        try {
+            sendDocument = new SendDocument(message.getChatId().toString(), requestService.getFileFromServer(peerEntity));
+        } catch (RequestService5xxException e) {
+            throw new BranchCriticalException("Server fails");
+        }
+        sendDocument.setReplyMarkup(makeKeyboardMarkupWithMainButton());
+        responses.add(new Response<>(ResponseType.SendDoc, sendDocument));
+
+        //Route to peer menu
+        setNextBranch(new PeerMenuBranch(this, requestService));
+
+        return responses;
     }
 }
