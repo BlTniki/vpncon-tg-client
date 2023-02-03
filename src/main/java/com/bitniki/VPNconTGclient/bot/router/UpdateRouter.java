@@ -1,6 +1,5 @@
 package com.bitniki.VPNconTGclient.bot.router;
 
-import com.bitniki.VPNconTGclient.bot.dialogueTree.branch.Branch;
 import com.bitniki.VPNconTGclient.bot.dialogueTree.Tree;
 import com.bitniki.VPNconTGclient.bot.response.Response;
 import com.bitniki.VPNconTGclient.bot.exception.UpdateRouterException;
@@ -16,10 +15,13 @@ import java.util.List;
  * and response to the chat
  */
 public class UpdateRouter {
-    private final HashMap<Long, Tree> chatBranchMap;
+    private final HashMap<Long, Tree> chatTreeMap;
+    private final HashMap<Long, TreeKiller> treeKillerMap;
     private final RequestService requestService;
+
     public UpdateRouter(RequestService requestService) {
-        this.chatBranchMap = new HashMap<Long, Tree>();
+        this.chatTreeMap = new HashMap<>();
+        this.treeKillerMap = new HashMap<>();
         this.requestService = requestService;
     }
 
@@ -27,18 +29,32 @@ public class UpdateRouter {
         if(!update.hasMessage())
             throw new UpdateRouterException("This is not a message!");
 
-        Branch branch;
         Tree tree;
-        if(chatBranchMap.containsKey(update.getMessage().getChatId())) {
+        if(chatTreeMap.containsKey(update.getMessage().getChatId())) {
             //get dialogue branch by chatId
-            tree = chatBranchMap.get(update.getMessage().getChatId());
+            tree = chatTreeMap.get(update.getMessage().getChatId());
+            //Refresh treeKiller task
+            treeKillerMap.get(update.getMessage().getChatId()).refreshKillTime();
         } else {
-            //if in HashMap no branch with this chatIp
-            //Create
+            //if in HashMap no tree with this chatIp
+            //Create tree
             tree = new Tree(requestService);
-            chatBranchMap.put(update.getMessage().getChatId(), tree);
+            chatTreeMap.put(update.getMessage().getChatId(), tree);
+            //Set Task to kill chat
+            treeKillerMap.put(update.getMessage().getChatId(),
+                    new TreeKiller(update.getMessage().getChatId(), this));
         }
 
         return tree.handle(update);
+    }
+
+    /**
+     * Deletes chat from chatBranchMap and task from treeKillerMap.
+     * Uses by ScheduledExecutorService to remove afk chats.
+     * @param chatId chat id
+     */
+    public void deleteChatFromMaps(Long chatId) {
+        chatTreeMap.remove(chatId);
+        treeKillerMap.remove(chatId);
     }
 }
