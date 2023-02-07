@@ -37,37 +37,29 @@ public class VPNconBot extends BasicTelegramBot{
         }
 
         //Get all responses
-        for(Response<?> response : responses) {
-            switch (response.getResponseType()) {
-                case SendText -> {
-                    try {
-                        execute((SendMessage)response.getData());
-                    } catch (TelegramApiException e) {
-                        throw new RuntimeException(e);
-                    }
-                }
-                case SendDoc -> {
-                    try {
-                        execute((SendDocument) response.getData());
-                    } catch (TelegramApiException e) {
-                        throw new RuntimeException(e);
-                    }
+        try {
+            for(Response<?> response : responses) {
+                switch (response.getResponseType()) {
+                    case SendText -> execute((SendMessage)response.getData());
+                    case SendDoc -> execute((SendDocument) response.getData());
+                    case SendInvoice -> sendInvoice((SendInvoice) response.getData());
+                    case SendAnswerToInvoice -> execute((AnswerPreCheckoutQuery)response.getData());
                 }
             }
+        } catch (TelegramApiException e) {
+            throw new RuntimeException(e);
         }
     }
 
     /**
      * sendMessage to chat with given chatId in Response
      */
-    private void sendMessage(Long chatId, Response<String> response) {
-        String messageData = response.getData();
-        SendMessage sendText = new SendMessage(chatId.toString(), messageData);
-        sendText.setReplyMarkup(new ForceReplyKeyboard(true));
+    private void sendInvoice(SendInvoice invoice) {
+        invoice.setProviderToken(paymentToken);
         try {
-            execute(sendText);
+            execute(invoice);
         } catch (TelegramApiException e) {
-            e.printStackTrace();
+            throw new RuntimeException(e);
         }
     }
 }
