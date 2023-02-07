@@ -1,6 +1,7 @@
 package com.bitniki.VPNconTGclient.config;
 
 
+import com.bitniki.VPNconTGclient.bot.BasicTelegramBot;
 import com.bitniki.VPNconTGclient.bot.router.UpdateRouter;
 import com.bitniki.VPNconTGclient.bot.VPNconBot;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,13 +12,15 @@ import org.telegram.telegrambots.meta.TelegramBotsApi;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import org.telegram.telegrambots.updatesreceivers.DefaultBotSession;
 
+@SuppressWarnings("unused")
 @Configuration
 public class VPNconBotConfig {
     @Value("${tg.botToken}")
     private String botToken;
-
     @Value("${tg.botUsername}")
     private String botUsername;
+    @Value("${tg.paymentToken}")
+    private String paymentToken;
 
     @Autowired
     private UpdateRouter updateRouter;
@@ -26,7 +29,7 @@ public class VPNconBotConfig {
     /**
      * init bot and run updates listener
      * @return TelegramBotsApi
-     * @throws TelegramApiException
+     * @throws TelegramApiException if something's goes wrong
      */
     @Bean
     public TelegramBotsApi telegramBotsApiBean() throws TelegramApiException {
