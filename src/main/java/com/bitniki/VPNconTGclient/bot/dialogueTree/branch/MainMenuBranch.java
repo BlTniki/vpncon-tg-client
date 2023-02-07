@@ -1,6 +1,7 @@
 package com.bitniki.VPNconTGclient.bot.dialogueTree.branch;
 
 import com.bitniki.VPNconTGclient.bot.dialogueTree.branch.PeerBranches.PeerMenuBranch;
+import com.bitniki.VPNconTGclient.bot.dialogueTree.branch.SubsBranch.SubsBranch;
 import com.bitniki.VPNconTGclient.bot.exception.BranchBadUpdateProvidedException;
 import com.bitniki.VPNconTGclient.bot.requestHandler.RequestService;
 import com.bitniki.VPNconTGclient.bot.response.Response;
@@ -22,6 +23,7 @@ public class MainMenuBranch extends Branch {
     private final String initText = "Выбери ченибуть:";
     private final String editUserText = "Настрока профиля";
     private final String editPeersText = "Настройка VPN";
+    private final String subsBranchText = "Оплатить подписку";
 
     public MainMenuBranch(Branch prevBranch, RequestService requestService) {
         super(prevBranch, requestService);
@@ -44,8 +46,11 @@ public class MainMenuBranch extends Branch {
 //            if(message.getText().equals(editUserText)){
 //
 //            }
-            if(getTextFrom(message).equals(editPeersText)){
+            if(getTextFrom(message).equals(editPeersText)) {
                 return routeToPeersMenu();
+            }
+            if(getTextFrom(message).equals(subsBranchText)) {
+                return routeToSubsBranch();
             }
         }
 
@@ -62,7 +67,7 @@ public class MainMenuBranch extends Branch {
         );
 
         //set nav buttons
-        sendMessage.setReplyMarkup(makeKeyboardMarkup(editUserText, editPeersText));
+        sendMessage.setReplyMarkup(makeKeyboardMarkup(editUserText, editPeersText, subsBranchText));
 
         responses.add(new Response<>(ResponseType.SendText, sendMessage));
 
@@ -78,6 +83,16 @@ public class MainMenuBranch extends Branch {
 
         //Change branch
         setNextBranch(new PeerMenuBranch(this, requestService));
+
+        return responses;
+    }
+
+    private List<Response<?>> routeToSubsBranch() {
+        //Init Responses
+        List<Response<?>> responses = new ArrayList<>();
+
+        //Change branch
+        setNextBranch(new SubsBranch(this, requestService));
 
         return responses;
     }
