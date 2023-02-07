@@ -3,10 +3,11 @@ package com.bitniki.VPNconTGclient.bot;
 import com.bitniki.VPNconTGclient.bot.response.Response;
 import com.bitniki.VPNconTGclient.bot.router.UpdateRouter;
 import com.bitniki.VPNconTGclient.bot.exception.UpdateRouterException;
+import org.telegram.telegrambots.meta.api.methods.AnswerPreCheckoutQuery;
+import org.telegram.telegrambots.meta.api.methods.invoices.SendInvoice;
 import org.telegram.telegrambots.meta.api.methods.send.SendDocument;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Update;
-import org.telegram.telegrambots.meta.api.objects.replykeyboard.ForceReplyKeyboard;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
 import java.util.List;
@@ -15,10 +16,12 @@ import java.util.List;
  * Class that's manipulate with Telegram bot api
  */
 public class VPNconBot extends BasicTelegramBot{
+    private final String paymentToken;
     private final UpdateRouter updateRouter;
 
-    public VPNconBot(String botToken, String botUsername, UpdateRouter updateRouter) {
+    public VPNconBot(String botToken, String botUsername, String paymentToken, UpdateRouter updateRouter) {
         super(botToken, botUsername);
+        this.paymentToken = paymentToken;
         this.updateRouter = updateRouter;
     }
 
