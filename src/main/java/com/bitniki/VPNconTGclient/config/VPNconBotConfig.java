@@ -21,6 +21,7 @@ public class VPNconBotConfig {
 
     @Autowired
     private UpdateRouter updateRouter;
+    private BasicTelegramBot bot;
 
     /**
      * init bot and run updates listener
@@ -31,11 +32,17 @@ public class VPNconBotConfig {
     public TelegramBotsApi telegramBotsApiBean() throws TelegramApiException {
         try {
             TelegramBotsApi botsApi = new TelegramBotsApi(DefaultBotSession.class);
-            botsApi.registerBot(new VPNconBot(botToken, botUsername, updateRouter));
+            botsApi.registerBot(bot);
             return botsApi;
         } catch (TelegramApiException e) {
             e.printStackTrace();
             throw e;
         }
+    }
+
+    @Bean
+    public BasicTelegramBot basicTelegramBotBean () {
+        this.bot = new VPNconBot(botToken, botUsername, paymentToken, updateRouter);
+        return bot;
     }
 }
