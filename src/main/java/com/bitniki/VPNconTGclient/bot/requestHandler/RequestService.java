@@ -9,6 +9,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.RestTemplate;
 import org.telegram.telegrambots.meta.api.objects.InputFile;
 
@@ -216,6 +217,92 @@ public class RequestService {
         }
     }
 
+    @SuppressWarnings("DataFlowIssue")
+    public List<SubscriptionEntity> getSubsByRole(String role) throws RequestService5xxException {
+        String uri = this.VPNconAddress + "/subs/byRole/" + role;
+        //Configure request body
+        ResponseEntity<SubscriptionEntity[]> response;
+
+        try {
+            response = restTemplate.exchange(
+                    uri,
+                    HttpMethod.GET,
+                    new HttpEntity<>(httpHeaders),
+                    SubscriptionEntity[].class
+            );
+        } catch (HttpClientErrorException | HttpServerErrorException e) {
+            if(e.getStatusCode().is5xxServerError())
+                throw new RequestService5xxException("Problems with server occurred");
+            throw e;
+        }
+        return List.of(response.getBody());
+    }
+
+    public UserEntity addSubToUser(String subId, String userId)
+            throws EntityValidationFailedException, RequestService5xxException, EntityNotFoundException {
+        String uri = this.VPNconAddress + "/subs/manage?subs_id=" + subId + "&&user_id=" + userId;
+        //Configure response entity
+        ResponseEntity<UserEntity> response;
+
+        try {
+            response = restTemplate.exchange(
+                    uri,
+                    HttpMethod.POST,
+                    new HttpEntity<>(httpHeaders),
+                    UserEntity.class
+            );
+        } catch (HttpClientErrorException | HttpServerErrorException e) {
+            if (e.getStatusCode().value() == 400)
+                throw new EntityValidationFailedException(e.getMessage());
+            if(e.getStatusCode().value() == 404)
+                throw new EntityNotFoundException(e.getMessage());
+            if(e.getStatusCode().is5xxServerError())
+                throw new RequestService5xxException("Problems with server occurred");
+            throw e;
+        }
+        return response.getBody();
+    }
+
+    public void saveCheque(MailEntity mail) throws RequestService5xxException {
+        String uri = this.VPNconAddress + "/mail/accountant";
+        //Configure request body
+        HttpEntity<MailEntity> httpEntity = makeHttpEntity(mail);
+
+        try {
+            restTemplate.exchange(
+                    uri,
+                    HttpMethod.POST,
+                    httpEntity,
+                    MailEntity.class
+            );
+        } catch (HttpClientErrorException | HttpServerErrorException e) {
+            if (e.getStatusCode().is5xxServerError())
+                throw new RequestService5xxException("Problems with server occurred");
+            throw e;
+        }
+    }
+
+    @SuppressWarnings("DataFlowIssue")
+    public List<MailEntity> getMailsFromServer() throws RequestService5xxException {
+        String uri = this.VPNconAddress + "/mail/with?forTelegram=true&&isChecked=false";
+        //Configure response entity
+        ResponseEntity<MailEntity[]> response;
+
+        try {
+            response = restTemplate.exchange(
+                    uri,
+                    HttpMethod.GET,
+                    new HttpEntity<>(httpHeaders),
+                    MailEntity[].class
+            );
+        } catch (HttpClientErrorException | HttpServerErrorException e) {
+            if (e.getStatusCode().is5xxServerError())
+                throw new RequestService5xxException("Problems with server occurred");
+            throw e;
+        }
+        return List.of(response.getBody());
+    }
+
     /**
      * Make request for auth token and save it
      * @return token
@@ -267,6 +354,17 @@ public class RequestService {
      * @return Built HttpEntity
      */
     private HttpEntity<PeerEntity> makeHttpEntity(PeerEntity entity) {
+        return new HttpEntity<>(
+                entity,
+                httpHeaders
+        );
+    }
+    /**
+     * Configure request body for mail entity
+     * @param entity — MailEntity
+     * @return Built HttpEntity
+     */
+    private HttpEntity<MailEntity> makeHttpEntity(MailEntity entity) {
         return new HttpEntity<>(
                 entity,
                 httpHeaders
