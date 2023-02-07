@@ -1,5 +1,6 @@
 package com.bitniki.VPNconTGclient.bot.requestHandler.requestEntity;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @SuppressWarnings("unused")
@@ -7,9 +8,12 @@ public class UserEntity {
     private Long id;
     private String login;
     private String password;
+    private String role;
     private Long telegramId;
     private String telegramUsername;
     private List<PeerEntity> peers;
+    private LocalDate subscriptionExpirationDay;
+    private SubscriptionEntity subscription;
 
     public UserEntity() {
     }
@@ -65,6 +69,30 @@ public class UserEntity {
 
     public void setPeers(List<PeerEntity> peers) {
         this.peers = peers;
+    }
+
+    public String getRole() {
+        return role;
+    }
+
+    public void setRole(String role) {
+        this.role = role;
+    }
+
+    public LocalDate getSubscriptionExpirationDay() {
+        return subscriptionExpirationDay;
+    }
+
+    public void setSubscriptionExpirationDay(LocalDate subscriptionExpirationDay) {
+        this.subscriptionExpirationDay = subscriptionExpirationDay;
+    }
+
+    public SubscriptionEntity getSubscription() {
+        return subscription;
+    }
+
+    public void setSubscription(SubscriptionEntity subscription) {
+        this.subscription = subscription;
     }
 
     @Override
