@@ -1,12 +1,14 @@
 package com.bitniki.VPNconTGclient.bot;
 
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
-import org.telegram.telegrambots.meta.api.objects.Update;
+import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
+import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
 /**
  * Basic telegram bot, it's cant handle updates
  * but can register bot and handle token and username
  */
+@SuppressWarnings("unused")
 public abstract class BasicTelegramBot extends TelegramLongPollingBot {
     private String botToken;
 
@@ -43,4 +45,15 @@ public abstract class BasicTelegramBot extends TelegramLongPollingBot {
         super.onRegister();
     }
 
+    /**
+     * Send mail to user
+     */
+    public void sendMailToUser(Long telegramId, String payload) {
+        SendMessage sendMessage = new SendMessage(telegramId.toString(), payload);
+        try {
+            execute(sendMessage);
+        } catch (TelegramApiException e) {
+            throw new RuntimeException(e);
+        }
+    }
 }
