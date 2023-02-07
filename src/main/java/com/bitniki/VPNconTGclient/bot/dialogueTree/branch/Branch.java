@@ -134,21 +134,16 @@ public abstract class Branch {
     }
 
     protected ReplyKeyboardMarkup makeKeyboardMarkupWithMainButton(String... buttons) {
-        List<String> buttonList = List.of(buttons);
         List<KeyboardRow> keyboardRowList = new ArrayList<>();
 
         //Make rows of 3 elements
         for (int i = 0; i < buttons.length; i+=3) {
             KeyboardRow keyboardRow = new KeyboardRow();
-
-            //If i+3 > buttons.length — rightRange = buttons.length
-            int rightRange = Math.min((i + 3), buttons.length);
-
             //iterate by sublist from i to right list
-            for (String button: buttonList.subList(i, rightRange)) {
-                keyboardRow.add(new KeyboardButton(button));
+            //If i+3 > buttons.length — rightRange = buttons.length
+            for (int j = i; j < Math.min(i + 3, buttons.length); j++) {
+                keyboardRow.add(new KeyboardButton(buttons[j]));
             }
-
             keyboardRowList.add(keyboardRow);
         }
         //add main menu button

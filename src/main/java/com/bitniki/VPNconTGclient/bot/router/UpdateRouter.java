@@ -29,21 +29,14 @@ public class UpdateRouter {
         if(!update.hasMessage())
             throw new UpdateRouterException("This is not a message!");
 
-        Tree tree;
-        if(chatTreeMap.containsKey(update.getMessage().getChatId())) {
-            //get dialogue branch by chatId
-            tree = chatTreeMap.get(update.getMessage().getChatId());
-            //Refresh treeKiller task
-            treeKillerMap.get(update.getMessage().getChatId()).refreshKillTime();
-        } else {
-            //if in HashMap no tree with this chatIp
-            //Create tree
-            tree = new Tree(requestService);
-            chatTreeMap.put(update.getMessage().getChatId(), tree);
-            //Set Task to kill chat
-            treeKillerMap.put(update.getMessage().getChatId(),
-                    new TreeKiller(update.getMessage().getChatId(), this));
-        }
+        Long chatId = update.getMessage().getChatId();
+        Tree tree = chatTreeMap.computeIfAbsent(chatId,
+                key -> new Tree(requestService));
+        treeKillerMap.computeIfPresent(chatId,
+                (key, treeKiller) -> {
+                    treeKiller.refreshKillTime();
+                    return treeKiller;
+                });
 
         return tree.handle(update);
     }
