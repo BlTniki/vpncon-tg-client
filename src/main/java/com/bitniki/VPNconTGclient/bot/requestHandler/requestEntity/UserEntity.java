@@ -98,9 +98,8 @@ public class UserEntity {
     @Override
     public String toString() {
         return  "id=" + id +
-                "\nlogin='" + login + '\'' +
-                "\ntelegramId=" + telegramId +
-                "\ntelegramUsername='" + telegramUsername + '\''
-                ;
+                "\nlogin= " + login +
+                "\ntelegramId= " + telegramId +
+                "\ntelegramUsername= " + telegramUsername;
     }
 }

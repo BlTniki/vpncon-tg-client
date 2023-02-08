@@ -53,8 +53,8 @@ public class SubscriptionEntity {
 
     public String describe() {
         return  "Цена в рублях: " + priceInRub +
-                ".\nКол-во доступных конфигов: " + peersAvailable +
-                ".\n Кол-во дней: " + days;
+                ". \nКол-во доступных конфигов: " + peersAvailable +
+                ". \nКол-во дней: " + days;
     }
 
     @Override
