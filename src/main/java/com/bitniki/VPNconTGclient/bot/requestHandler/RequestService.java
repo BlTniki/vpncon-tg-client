@@ -304,6 +304,35 @@ public class RequestService {
     }
 
     /**
+     * Changing user role by activate token
+     * @param userId user id
+     * @param token activate token
+     * @return true if no errors
+     * @throws EntityNotFoundException if no user or activate token is found
+     * @throws RequestService5xxException if some internal error happened
+     */
+    public Boolean useCodeOnServer(String userId, String token)
+            throws EntityNotFoundException, RequestService5xxException {
+        String uri = this.VPNconAddress + "/activate_token/use?user_id=" + userId + "&&token=" + token;
+
+        try {
+            restTemplate.exchange(
+                    uri,
+                    HttpMethod.GET,
+                    new HttpEntity<>(httpHeaders),
+                    String.class
+            );
+        } catch (HttpClientErrorException | HttpServerErrorException e) {
+            if(e.getStatusCode().value() == 404)
+                throw new EntityNotFoundException(e.getMessage());
+            if(e.getStatusCode().is5xxServerError())
+                throw new RequestService5xxException("Problems with server occurred");
+            throw e;
+        }
+        return true;
+    }
+
+    /**
      * Make request for auth token and save it
      * @return token
      */
