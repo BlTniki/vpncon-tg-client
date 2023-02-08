@@ -30,8 +30,8 @@ public class EditPeersBranch extends Branch {
     private PeerEntity peerEntity;
 
     private final String providePeerListText = "Выбери конфиг:";
-    private final String providePeerText = "Твой конфиг:\n%s\nВыбери, что будешь менять";
-    private final String editIpButton = "Изменить peerIp";
+    private final String providePeerText = "Твой конфиг:\n%s";//\nВыбери, что будешь менять";
+    //private final String editIpButton = "Изменить peerIp";
     private final String deleteButton = "Удалить";
     private final String deletePeerText = "Успешно";
 
@@ -98,7 +98,7 @@ public class EditPeersBranch extends Branch {
         );
 
         //Provide buttons
-        sendMessage.setReplyMarkup(makeKeyboardMarkupWithMainButton(editIpButton, deleteButton));
+        sendMessage.setReplyMarkup(makeKeyboardMarkupWithMainButton(deleteButton));//editIpButton, deleteButton));
         responses.add(new Response<>(ResponseType.SendText, sendMessage));
 
         //Provide file
