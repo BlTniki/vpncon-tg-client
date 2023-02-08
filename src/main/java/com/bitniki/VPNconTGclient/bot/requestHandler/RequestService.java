@@ -74,7 +74,35 @@ public class RequestService {
         //Make request
         try {
             response = restTemplate.postForEntity(uri, httpEntity, UserEntity.class);
-        } catch (HttpClientErrorException e) {
+        } catch (HttpClientErrorException | HttpServerErrorException e) {
+            if(e.getStatusCode().value() == 404)
+                throw new UserNotFoundException(e.getMessage());
+            if(e.getStatusCode().is5xxServerError())
+                throw new RequestService5xxException("Problems with server occurred");
+            throw e;
+        }
+        return response.getBody();
+    }
+
+    @SuppressWarnings("UnusedReturnValue")
+    public UserEntity dissociateTelegramIdFromUser(UserEntity userEntity)
+            throws UserNotFoundException, RequestService5xxException {
+        String uri = this.VPNconAddress + "/auth/tg";
+        //Configure request body
+        HttpEntity<UserEntity> httpEntity = makeHttpEntity(userEntity);
+        //Configure response entity
+        ResponseEntity<UserEntity> response;
+
+
+        //Make request
+        try {
+            response = restTemplate.exchange(
+                    uri,
+                    HttpMethod.DELETE,
+                    httpEntity,
+                    UserEntity.class
+            );
+        } catch (HttpClientErrorException | HttpServerErrorException e) {
             if(e.getStatusCode().value() == 404)
                 throw new UserNotFoundException(e.getMessage());
             if(e.getStatusCode().is5xxServerError())
@@ -99,7 +127,7 @@ public class RequestService {
                     httpEntity,
                     UserEntity.class
             );
-        } catch (HttpClientErrorException e) {
+        } catch (HttpClientErrorException | HttpServerErrorException e) {
             if (e.getStatusCode().value() == 400)
                 throw new UserValidationFailedException(e.getMessage());
             if(e.getStatusCode().is5xxServerError())
@@ -366,6 +394,7 @@ public class RequestService {
      * @throws EntityNotFoundException if no user or activate token is found
      * @throws RequestService5xxException if some internal error happened
      */
+    @SuppressWarnings("UnusedReturnValue")
     public Boolean useCodeOnServer(String userId, String token)
             throws EntityNotFoundException, RequestService5xxException {
         String uri = this.VPNconAddress + "/activate_token/use?user_id=" + userId + "&&token=" + token;
