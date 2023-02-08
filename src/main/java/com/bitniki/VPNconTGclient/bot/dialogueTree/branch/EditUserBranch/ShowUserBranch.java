@@ -25,8 +25,7 @@ public class ShowUserBranch extends Branch {
 
     private final String editUserButton = "Изменить данные";
     private final String enterCodeButton = "Ввести промокод";
-    private final String logoutButton = "Разлогиниться";
-    private final String deleteButton = "Удалить аккаунт";
+    private final String logoutButton = "Выйти из аккаунта";
 
     public ShowUserBranch(Branch prevBranch, RequestService requestService) {
         super(prevBranch, requestService);
@@ -45,16 +44,13 @@ public class ShowUserBranch extends Branch {
         if(branchState.equals(BranchState.WaitingForButtonChoose)) {
             String text = getTextFrom(message);
             if(text.equals(editUserButton)) {
-                return routeToEditUserBranch(message);
+                return routeToEditUserBranch();
             }
             if(text.equals(enterCodeButton)) {
-                return routeToCodeBranch(message);
+                return routeToCodeBranch();
             }
             if(text.equals(logoutButton)) {
-                return routeToLogoutBranch(message);
-            }
-            if(text.equals(deleteButton)) {
-                return routeToDeleteUserBranch(message);
+                return routeToLogoutBranch();
             }
         }
         //If we got here return null
@@ -76,8 +72,7 @@ public class ShowUserBranch extends Branch {
         sendMessage.setReplyMarkup(makeKeyboardMarkupWithMainButton(
                 editUserButton,
                 enterCodeButton,
-                logoutButton,
-                deleteButton
+                logoutButton
                 )
         );
 
@@ -87,7 +82,7 @@ public class ShowUserBranch extends Branch {
         return  responses;
     }
 
-    private List<Response<?>> routeToEditUserBranch(Message message) {
+    private List<Response<?>> routeToEditUserBranch() {
         //Init Responses
         List<Response<?>> responses = new ArrayList<>();
 
@@ -97,7 +92,7 @@ public class ShowUserBranch extends Branch {
         return responses;
     }
 
-    private List<Response<?>> routeToCodeBranch(Message message) {
+    private List<Response<?>> routeToCodeBranch() {
         //Init Responses
         List<Response<?>> responses = new ArrayList<>();
 
@@ -107,22 +102,12 @@ public class ShowUserBranch extends Branch {
         return responses;
     }
 
-    private List<Response<?>> routeToLogoutBranch(Message message) {
+    private List<Response<?>> routeToLogoutBranch() {
         //Init Responses
         List<Response<?>> responses = new ArrayList<>();
 
         //Change branch
         setNextBranch(new LogoutUserBranch(this, requestService));
-
-        return responses;
-    }
-
-    private List<Response<?>> routeToDeleteUserBranch(Message message) {
-        //Init Responses
-        List<Response<?>> responses = new ArrayList<>();
-
-        //Change branch
-        setNextBranch(new DeleteUserBranch(this, requestService));
 
         return responses;
     }
