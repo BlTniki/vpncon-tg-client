@@ -108,8 +108,12 @@ public abstract class Branch {
      * @throws BranchBadUpdateProvidedException if there is no text
      */
     protected String getTextFrom(Message message) throws BranchBadUpdateProvidedException {
-        if(message.hasText()) return message.getText();
-        else throw new BranchBadUpdateProvidedException("there no text!");
+        if(message.hasText() && !message.getText().contains("/")) {
+            return message.getText();
+        }
+        else {
+            throw new BranchBadUpdateProvidedException("there no text!");
+        }
     }
 
     protected ReplyKeyboardMarkup makeKeyboardMarkup(@Nonnull String... buttons) {
