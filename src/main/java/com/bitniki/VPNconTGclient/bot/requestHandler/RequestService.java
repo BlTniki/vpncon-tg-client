@@ -109,6 +109,36 @@ public class RequestService {
         return response.getBody();
     }
 
+    @SuppressWarnings("UnusedReturnValue")
+    public UserEntity updateUserOnServer(String userId, UserEntity userEntity)
+            throws UserValidationFailedException, RequestService5xxException, UserNotFoundException {
+            String uri = this.VPNconAddress + "/users/"+userId;
+            //Configure request body
+            HttpEntity<UserEntity> httpEntity = makeHttpEntity(userEntity);
+            //Configure response entity
+            ResponseEntity<UserEntity> response;
+
+            //Make request
+            try {
+                response = restTemplate.exchange(
+                        uri,
+                        HttpMethod.PUT,
+                        httpEntity,
+                        UserEntity.class
+                );
+            } catch (HttpClientErrorException | HttpServerErrorException e) {
+                if (e.getStatusCode().value() == 400)
+                    throw new UserValidationFailedException(e.getMessage());
+                if (e.getStatusCode().value() == 404)
+                    throw new UserNotFoundException(e.getMessage());
+                if(e.getStatusCode().is5xxServerError())
+                    throw new RequestService5xxException("Problems with server occurred");
+                throw e;
+            }
+            return response.getBody();
+    }
+
+
     public List<HostEntity> getHostsFromServer() throws RequestService5xxException {
         String uri = this.VPNconAddress + "/hosts";
         //Configure response entity
