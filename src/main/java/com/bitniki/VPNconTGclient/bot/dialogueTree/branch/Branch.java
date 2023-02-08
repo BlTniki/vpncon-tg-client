@@ -108,7 +108,7 @@ public abstract class Branch {
      * @throws BranchBadUpdateProvidedException if there is no text
      */
     protected String getTextFrom(Message message) throws BranchBadUpdateProvidedException {
-        if(message.hasText() && !message.getText().contains("/")) {
+        if(message.hasText()) {
             return message.getText();
         }
         else {
