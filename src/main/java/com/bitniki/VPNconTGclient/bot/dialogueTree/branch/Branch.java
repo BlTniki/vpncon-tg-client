@@ -134,7 +134,9 @@ public abstract class Branch {
 
             keyboardRowList.add(keyboardRow);
         }
-        return new ReplyKeyboardMarkup(keyboardRowList);
+        ReplyKeyboardMarkup replyKeyboardMarkup = new ReplyKeyboardMarkup(keyboardRowList);
+        replyKeyboardMarkup.setResizeKeyboard(true);
+        return replyKeyboardMarkup;
     }
 
     protected ReplyKeyboardMarkup makeKeyboardMarkupWithMainButton(String... buttons) {
@@ -154,7 +156,9 @@ public abstract class Branch {
         KeyboardRow mainKeyboardRow = new KeyboardRow();
         mainKeyboardRow.add(returnText);
         keyboardRowList.add(mainKeyboardRow);
-        return new ReplyKeyboardMarkup(keyboardRowList);
+        ReplyKeyboardMarkup replyKeyboardMarkup = new ReplyKeyboardMarkup(keyboardRowList);
+        replyKeyboardMarkup.setResizeKeyboard(true);
+        return replyKeyboardMarkup;
     }
 
     protected UserEntity loadUserByTelegramId(Long telegramId)
