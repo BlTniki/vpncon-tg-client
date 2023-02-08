@@ -139,6 +139,31 @@ public class RequestService {
     }
 
 
+    @SuppressWarnings("UnusedReturnValue")
+    public UserEntity deleteUserOnServer(String userId)
+            throws UserNotFoundException, RequestService5xxException {
+        String uri = this.VPNconAddress + "/users/" + userId;
+        //Configure response entity
+        ResponseEntity<UserEntity> response;
+
+        //Make request
+        try {
+            response = restTemplate.exchange(
+                    uri,
+                    HttpMethod.DELETE,
+                    new HttpEntity<>(httpHeaders),
+                    UserEntity.class
+            );
+        } catch (HttpClientErrorException | HttpServerErrorException e) {
+            if (e.getStatusCode().value() == 404)
+                throw new UserNotFoundException(e.getMessage());
+            if(e.getStatusCode().is5xxServerError())
+                throw new RequestService5xxException("Problems with server occurred");
+            throw e;
+        }
+        return response.getBody();
+    }
+
     public List<HostEntity> getHostsFromServer() throws RequestService5xxException {
         String uri = this.VPNconAddress + "/hosts";
         //Configure response entity
