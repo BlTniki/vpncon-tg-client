@@ -1,5 +1,6 @@
 package com.bitniki.VPNconTGclient.bot.dialogueTree.branch;
 
+import com.bitniki.VPNconTGclient.bot.dialogueTree.branch.EditUserBranch.ShowUserBranch;
 import com.bitniki.VPNconTGclient.bot.dialogueTree.branch.PeerBranches.PeerMenuBranch;
 import com.bitniki.VPNconTGclient.bot.dialogueTree.branch.SubsBranch.SubsBranch;
 import com.bitniki.VPNconTGclient.bot.exception.BranchBadUpdateProvidedException;
@@ -43,9 +44,9 @@ public class MainMenuBranch extends Branch {
 
         //WaitingForButtonChoose State
         if(branchState.equals(BranchState.WaitingForButtonChoose)) {
-//            if(message.getText().equals(editUserText)){
-//
-//            }
+            if(message.getText().equals(editUserText)){
+                return routeToShowUserBranch();
+            }
             if(getTextFrom(message).equals(editPeersText)) {
                 return routeToPeersMenu();
             }
@@ -75,6 +76,16 @@ public class MainMenuBranch extends Branch {
         branchState = BranchState.WaitingForButtonChoose;
 
         return  responses;
+    }
+
+    private List<Response<?>> routeToShowUserBranch() {
+        //Init Responses
+        List<Response<?>> responses = new ArrayList<>();
+
+        //Change branch
+        setNextBranch(new ShowUserBranch(this, requestService));
+
+        return responses;
     }
 
     private List<Response<?>> routeToPeersMenu() {
