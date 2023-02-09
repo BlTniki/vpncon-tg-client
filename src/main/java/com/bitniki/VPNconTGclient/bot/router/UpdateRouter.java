@@ -12,6 +12,7 @@ import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.api.objects.payments.PreCheckoutQuery;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -86,7 +87,7 @@ public class UpdateRouter {
             //Save Cheque
             MailEntity mail = new MailEntity(
                     user,
-                    "User " + user.getLogin() + "Bayed sub with id " + subId
+                    "User " + user.getLogin() + "Bayed sub with id " + subId + "\n at" + LocalDateTime.now()
                     );
             requestService.saveCheque(mail);
 
