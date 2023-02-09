@@ -1,6 +1,7 @@
 package com.bitniki.VPNconTGclient.bot.dialogueTree.branch;
 
 import com.bitniki.VPNconTGclient.bot.dialogueTree.branch.EditUserBranch.ShowUserBranch;
+import com.bitniki.VPNconTGclient.bot.dialogueTree.branch.FAQ.GeneralFaqBranch;
 import com.bitniki.VPNconTGclient.bot.dialogueTree.branch.PeerBranches.PeerMenuBranch;
 import com.bitniki.VPNconTGclient.bot.dialogueTree.branch.SubsBranch.SubsBranch;
 import com.bitniki.VPNconTGclient.bot.exception.BranchBadUpdateProvidedException;
@@ -21,10 +22,11 @@ public class MainMenuBranch extends Branch {
         WaitingForButtonChoose()
     }
     private BranchState branchState;
-    private final String initText = "Выбери ченибуть:";
-    private final String editUserText = "Настрока профиля";
-    private final String editPeersText = "Настройка VPN";
-    private final String subsBranchText = "Оплатить подписку";
+    private final String initText = "Выберите что-нибудь:";
+    private final String editUserButton = "Настрока профиля";
+    private final String editPeersButton = "Настройка VPN";
+    private final String subsBranchButton = "Оплатить подписку";
+    private final String faqButton = "О проекте";
 
     public MainMenuBranch(Branch prevBranch, RequestService requestService) {
         super(prevBranch, requestService);
@@ -44,14 +46,18 @@ public class MainMenuBranch extends Branch {
 
         //WaitingForButtonChoose State
         if(branchState.equals(BranchState.WaitingForButtonChoose)) {
-            if(message.getText().equals(editUserText)){
+            String text = getTextFrom(message);
+            if(text.equals(editUserButton)){
                 return routeToShowUserBranch();
             }
-            if(getTextFrom(message).equals(editPeersText)) {
+            if(text.equals(editPeersButton)) {
                 return routeToPeersMenu();
             }
-            if(getTextFrom(message).equals(subsBranchText)) {
+            if(text.equals(subsBranchButton)) {
                 return routeToSubsBranch();
+            }
+            if(text.equals(faqButton)) {
+                return routeToGeneralFaqBranch();
             }
         }
 
@@ -68,7 +74,7 @@ public class MainMenuBranch extends Branch {
         );
 
         //set nav buttons
-        sendMessage.setReplyMarkup(makeKeyboardMarkup(editUserText, editPeersText, subsBranchText));
+        sendMessage.setReplyMarkup(makeKeyboardMarkup(editUserButton, editPeersButton, subsBranchButton, faqButton));
 
         responses.add(new Response<>(ResponseType.SendText, sendMessage));
 
@@ -104,6 +110,16 @@ public class MainMenuBranch extends Branch {
 
         //Change branch
         setNextBranch(new SubsBranch(this, requestService));
+
+        return responses;
+    }
+
+    private List<Response<?>> routeToGeneralFaqBranch() {
+        //Init Responses
+        List<Response<?>> responses = new ArrayList<>();
+
+        //Change branch
+        setNextBranch(new GeneralFaqBranch(this, requestService));
 
         return responses;
     }
