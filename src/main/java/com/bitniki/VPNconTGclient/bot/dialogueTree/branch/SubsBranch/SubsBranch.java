@@ -49,6 +49,11 @@ public class SubsBranch extends Branch {
     private List<Response<?>> provideSubsList(Message message) throws BranchCriticalException {
         //Init Responses
         List<Response<?>> responses = new ArrayList<>();
+
+        if(userEntity.getSubscription() != null) {
+            responses.addAll(showSubs(message));
+        }
+
         String chatId = message.getChatId().toString();
         //Greet user
         SendMessage sendMessage = new SendMessage(chatId, subsText);
