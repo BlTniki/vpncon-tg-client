@@ -116,22 +116,18 @@ public abstract class Branch {
         }
     }
 
-    protected ReplyKeyboardMarkup makeKeyboardMarkup(@Nonnull String... buttons) {
-        List<String> buttonList = List.of(buttons);
+    protected ReplyKeyboardMarkup makeKeyboardMarkup(int elementsPerRow, @Nonnull String... buttons) {
+        if (elementsPerRow <= 0) {
+            throw new IllegalArgumentException("The number of elements per row must be greater than 0");
+        }
         List<KeyboardRow> keyboardRowList = new ArrayList<>();
 
-        //Make rows of 3 elements
-        for (int i = 0; i < buttons.length; i+=3) {
+        // Make rows with the specified number of elements
+        for (int i = 0; i < buttons.length; i += elementsPerRow) {
             KeyboardRow keyboardRow = new KeyboardRow();
-
-            //If i+3 > buttons.length — rightRange = buttons.length
-            int rightRange = Math.min((i + 3), buttons.length);
-
-            //iterate by sublist from i to right list
-            for (String button: buttonList.subList(i, rightRange)) {
-                keyboardRow.add(new KeyboardButton(button));
+            for (int j = i; j < Math.min(i + elementsPerRow, buttons.length); j++) {
+                keyboardRow.add(new KeyboardButton(buttons[j]));
             }
-
             keyboardRowList.add(keyboardRow);
         }
         ReplyKeyboardMarkup replyKeyboardMarkup = new ReplyKeyboardMarkup(keyboardRowList);
@@ -139,26 +135,35 @@ public abstract class Branch {
         return replyKeyboardMarkup;
     }
 
-    protected ReplyKeyboardMarkup makeKeyboardMarkupWithMainButton(String... buttons) {
+    protected ReplyKeyboardMarkup makeKeyboardMarkup(@Nonnull String... buttons) {
+        return makeKeyboardMarkup(3, buttons);
+    }
+
+    protected ReplyKeyboardMarkup makeKeyboardMarkupWithMainButton(int elementsPerRow, String... buttons) {
+        if (elementsPerRow <= 0) {
+            throw new IllegalArgumentException("The number of elements per row must be greater than 0");
+        }
         List<KeyboardRow> keyboardRowList = new ArrayList<>();
 
-        //Make rows of 3 elements
-        for (int i = 0; i < buttons.length; i+=3) {
+        // Make rows with the specified number of elements
+        for (int i = 0; i < buttons.length; i += elementsPerRow) {
             KeyboardRow keyboardRow = new KeyboardRow();
-            //iterate by sublist from i to right list
-            //If i+3 > buttons.length — rightRange = buttons.length
-            for (int j = i; j < Math.min(i + 3, buttons.length); j++) {
+            for (int j = i; j < Math.min(i + elementsPerRow, buttons.length); j++) {
                 keyboardRow.add(new KeyboardButton(buttons[j]));
             }
             keyboardRowList.add(keyboardRow);
         }
-        //add main menu button
+        // Add the main menu button
         KeyboardRow mainKeyboardRow = new KeyboardRow();
         mainKeyboardRow.add(returnText);
         keyboardRowList.add(mainKeyboardRow);
         ReplyKeyboardMarkup replyKeyboardMarkup = new ReplyKeyboardMarkup(keyboardRowList);
         replyKeyboardMarkup.setResizeKeyboard(true);
         return replyKeyboardMarkup;
+    }
+
+    protected ReplyKeyboardMarkup makeKeyboardMarkupWithMainButton(String... buttons) {
+        return makeKeyboardMarkupWithMainButton(3, buttons);
     }
 
     protected UserEntity loadUserByTelegramId(Long telegramId)
