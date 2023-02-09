@@ -37,8 +37,8 @@ public class CreatePeerBranch extends Branch {
             "\nНапиши число 0, если тебе неважно." +
             "\nНапиши число от 2 до 254 и мы проверим доступность.";
     private final String wrongOctetText = "Число не 0 и не в промежутке от 2 до 254";
-    private final String askConfNameText = "Отлично!\nА теперь придумай название конфигу.\nПодойдёт имя состоящие из латиницы и цифр";
-    private final String showConfText = "Создал! вот он:\n";
+    private final String askConfNameText = "Отлично!\nА теперь придумай название конфигу.\nПодойдёт имя состоящие из латиницы и/или цифр";
+    private final String showConfText = "Создал! Вот он:\n";
 
     public CreatePeerBranch(Branch prevBranch, RequestService requestService) {
         super(prevBranch, requestService);
