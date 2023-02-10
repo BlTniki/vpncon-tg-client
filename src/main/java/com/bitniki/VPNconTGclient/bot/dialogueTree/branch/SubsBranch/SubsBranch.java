@@ -7,11 +7,10 @@ import com.bitniki.VPNconTGclient.bot.requestHandler.RequestService;
 import com.bitniki.VPNconTGclient.bot.requestHandler.requestEntity.SubscriptionEntity;
 import com.bitniki.VPNconTGclient.bot.response.Response;
 import com.bitniki.VPNconTGclient.bot.response.ResponseType;
-import org.telegram.telegrambots.meta.api.methods.invoices.SendInvoice;
+import org.telegram.telegrambots.meta.api.methods.ParseMode;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
-import org.telegram.telegrambots.meta.api.objects.payments.LabeledPrice;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
@@ -26,6 +25,7 @@ public class SubsBranch extends Branch {
     private BranchState branchState = BranchState.InitState;
     private final String showSubsText = "Вот твоя подписка:\n%s\nДата окончания подписки: %s";
     private final String subsText = "Вот доступные тебе подписки";
+    private final String subsCardText = "*Подписка*\n%s\n\nОплата по [ссылке](%s)";
     public SubsBranch(Branch prevBranch, RequestService requestService) {
         super(prevBranch, requestService);
     }
@@ -66,13 +66,15 @@ public class SubsBranch extends Branch {
         } catch (RequestService5xxException e) {
             throw new BranchCriticalException("Critical error occurred");
         }
-        //Make invoices
+        //Make subs cards
         for (SubscriptionEntity subscription: subscriptions) {
-            responses.add(new Response<>(
-                            ResponseType.SendInvoice,
-                            makeRawSubscriptionInvoice(chatId, subscription)
-                    )
-            );
+            SendMessage subsCard = new SendMessage(
+                    chatId,
+                    String.format(subsCardText, subscription.describe(), "google.com")
+                    );
+            subsCard.setParseMode(ParseMode.MARKDOWN);
+            responses.add(new Response<>(ResponseType.SendText, subsCard));
+
         }
         //Change state
         branchState = BranchState.WaitingForPayment;
@@ -95,20 +97,5 @@ public class SubsBranch extends Branch {
         sendMessage.setReplyMarkup(makeKeyboardMarkupWithMainButton());
         responses.add(new Response<>(ResponseType.SendText, sendMessage));
         return responses;
-    }
-
-    private SendInvoice makeRawSubscriptionInvoice(String chatId, SubscriptionEntity subscription) {
-        LabeledPrice price = new LabeledPrice(
-                "Подписка",
-                subscription.getPriceInRub()*100
-        );
-        SendInvoice sendInvoice = new SendInvoice();
-        sendInvoice.setChatId(chatId);
-        sendInvoice.setTitle("Подписка");
-        sendInvoice.setDescription(subscription.describe());
-        sendInvoice.setPayload(subscription.toString());
-        sendInvoice.setCurrency("RUB");
-        sendInvoice.setPrices(List.of(price));
-        return sendInvoice;
     }
 }
