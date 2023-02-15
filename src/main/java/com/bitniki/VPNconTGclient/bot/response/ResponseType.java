@@ -4,6 +4,4 @@ public enum ResponseType {
     SendText(),
     SendPhoto(),
     SendDoc(),
-    SendInvoice(),
-    SendAnswerToInvoice()
 }

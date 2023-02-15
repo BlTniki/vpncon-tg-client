@@ -325,50 +325,6 @@ public class RequestService {
         return List.of(response.getBody());
     }
 
-    public UserEntity addSubToUser(String subId, String userId)
-            throws EntityValidationFailedException, RequestService5xxException, EntityNotFoundException {
-        String uri = this.VPNconAddress + "/subs/manage?subs_id=" + subId + "&&user_id=" + userId;
-        //Configure response entity
-        ResponseEntity<UserEntity> response;
-
-        try {
-            response = restTemplate.exchange(
-                    uri,
-                    HttpMethod.POST,
-                    new HttpEntity<>(httpHeaders),
-                    UserEntity.class
-            );
-        } catch (HttpClientErrorException | HttpServerErrorException e) {
-            if (e.getStatusCode().value() == 400)
-                throw new EntityValidationFailedException(e.getMessage());
-            if(e.getStatusCode().value() == 404)
-                throw new EntityNotFoundException(e.getMessage());
-            if(e.getStatusCode().is5xxServerError())
-                throw new RequestService5xxException("Problems with server occurred");
-            throw e;
-        }
-        return response.getBody();
-    }
-
-    public void saveCheque(MailEntity mail) throws RequestService5xxException {
-        String uri = this.VPNconAddress + "/mail/accountant";
-        //Configure request body
-        HttpEntity<MailEntity> httpEntity = makeHttpEntity(mail);
-
-        try {
-            restTemplate.exchange(
-                    uri,
-                    HttpMethod.POST,
-                    httpEntity,
-                    MailEntity.class
-            );
-        } catch (HttpClientErrorException | HttpServerErrorException e) {
-            if (e.getStatusCode().is5xxServerError())
-                throw new RequestService5xxException("Problems with server occurred");
-            throw e;
-        }
-    }
-
     @SuppressWarnings("DataFlowIssue")
     public List<MailEntity> getMailsFromServer() throws RequestService5xxException {
         String uri = this.VPNconAddress + "/mail/with?forTelegram=true&&isChecked=false";
@@ -420,6 +376,14 @@ public class RequestService {
         return true;
     }
 
+    /**
+     * Compile payment url that routes to server payment
+     * Uses domain so check if domain routes to VPNcon server
+     * @param subsId subscription id
+     * @param userId user id
+     * @return payment url
+     * @throws URISyntaxException if something
+     */
     public String makePaymentUrl(Long subsId, Long userId) throws URISyntaxException {
         return new URIBuilder(VPNconDomain + "/payments/bill")
                 .addParameter("subs_id", subsId.toString())
@@ -479,17 +443,6 @@ public class RequestService {
      * @return Built HttpEntity
      */
     private HttpEntity<PeerEntity> makeHttpEntity(PeerEntity entity) {
-        return new HttpEntity<>(
-                entity,
-                httpHeaders
-        );
-    }
-    /**
-     * Configure request body for mail entity
-     * @param entity — MailEntity
-     * @return Built HttpEntity
-     */
-    private HttpEntity<MailEntity> makeHttpEntity(MailEntity entity) {
         return new HttpEntity<>(
                 entity,
                 httpHeaders

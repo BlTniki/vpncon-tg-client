@@ -19,8 +19,6 @@ public class VPNconBotConfig {
     private String botToken;
     @Value("${tg.botUsername}")
     private String botUsername;
-    @Value("${tg.paymentToken}")
-    private String paymentToken;
 
     @Autowired
     private UpdateRouter updateRouter;
@@ -45,7 +43,7 @@ public class VPNconBotConfig {
 
     @Bean
     public BasicTelegramBot basicTelegramBotBean () {
-        this.bot = new VPNconBot(botToken, botUsername, paymentToken, updateRouter);
+        this.bot = new VPNconBot(botToken, botUsername, updateRouter);
         return bot;
     }
 }
