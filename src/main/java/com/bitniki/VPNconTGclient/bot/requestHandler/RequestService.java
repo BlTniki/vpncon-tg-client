@@ -4,6 +4,7 @@ import com.bitniki.VPNconTGclient.bot.exception.notFoundException.*;
 import com.bitniki.VPNconTGclient.bot.exception.requestHandlerException.*;
 import com.bitniki.VPNconTGclient.bot.exception.validationFailedException.*;
 import com.bitniki.VPNconTGclient.bot.requestHandler.requestEntity.*;
+import org.apache.http.client.utils.URIBuilder;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -16,6 +17,7 @@ import org.telegram.telegrambots.meta.api.objects.InputFile;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
@@ -23,14 +25,16 @@ import java.util.Objects;
 
 public class RequestService {
     private final String VPNconAddress;
+    private final String VPNconDomain;
     private final String botLogin;
     private final String botPassword;
     private final String botToken;
     private final HttpHeaders httpHeaders;
     private final RestTemplate restTemplate;
 
-    public RequestService(String VPNconAddress, String botLogin, String botPassword) {
+    public RequestService(String VPNconAddress, String VPNconDomain, String botLogin, String botPassword) {
         this.VPNconAddress = VPNconAddress;
+        this.VPNconDomain = VPNconDomain;
         this.botLogin = botLogin;
         this.botPassword = botPassword;
         this.restTemplate = new RestTemplate();
@@ -414,6 +418,14 @@ public class RequestService {
             throw e;
         }
         return true;
+    }
+
+    public String makePaymentUrl(Long subsId, Long userId) throws URISyntaxException {
+        return new URIBuilder(VPNconDomain + "/payments/bill")
+                .addParameter("subs_id", subsId.toString())
+                .addParameter("user_id", userId.toString())
+                .build()
+                .toString();
     }
 
     /**

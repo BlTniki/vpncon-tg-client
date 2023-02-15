@@ -9,6 +9,8 @@ import org.springframework.context.annotation.Configuration;
 public class RequestConfig {
     @Value("${VPNconServer.address}")
     private String VPNconAddress;
+    @Value("${VPNconServer.domain}")
+    private String VPNconDomain;
     @Value("${VPNconServer.login}")
     private String botLogin;
     @Value("${VPNconServer.password}")
@@ -19,6 +21,6 @@ public class RequestConfig {
      */
     @Bean
     public RequestService requestServiceBean() {
-        return new RequestService(VPNconAddress, botLogin, botPassword);
+        return new RequestService(VPNconAddress, VPNconDomain, botLogin, botPassword);
     }
 }

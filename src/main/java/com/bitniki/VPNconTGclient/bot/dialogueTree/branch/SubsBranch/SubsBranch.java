@@ -13,6 +13,7 @@ import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
 
 import javax.annotation.Nullable;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -68,9 +69,19 @@ public class SubsBranch extends Branch {
         }
         //Make subs cards
         for (SubscriptionEntity subscription: subscriptions) {
+            //make pay url
+            String payUrl;
+            try {
+                 payUrl = requestService.makePaymentUrl(
+                        subscription.getId(),
+                        userEntity.getId()
+                );
+            } catch (URISyntaxException e) {
+                continue;
+            }
             SendMessage subsCard = new SendMessage(
                     chatId,
-                    String.format(subsCardText, subscription.describe(), "google.com")
+                    String.format(subsCardText, subscription.describe(), payUrl)
                     );
             subsCard.setParseMode(ParseMode.MARKDOWN);
             responses.add(new Response<>(ResponseType.SendText, subsCard));
