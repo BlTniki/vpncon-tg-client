@@ -25,7 +25,7 @@ public class SubsBranch extends Branch {
     }
     private BranchState branchState = BranchState.InitState;
     private final String showSubsText = "Вот твоя подписка:\n%s\nДата окончания подписки: %s";
-    private final String subsText = "Вот доступные тебе подписки";
+    private final String subsText = "Вот доступные тебе подписки.\nПеред совершением оплаты, пожалуйста, ознакомтесь с разделом '*О проекте*'.";
     private final String subsCardText = "*Подписка*\n%s\n\nОплата по [ссылке](%s)";
     public SubsBranch(Branch prevBranch, RequestService requestService) {
         super(prevBranch, requestService);
@@ -58,6 +58,7 @@ public class SubsBranch extends Branch {
         String chatId = message.getChatId().toString();
         //Greet user
         SendMessage sendMessage = new SendMessage(chatId, subsText);
+        sendMessage.setParseMode(ParseMode.MARKDOWN);
         sendMessage.setReplyMarkup(makeKeyboardMarkupWithMainButton());
         responses.add(new Response<>(ResponseType.SendText, sendMessage));
         //Load subs by user role
