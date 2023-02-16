@@ -5,6 +5,7 @@ import com.bitniki.VPNconTGclient.bot.exception.BranchCriticalException;
 import com.bitniki.VPNconTGclient.bot.requestHandler.RequestService;
 import com.bitniki.VPNconTGclient.bot.response.Response;
 import com.bitniki.VPNconTGclient.bot.response.ResponseType;
+import org.springframework.core.io.ClassPathResource;
 import org.telegram.telegrambots.meta.api.methods.ParseMode;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.methods.send.SendPhoto;
@@ -13,7 +14,7 @@ import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
 
 import javax.annotation.Nullable;
-import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -38,7 +39,7 @@ public class AboutSubsBranch extends Branch {
             *Важно отметить*: Если у вас уже есть подписка, и вы оплатите другую. То предыдущая подписка сгорит полностью. Если у вас есть желание поменять подписку, свяжитесь со мной: @BITniki
             """;
 
-    private final String aboutSubsPhotoPath = "src/main/resources/static/image/aboutSubs.png";
+    private final String aboutSubsPhotoPath = "static/image/aboutSubs.png";
 
     public AboutSubsBranch(Branch prevBranch, RequestService requestService) {
         super(prevBranch, requestService);
@@ -57,7 +58,7 @@ public class AboutSubsBranch extends Branch {
         return null;
     }
 
-    private List<Response<?>> provideAnswer(Message message) {
+    private List<Response<?>> provideAnswer(Message message) throws BranchCriticalException {
         //Init Responses
         List<Response<?>> responses = new ArrayList<>();
 
@@ -66,7 +67,13 @@ public class AboutSubsBranch extends Branch {
         sendPhoto.setCaption(aboutSubsText1);
         sendPhoto.setChatId(message.getChatId());
         sendPhoto.setParseMode(ParseMode.MARKDOWN);
-        sendPhoto.setPhoto(new InputFile( new File(aboutSubsPhotoPath)));
+        try {
+            //This is for loading file both on IDE and jar
+            ClassPathResource photoResource = new ClassPathResource(aboutSubsPhotoPath);
+            sendPhoto.setPhoto(new InputFile(photoResource.getFile()));
+        } catch (IOException e) {
+            throw new BranchCriticalException("Cant load " + aboutSubsPhotoPath);
+        }
         responses.add(new Response<>(ResponseType.SendPhoto, sendPhoto));
 
         //Send second message

@@ -5,6 +5,7 @@ import com.bitniki.VPNconTGclient.bot.exception.BranchCriticalException;
 import com.bitniki.VPNconTGclient.bot.requestHandler.RequestService;
 import com.bitniki.VPNconTGclient.bot.response.Response;
 import com.bitniki.VPNconTGclient.bot.response.ResponseType;
+import org.springframework.core.io.ClassPathResource;
 import org.telegram.telegrambots.meta.api.methods.ParseMode;
 import org.telegram.telegrambots.meta.api.methods.send.SendPhoto;
 import org.telegram.telegrambots.meta.api.objects.InputFile;
@@ -12,7 +13,7 @@ import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
 
 import javax.annotation.Nullable;
-import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -28,7 +29,7 @@ public class AboutWireguardBranch extends Branch {
             Скачать *Wireguard* можно как с официального сайта (для ПК), так из AppStore или Google Play (Для смартфонов).
             После установки и запуска откроется главное окно, в котором следует найти кнопку *Добавить туннель* или *Импорт из файла*. Нажать на неё и выбрать конфиг.
             """;
-    private final String aboutWireguardPhotoPath = "src/main/resources/static/image/aboutWireguard.png";
+    private final String aboutWireguardPhotoPath = "static/image/aboutWireguard.png";
 
     public AboutWireguardBranch(Branch prevBranch, RequestService requestService) {
         super(prevBranch, requestService);
@@ -47,14 +48,20 @@ public class AboutWireguardBranch extends Branch {
         return null;
     }
 
-    private List<Response<?>> provideAnswer(Message message) {
+    private List<Response<?>> provideAnswer(Message message) throws BranchCriticalException {
         //Init Responses
         List<Response<?>> responses = new ArrayList<>();
 
         //Send Photo with caption
         SendPhoto sendPhoto = new SendPhoto();
         sendPhoto.setChatId(message.getChatId());
-        sendPhoto.setPhoto(new InputFile( new File(aboutWireguardPhotoPath)));
+        try {
+            //This is for loading file both on IDE and jar
+            ClassPathResource photoResource = new ClassPathResource(aboutWireguardPhotoPath);
+            sendPhoto.setPhoto(new InputFile(photoResource.getFile()));
+        } catch (IOException e) {
+            throw new BranchCriticalException("Cant load " + aboutWireguardPhotoPath);
+        }
         sendPhoto.setCaption(aboutWireguardText);
         //Set Markdown
         sendPhoto.setParseMode(ParseMode.MARKDOWN);
