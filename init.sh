@@ -8,5 +8,5 @@ echo "VPNconServer.address = ${VPNCONSERVER_ADDRESS}" >> BOOT-INF/classes/applic
 echo "VPNconServer.domain = ${VPNCONSERVER_DOMAIN}" >> BOOT-INF/classes/application.properties
 echo "VPNconServer.login = telegramBot" >> BOOT-INF/classes/application.properties
 echo "VPNconServer.password = ${VPNCONSERVER_PASSWORD}" >> BOOT-INF/classes/application.properties
-jar uf vpncon.jar BOOT-INF/classes/application.properties
+jar uf vpnconbot.jar BOOT-INF/classes/application.properties
 exec java -jar vpnconbot.jar
