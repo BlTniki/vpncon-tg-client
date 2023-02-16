@@ -5,8 +5,6 @@ import com.bitniki.VPNconTGclient.bot.exception.BranchCriticalException;
 import com.bitniki.VPNconTGclient.bot.requestHandler.RequestService;
 import com.bitniki.VPNconTGclient.bot.response.Response;
 import com.bitniki.VPNconTGclient.bot.response.ResponseType;
-import org.springframework.core.io.ClassPathResource;
-import org.springframework.util.ResourceUtils;
 import org.telegram.telegrambots.meta.api.methods.ParseMode;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.methods.send.SendPhoto;
@@ -15,9 +13,6 @@ import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
 
 import javax.annotation.Nullable;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
@@ -62,17 +57,18 @@ public class AboutSubsBranch extends Branch {
         return null;
     }
 
-    private List<Response<?>> provideAnswer(Message message) throws BranchCriticalException {
+    private List<Response<?>> provideAnswer(Message message) {
         //Init Responses
         List<Response<?>> responses = new ArrayList<>();
 
         //Send Photo with caption
-        ClassLoader classLoader = getClass().getClassLoader();
-        InputStream photoStream = classLoader.getResourceAsStream("static/image/aboutSubs.png");
         SendPhoto sendPhoto = new SendPhoto();
         sendPhoto.setCaption(aboutSubsText1);
         sendPhoto.setChatId(message.getChatId());
         sendPhoto.setParseMode(ParseMode.MARKDOWN);
+        //load file
+        ClassLoader classLoader = getClass().getClassLoader();
+        InputStream photoStream = classLoader.getResourceAsStream(aboutSubsPhotoPath);
         sendPhoto.setPhoto(new InputFile(photoStream, "aboutSubs.png"));
         responses.add(new Response<>(ResponseType.SendPhoto, sendPhoto));
 
