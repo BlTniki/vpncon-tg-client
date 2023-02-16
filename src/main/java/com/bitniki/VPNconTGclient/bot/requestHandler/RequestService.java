@@ -28,8 +28,8 @@ public class RequestService {
     private final String VPNconDomain;
     private final String botLogin;
     private final String botPassword;
-    private final String botToken;
-    private final HttpHeaders httpHeaders;
+    private String botToken;
+    private HttpHeaders httpHeaders;
     private final RestTemplate restTemplate;
 
     public RequestService(String VPNconAddress, String VPNconDomain, String botLogin, String botPassword) {
@@ -413,6 +413,15 @@ public class RequestService {
             throw e;
         }
         return Objects.requireNonNull(response.getBody()).getToken();
+    }
+
+    /**
+     * Update server auth token and HttpHeader.
+     * Uses by scheduler.
+     */
+    public void refreshBotToken() {
+        this.botToken = SignInAndReturnToken();
+        this.httpHeaders = makeHttpHeaders();
     }
 
     /**
