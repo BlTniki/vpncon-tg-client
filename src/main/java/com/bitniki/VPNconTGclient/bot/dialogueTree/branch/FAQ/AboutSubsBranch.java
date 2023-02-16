@@ -18,6 +18,7 @@ import javax.annotation.Nullable;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -66,17 +67,13 @@ public class AboutSubsBranch extends Branch {
         List<Response<?>> responses = new ArrayList<>();
 
         //Send Photo with caption
-        String aboutSubsPhotoPath = null;
-        try {
-            aboutSubsPhotoPath = ResourceUtils.getFile("classpath:static/image/aboutSubs.png").getAbsolutePath();
-        } catch (FileNotFoundException e) {
-            throw new RuntimeException(e);
-        }
+        ClassLoader classLoader = getClass().getClassLoader();
+        InputStream photoStream = classLoader.getResourceAsStream("static/image/aboutSubs.png");
         SendPhoto sendPhoto = new SendPhoto();
         sendPhoto.setCaption(aboutSubsText1);
         sendPhoto.setChatId(message.getChatId());
         sendPhoto.setParseMode(ParseMode.MARKDOWN);
-        sendPhoto.setPhoto(new InputFile(new File(aboutSubsPhotoPath)));
+        sendPhoto.setPhoto(new InputFile(photoStream, "aboutSubs.png"));
         responses.add(new Response<>(ResponseType.SendPhoto, sendPhoto));
 
         //Send second message
