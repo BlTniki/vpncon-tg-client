@@ -31,7 +31,7 @@ public class EditUserBranch extends Branch {
     private final String editLoginText = "Введи новый логин";
     private final String editPasswordText = "Введи новый пароль";
     private final String editSuccessText = "Успех!";
-    private final String editErrorText = "Похоже ты накосячил, у тебя:\n%s\nПопробуй ещё раз";
+    private final String editErrorText = "Нашёл ошибку:\n%s\nПопробуй ещё раз";
     private final String editLoginButton = "Изменить логин";
     private final String editPasswordButton = "Изменить пароль";
     private final String deleteButton = "Удалить аккаунт";

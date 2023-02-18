@@ -11,6 +11,7 @@ import com.bitniki.VPNconTGclient.bot.response.ResponseType;
 import com.bitniki.VPNconTGclient.bot.exception.BranchBadUpdateProvidedException;
 import com.bitniki.VPNconTGclient.bot.exception.requestHandlerException.RequestService5xxException;
 import com.bitniki.VPNconTGclient.bot.exception.validationFailedException.UserValidationFailedException;
+import org.telegram.telegrambots.meta.api.methods.ParseMode;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
@@ -27,14 +28,14 @@ public class SignUpBranch extends AuthBranch {
     }
     private BranchState branchState = BranchState.InitState;
     private UserEntity userEntity;
-    private final String loginText =    "Придумай себе логин. Он должен быть длиной от 1 до 20 и может состоять из:\n" +
-                                        "Строчного или прописного латинского алфавита\n" +
-                                        "Цифр\n" +
-                                        "Знаков: - _ ."
+    private final String loginText =    "Придумай себе логин. Длиной до 20 символов и может состоять из:\n" +
+                                        "- Заглавного и строчного латинского алфавита\n" +
+                                        "- Цифр\n" +
+                                        "- Знаков: - _ ."
                                         ;
-    private final String passwordText = "Так, а теперь пароль: Он должен быть длиной от 3 символов и должен состоять из:\n" +
-                                        "Строчного и прописного латинского алфавита\n" +
-                                        "Цифр\n" +
+    private final String passwordText = "Так, а теперь пароль. Длиной от 3 символов и *должен* состоять из:\n" +
+                                        "- Строчного и прописного латинского алфавита\n" +
+                                        "- Цифр\n" +
                                         "А также можно добавить другие символы"
                                         ;
     private final String endText = "Создал тебе аккаунт! вот он:\n";
@@ -71,6 +72,7 @@ public class SignUpBranch extends AuthBranch {
 
         //Make Response
         SendMessage sendMessage = new SendMessage(message.getChatId().toString(), loginText);
+        sendMessage.setParseMode(ParseMode.MARKDOWN);
         sendMessage.setReplyMarkup(makeKeyboardMarkupWithMainButton());
         responses.add(new Response<>(ResponseType.SendText, sendMessage));
         this.userEntity = new UserEntity();
@@ -109,7 +111,7 @@ public class SignUpBranch extends AuthBranch {
         try {
             this.userEntity = requestService.createUserOnServer(this.userEntity);
         } catch (UserValidationFailedException e) {
-            throw new UserValidationFailedException("Похоже ты накосячил, у тебя:\n" +
+            throw new UserValidationFailedException("Нашёл ошибку:\n" +
                                                     e.getMessage() +
                                                     "\nПопробуй ещё раз");
         } catch (RequestService5xxException e) {

@@ -24,10 +24,10 @@ public class InitBranch extends AuthBranch {
     }
     private BranchState branchState;
     private UserEntity userEntity;
-    private final String unrecognizedInitText = "Привет! Представься пожалуста.";
+    private final String unrecognizedInitText = "Привет! Представься пожалуйста.";
     private final String recognizedInitText = "Привет, ";
 
-    private final String errorText = "Похоже на внутренюю ошибку бота. " +
+    private final String errorText = "Похоже на внутреннюю ошибку бота. " +
                                      "Напиши мне: @BITniki";
     private final String regButtonText = "Регистрация";
     private final String authButtonText = "Авторизация";

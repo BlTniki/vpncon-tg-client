@@ -33,7 +33,7 @@ public class CreatePeerBranch extends Branch {
 
     private final String hostListText = "Выбери локацию сервера:";
     private final String availablePeersText ="/254 доступно";
-    private final String askPeerIpText = "Веберем тебе айпишник:" +
+    private final String askPeerIpText = "Выберем тебе айпишник:" +
             "\nНапиши число 0, если тебе неважно." +
             "\nНапиши число от 2 до 254 и мы проверим доступность.";
     private final String wrongOctetText = "Число не 0 и не в промежутке от 2 до 254";
@@ -183,7 +183,7 @@ public class CreatePeerBranch extends Branch {
                     peerEntity.getHost().getId() //Host ID
             );
         } catch (EntityValidationFailedException | EntityNotFoundException e) {
-            throw new EntityValidationFailedException("Похоже ты накосячил, у тебя:\n" +
+            throw new EntityValidationFailedException("Нашёл ошибку:\n" +
                                                         e.getMessage() +
                                                         "\nПопробуй ещё раз");
         } catch (RequestService5xxException e) {

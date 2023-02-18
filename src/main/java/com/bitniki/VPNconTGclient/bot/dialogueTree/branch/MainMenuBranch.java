@@ -23,7 +23,7 @@ public class MainMenuBranch extends Branch {
     }
     private BranchState branchState;
     private final String initText = "Выберите что-нибудь:";
-    private final String editUserButton = "Настрока профиля";
+    private final String editUserButton = "Настройка профиля";
     private final String editPeersButton = "Настройка VPN";
     private final String subsBranchButton = "Оплатить подписку";
     private final String faqButton = "О проекте";

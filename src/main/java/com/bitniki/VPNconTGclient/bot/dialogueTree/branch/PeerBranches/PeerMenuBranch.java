@@ -19,7 +19,7 @@ public class PeerMenuBranch extends Branch {
         WaitingForButtonChoose()
     }
     private BranchState branchState;
-    private final String initText = "Итак меню VPN:";
+    private final String initText = "Настройка VPN:";
     private final String createText = "Создать новый конфиг";
     private final String editText = "Показать созданные";
 
