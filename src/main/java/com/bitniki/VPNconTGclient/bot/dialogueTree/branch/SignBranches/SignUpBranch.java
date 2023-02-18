@@ -28,11 +28,10 @@ public class SignUpBranch extends AuthBranch {
     }
     private BranchState branchState = BranchState.InitState;
     private UserEntity userEntity;
-    private final String loginText =    "Придумай себе логин. Длиной до 20 символов и может состоять из:\n" +
-                                        "- Заглавного и строчного латинского алфавита\n" +
-                                        "- Цифр\n" +
-                                        "- Знаков: - _ ."
-                                        ;
+    private final String loginText = "Придумай себе логин. Длиной до 20 символов и может состоять из:\n" +
+            "- Заглавного и строчного латинского алфавита\n" +
+            "- Цифр\n" +
+            "- Знаков: - \\_ .";
     private final String passwordText = "Так, а теперь пароль. Длиной от 3 символов и *должен* состоять из:\n" +
                                         "- Строчного и прописного латинского алфавита\n" +
                                         "- Цифр\n" +
