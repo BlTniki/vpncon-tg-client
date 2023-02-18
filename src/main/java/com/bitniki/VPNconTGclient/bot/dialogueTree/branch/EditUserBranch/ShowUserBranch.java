@@ -63,7 +63,7 @@ public class ShowUserBranch extends Branch {
 
         SendMessage sendMessage = new SendMessage(message.getChatId().toString(),
                 String.format(initText, userEntity,
-                        userEntity.getSubscription().describe(),
+                        userEntity.getSubscription() != null ? userEntity.getSubscription().describe() : "None",
                         userEntity.getSubscriptionExpirationDay()
                 )
         );
