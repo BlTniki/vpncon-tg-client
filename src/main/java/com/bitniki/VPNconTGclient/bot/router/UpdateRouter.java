@@ -32,6 +32,9 @@ public class UpdateRouter {
         Long chatId = update.getMessage().getChatId();
         Tree tree = chatTreeMap.computeIfAbsent(chatId,
                 key -> new Tree(requestService));
+        treeKillerMap.computeIfAbsent(chatId,
+                key -> new TreeKiller(key, this)
+                );
         treeKillerMap.computeIfPresent(chatId,
                 (key, treeKiller) -> {
                     treeKiller.refreshKillTime();
