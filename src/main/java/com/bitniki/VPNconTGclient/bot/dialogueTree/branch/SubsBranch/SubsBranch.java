@@ -25,8 +25,9 @@ public class SubsBranch extends Branch {
     }
     private BranchState branchState = BranchState.InitState;
     private final String showSubsText = "Вот твоя подписка:\n%s\nДата окончания подписки: %s";
-    private final String subsText = "Вот доступные тебе подписки.\nПеред совершением оплаты, пожалуйста, ознакомтесь с разделом '*О проекте*'.";
-    private final String subsCardText = "*Подписка*\n%s\n\nОплата по [ссылке](%s)";
+    //private final String subsText = "Вот доступные тебе подписки.\nПеред совершением оплаты, пожалуйста, ознакомтесь с разделом '*О проекте*'.";
+    private final String subsText = "*!!!К сожалению, возникли проблемы с [QIWI](https://incrussia.ru/news/qiwi-ogranichila-vyvod-sredstv/)!!!*\n\n Поэтому для оплаты подписки прошу писать мне напрямую: @BITniki";
+    private final String subsCardText = "*Подписка*\n%s\n\n*Оплата НЕДОСТУПНА*";
     public SubsBranch(Branch prevBranch, RequestService requestService) {
         super(prevBranch, requestService);
     }
@@ -71,18 +72,18 @@ public class SubsBranch extends Branch {
         //Make subs cards
         for (SubscriptionEntity subscription: subscriptions) {
             //make pay url
-            String payUrl;
-            try {
-                 payUrl = requestService.makePaymentUrl(
-                        subscription.getId(),
-                        userEntity.getId()
-                );
-            } catch (URISyntaxException e) {
-                continue;
-            }
+//            String payUrl;
+//            try {
+//                 payUrl = requestService.makePaymentUrl(
+//                        subscription.getId(),
+//                        userEntity.getId()
+//                );
+//            } catch (URISyntaxException e) {
+//                continue;
+//            }
             SendMessage subsCard = new SendMessage(
                     chatId,
-                    String.format(subsCardText, subscription.describe(), payUrl)
+                    String.format(subsCardText, subscription.describe())//, payUrl)
                     );
             subsCard.setParseMode(ParseMode.MARKDOWN);
             responses.add(new Response<>(ResponseType.SendText, subsCard));
