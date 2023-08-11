@@ -1,10 +1,12 @@
 package com.bitniki.VPNconTGclient.bot.requestHandler.tmp.RequestService;
 
 import com.bitniki.VPNconTGclient.bot.requestHandler.tmp.Model.impl.User;
+import com.bitniki.VPNconTGclient.bot.requestHandler.tmp.Model.impl.UserValidatorRegex;
 import com.bitniki.VPNconTGclient.bot.requestHandler.tmp.ModelForRequest.impl.UserForRequest;
 import com.bitniki.VPNconTGclient.bot.requestHandler.tmp.exception.ModelAlreadyExistException;
 import com.bitniki.VPNconTGclient.bot.requestHandler.tmp.exception.ModelNotFoundException;
 import com.bitniki.VPNconTGclient.bot.requestHandler.tmp.exception.ModelValidationFailedException;
+import com.bitniki.VPNconTGclient.bot.requestHandler.tmp.exception.requestHandler.RequestHandlerException;
 
 public interface UserRequestService {
     /**
@@ -13,7 +15,13 @@ public interface UserRequestService {
      * @return Сущность Юзера.
      * @throws ModelNotFoundException Если юзер не найден по-данному telegramId.
      */
-    User getUserByTelegramId(Long telegramId) throws ModelNotFoundException;
+    User getUserByTelegramId(Long telegramId) throws ModelNotFoundException, RequestHandlerException;
+
+    /**
+     * Получение паттерна валидации для полей юзера с сервера
+     * @return Правила валидации.
+     */
+    UserValidatorRegex getValidatorFields();
 
     /**
      * Создание юзера на сервере.
