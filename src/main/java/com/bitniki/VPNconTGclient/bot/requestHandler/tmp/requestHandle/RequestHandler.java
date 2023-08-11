@@ -56,7 +56,7 @@ public interface RequestHandler {
      * RequestHandler5xxException Если сервер вернул внутреннюю ошибку.
      * RequestHandlerException В случае непредвиденной ошибки.
      */
-    <K extends ModelForRequest, T extends Model> T POST(String endpoint, K requestBody, Class<T> responseBodyClass) throws RequestHandlerException;
+    <K extends ModelForRequest, T> T POST(String endpoint, K requestBody, Class<T> responseBodyClass) throws RequestHandlerException;
 
     /**
      * PUT запрос на сервер.
