@@ -29,7 +29,7 @@ public interface PeerRequestService {
      * @param hostId Id хоста.
      * @return Сущность пира.
      */
-    Peer getPeerByPeerIpAndHostId(String peerIp, Long hostId);
+    Peer getPeerByPeerIpAndHostId(String peerIp, Long hostId) throws ModelNotFoundException;
 
     /**
      * Создание пира.
@@ -54,7 +54,7 @@ public interface PeerRequestService {
      * @return True при деактивации.
      * @throws ModelNotFoundException Если пир не найден.
      */
-    Peer deactivatePeer(Long peerId) throws ModelNotFoundException;
+    Boolean deactivatePeer(Long peerId) throws ModelNotFoundException;
 
     /**
      * Получение файла конфигурации с хоста.
