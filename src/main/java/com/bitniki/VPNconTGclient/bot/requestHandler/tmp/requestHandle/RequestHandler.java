@@ -26,7 +26,7 @@ public interface RequestHandler {
      * RequestHandler5xxException Если сервер вернул внутреннюю ошибку.
      * RequestHandlerException В случае непредвиденной ошибки.
      */
-    <T extends Model> T GET(String endpoint, Class<T> responseBodyClass) throws RequestHandlerException;
+    <T> T GET(String endpoint, Class<T> responseBodyClass) throws RequestHandlerException;
 
     /**
      * DELETE запрос на сервер.
