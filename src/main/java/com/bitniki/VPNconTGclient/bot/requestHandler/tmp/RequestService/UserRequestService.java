@@ -10,6 +10,14 @@ import com.bitniki.VPNconTGclient.bot.requestHandler.tmp.exception.requestHandle
 
 public interface UserRequestService {
     /**
+     * Получение юзера по его логину.
+     * @param login Логин юзера.
+     * @return Сущность юзера.
+     * @throws ModelNotFoundException Если юзер с таким логином не найден.
+     */
+    User getUserByLogin(String login) throws ModelNotFoundException;
+
+    /**
      * Получение юзера с сервера по его telegramId.
      * @param telegramId Телеграмм Id юзера.
      * @return Сущность Юзера.
