@@ -3,10 +3,8 @@ package com.bitniki.VPNconTGclient.bot.requestHandler.tmp.RequestService;
 import com.bitniki.VPNconTGclient.bot.requestHandler.tmp.Model.impl.User;
 import com.bitniki.VPNconTGclient.bot.requestHandler.tmp.Model.impl.UserValidatorRegex;
 import com.bitniki.VPNconTGclient.bot.requestHandler.tmp.ModelForRequest.impl.UserForRequest;
-import com.bitniki.VPNconTGclient.bot.requestHandler.tmp.exception.ModelAlreadyExistException;
 import com.bitniki.VPNconTGclient.bot.requestHandler.tmp.exception.ModelNotFoundException;
 import com.bitniki.VPNconTGclient.bot.requestHandler.tmp.exception.ModelValidationFailedException;
-import com.bitniki.VPNconTGclient.bot.requestHandler.tmp.exception.requestHandler.RequestHandlerException;
 
 public interface UserRequestService {
     /**
@@ -23,7 +21,7 @@ public interface UserRequestService {
      * @return Сущность Юзера.
      * @throws ModelNotFoundException Если юзер не найден по-данному telegramId.
      */
-    User getUserByTelegramId(Long telegramId) throws ModelNotFoundException, RequestHandlerException;
+    User getUserByTelegramId(Long telegramId) throws ModelNotFoundException;
 
     /**
      * Получение паттерна валидации для полей юзера с сервера
@@ -36,9 +34,8 @@ public interface UserRequestService {
      * @param model Необходимые поля для создания. Указать login и password.
      * @return Сущность юзера.
      * @throws ModelValidationFailedException Если поля не прошли валидацию.
-     * @throws ModelAlreadyExistException Если поля не уникальны.
      */
-    User createUserOnServer(UserForRequest model) throws ModelValidationFailedException, ModelAlreadyExistException;
+    User createUserOnServer(UserForRequest model) throws ModelValidationFailedException;
 
     /**
      * Привязка телеграмм аккаунта к юзеру.
@@ -64,10 +61,9 @@ public interface UserRequestService {
      * @param model Поля для обновления.
      * @return Обновлённую сущность юзера.
      * @throws ModelValidationFailedException Если поля не прошли валидацию.
-     * @throws ModelAlreadyExistException Если поля не уникальны.
      * @throws ModelNotFoundException Если юзер с данным Id не найден.
      */
-    User updateUserOnServer(String userId, UserForRequest model) throws ModelValidationFailedException, ModelAlreadyExistException, ModelNotFoundException;
+    User updateUserOnServer(Long userId, UserForRequest model) throws ModelValidationFailedException, ModelNotFoundException;
 
     /**
      * Удаление юзера на сервере.
@@ -75,5 +71,5 @@ public interface UserRequestService {
      * @return Удалённую сущность юзера.
      * @throws ModelNotFoundException Если юзер с данным Id не найден.
      */
-    User deleteUserOnServer(String userId) throws ModelNotFoundException;
+    User deleteUserOnServer(Long userId) throws ModelNotFoundException;
 }
