@@ -9,4 +9,6 @@ import lombok.*;
 @AllArgsConstructor
 @Builder
 public class UserValidatorRegex extends Model {
+    private String login;
+    private String password;
 }
