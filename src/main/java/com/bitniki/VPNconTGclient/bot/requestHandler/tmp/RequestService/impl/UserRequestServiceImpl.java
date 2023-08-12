@@ -1,5 +1,6 @@
 package com.bitniki.VPNconTGclient.bot.requestHandler.tmp.RequestService.impl;
 
+import com.bitniki.VPNconTGclient.bot.requestHandler.tmp.Model.impl.Token;
 import com.bitniki.VPNconTGclient.bot.requestHandler.tmp.Model.impl.UserEntity;
 import com.bitniki.VPNconTGclient.bot.requestHandler.tmp.Model.impl.UserValidatorRegex;
 import com.bitniki.VPNconTGclient.bot.requestHandler.tmp.ModelForRequest.impl.UserForRequest;
@@ -111,5 +112,19 @@ public class UserRequestServiceImpl implements UserRequestService {
         }  catch (RequestHandler404Exception e) {
             throw new ModelNotFoundException("Не смог найти юзера с id %d".formatted(userId));
         }
+    }
+
+    @Override
+    public Boolean isSignInValid(UserForRequest model) {
+        final String ENDPOINT = "/users/login";
+
+        try {
+            requestHandler.POST(ENDPOINT, model, Token.class);
+        } catch (RequestHandler400Exception | RequestHandler404Exception e) {
+            // if we catch those errors that means that sign in failed
+            return Boolean.FALSE;
+        }
+
+        return Boolean.TRUE;
     }
 }

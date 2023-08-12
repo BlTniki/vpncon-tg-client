@@ -72,4 +72,11 @@ public interface UserRequestService {
      * @throws ModelNotFoundException Если юзер с данным Id не найден.
      */
     UserEntity deleteUserOnServer(Long userId) throws ModelNotFoundException;
+
+    /**
+     * Проверяет данные аутентификации на сервере.
+     * @param model Поля login и password.
+     * @return True, если аутентификация прошла успешно. Иначе — False.
+     */
+    Boolean isSignInValid(UserForRequest model);
 }
