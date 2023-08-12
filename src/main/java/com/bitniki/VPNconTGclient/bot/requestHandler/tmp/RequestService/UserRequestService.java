@@ -79,4 +79,11 @@ public interface UserRequestService {
      * @return True, если аутентификация прошла успешно. Иначе — False.
      */
     Boolean isSignInValid(UserForRequest model);
+
+    /**
+     * Проверяет уникальность логина на сервере
+     * @param login Логин юзера.
+     * @return True, если НЕ УНИКАЛЬНА. Иначе — False.
+     */
+    Boolean isLoginIsNotUnique(String login);
 }

@@ -127,4 +127,16 @@ public class UserRequestServiceImpl implements UserRequestService {
 
         return Boolean.TRUE;
     }
+
+    @Override
+    public Boolean isLoginIsNotUnique(String login) {
+        try {
+            getUserByLogin(login);
+        } catch (ModelNotFoundException e) {
+            // if we catch those errors that means that login is unique
+            return Boolean.FALSE;
+        }
+
+        return Boolean.TRUE;
+    }
 }
