@@ -13,6 +13,6 @@ public class Peer extends Model {
     private String peerConfName;
     private String peerIp;
     private Boolean isActivated;
-    private User user;
+    private UserEntity user;
     private Host host;
 }
