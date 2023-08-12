@@ -12,6 +12,6 @@ import lombok.*;
 public class Reminder extends Model {
     private Long id;
     private ReminderType reminderType;
-    private User user;
+    private UserEntity user;
     private String payload;
 }
