@@ -3,10 +3,10 @@ package com.bitniki.VPNconTGclient.bot.dialogueTree.branch.PeerBranches;
 import com.bitniki.VPNconTGclient.bot.dialogueTree.branch.Branch;
 import com.bitniki.VPNconTGclient.bot.exception.BranchBadUpdateProvidedException;
 import com.bitniki.VPNconTGclient.bot.exception.BranchCriticalException;
-import com.bitniki.VPNconTGclient.bot.exception.notFoundException.EntityNotFoundException;
-import com.bitniki.VPNconTGclient.bot.exception.requestHandlerException.RequestService5xxException;
-import com.bitniki.VPNconTGclient.bot.requestHandler.RequestService;
-import com.bitniki.VPNconTGclient.bot.requestHandler.requestEntity.PeerEntity;
+import com.bitniki.VPNconTGclient.bot.requestHandler.tmp.Model.impl.Peer;
+import com.bitniki.VPNconTGclient.bot.requestHandler.tmp.RequestService.RequestServiceFactory;
+import com.bitniki.VPNconTGclient.bot.requestHandler.tmp.exception.ModelNotFoundException;
+import com.bitniki.VPNconTGclient.bot.requestHandler.tmp.exception.requestHandler.RequestHandlerException;
 import com.bitniki.VPNconTGclient.bot.response.Response;
 import com.bitniki.VPNconTGclient.bot.response.ResponseType;
 import org.telegram.telegrambots.meta.api.methods.send.SendDocument;
@@ -27,15 +27,16 @@ public class EditPeersBranch extends Branch {
         WaitingForEditChose()
     }
     private BranchState branchState = BranchState.InitState;
-    private PeerEntity peerEntity;
+    private Peer peerEntity;
 
     private final String providePeerListText = "Выбери конфиг:";
-    private final String providePeerText = "Твой конфиг:\n%s";//\nВыбери, что будешь менять";
-    //private final String editIpButton = "Изменить peerIp";
+    private final String providePeerText = "Твой конфиг:\n%s";
+    private final String activateButton = "Активировать";
+    private final String deactivateButton = "Деактивировать";
     private final String deleteButton = "Удалить";
-    private final String deletePeerText = "Успешно";
+    private final String successText = "Успешно";
 
-    public EditPeersBranch(Branch prevBranch, RequestService requestService) {
+    public EditPeersBranch(Branch prevBranch, RequestServiceFactory requestService) {
         super(prevBranch, requestService);
     }
 
@@ -55,6 +56,12 @@ public class EditPeersBranch extends Branch {
             if(getTextFrom(message).equals(deleteButton)) {
                 return deletePeer(message);
             }
+            if(getTextFrom(message).equals(activateButton)) {
+                return activatePeer(message);
+            }
+            if(getTextFrom(message).equals(deactivateButton)) {
+                return deactivatePeer(message);
+            }
         }
 
         return null;
@@ -69,10 +76,11 @@ public class EditPeersBranch extends Branch {
         );
 
         //Get peer names
-        String[] peerNames = userEntity.getPeers()
+        String[] peerNames = requestService.PEER_REQUEST_SERVICE.getPeersByUserId(userEntity.getId())
                 .stream()
-                .map(PeerEntity::getPeerConfName)
+                .map(Peer::getPeerConfName)
                 .toList().toArray(new String[0]);
+
         //Provide buttons
         sendMessage.setReplyMarkup(makeKeyboardMarkupWithMainButton(peerNames));
         responses.add(new Response<>(ResponseType.SendText, sendMessage));
@@ -88,7 +96,7 @@ public class EditPeersBranch extends Branch {
 
         //Get peer by name or throw exception
         String peerName = getTextFrom(message);
-        peerEntity = userEntity.getPeers().stream()
+        peerEntity = requestService.PEER_REQUEST_SERVICE.getPeersByUserId(userEntity.getId()).stream()
                 .filter(peer -> peer.getPeerConfName().equals(peerName))
                 .findFirst()
                 .orElseThrow(() -> new BranchBadUpdateProvidedException("There no such peer!"));
@@ -98,14 +106,14 @@ public class EditPeersBranch extends Branch {
         );
 
         //Provide buttons
-        sendMessage.setReplyMarkup(makeKeyboardMarkupWithMainButton(deleteButton));//editIpButton, deleteButton));
+        sendMessage.setReplyMarkup(makeKeyboardMarkupWithMainButton(deleteButton));
         responses.add(new Response<>(ResponseType.SendText, sendMessage));
 
         //Provide file
         InputFile file;
         try {
-            file = requestService.getFileFromServer(peerEntity);
-        } catch (RequestService5xxException e) {
+            file = requestService.PEER_REQUEST_SERVICE.getConfigFileFromServer(peerEntity);
+        } catch (RequestHandlerException | ModelNotFoundException e) {
             throw new BranchCriticalException("Ouch");
         }
         SendDocument sendDocument = new SendDocument(message.getChatId().toString(), file);
@@ -121,11 +129,51 @@ public class EditPeersBranch extends Branch {
         List<Response<?>> responses = new ArrayList<>();
 
         try {
-            requestService.deletePeerOnServer(peerEntity);
-        } catch (EntityNotFoundException | RequestService5xxException e) {
+            requestService.PEER_REQUEST_SERVICE.deletePeerOnServer(peerEntity.getId());
+        } catch (RequestHandlerException | ModelNotFoundException e) {
             throw new BranchCriticalException("Some real problems");
         }
-        SendMessage sendMessage = new SendMessage(message.getChatId().toString(), deletePeerText);
+
+        // Make response
+        SendMessage sendMessage = new SendMessage(message.getChatId().toString(), successText);
+        responses.add(new Response<>(ResponseType.SendText, sendMessage));
+        //Route to EditPeerBranch
+        setNextBranch(new EditPeersBranch(this, requestService));
+
+        return responses;
+    }
+
+    private List<Response<?>> activatePeer(Message message) throws BranchCriticalException {
+        //Init Responses
+        List<Response<?>> responses = new ArrayList<>();
+
+        try {
+            requestService.PEER_REQUEST_SERVICE.activatePeer(peerEntity.getId());
+        } catch (RequestHandlerException | ModelNotFoundException e) {
+            throw new BranchCriticalException("Some real problems");
+        }
+
+        // Make response
+        SendMessage sendMessage = new SendMessage(message.getChatId().toString(), successText);
+        responses.add(new Response<>(ResponseType.SendText, sendMessage));
+        //Route to EditPeerBranch
+        setNextBranch(new EditPeersBranch(this, requestService));
+
+        return responses;
+    }
+
+    private List<Response<?>> deactivatePeer(Message message) throws BranchCriticalException {
+        //Init Responses
+        List<Response<?>> responses = new ArrayList<>();
+
+        try {
+            requestService.PEER_REQUEST_SERVICE.deactivatePeer(peerEntity.getId());
+        } catch (RequestHandlerException | ModelNotFoundException e) {
+            throw new BranchCriticalException("Some real problems");
+        }
+
+        // Make response
+        SendMessage sendMessage = new SendMessage(message.getChatId().toString(), successText);
         responses.add(new Response<>(ResponseType.SendText, sendMessage));
         //Route to EditPeerBranch
         setNextBranch(new EditPeersBranch(this, requestService));
