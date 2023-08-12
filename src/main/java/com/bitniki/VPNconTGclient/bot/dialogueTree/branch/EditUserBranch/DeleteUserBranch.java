@@ -3,9 +3,8 @@ package com.bitniki.VPNconTGclient.bot.dialogueTree.branch.EditUserBranch;
 import com.bitniki.VPNconTGclient.bot.dialogueTree.branch.Branch;
 import com.bitniki.VPNconTGclient.bot.dialogueTree.branch.InitBranch;
 import com.bitniki.VPNconTGclient.bot.exception.BranchCriticalException;
-import com.bitniki.VPNconTGclient.bot.exception.notFoundException.UserNotFoundException;
-import com.bitniki.VPNconTGclient.bot.exception.requestHandlerException.RequestService5xxException;
-import com.bitniki.VPNconTGclient.bot.requestHandler.RequestService;
+import com.bitniki.VPNconTGclient.bot.requestHandler.tmp.RequestService.RequestServiceFactory;
+import com.bitniki.VPNconTGclient.bot.requestHandler.tmp.exception.ModelNotFoundException;
 import com.bitniki.VPNconTGclient.bot.response.Response;
 import com.bitniki.VPNconTGclient.bot.response.ResponseType;
 import io.micrometer.common.lang.Nullable;
@@ -29,7 +28,7 @@ public class DeleteUserBranch extends Branch {
     private final String submitText = "Вы успешно удалили аккаунт";
     private final String submitButton = "Да";
 
-    public DeleteUserBranch(Branch prevBranch, RequestService requestService) {
+    public DeleteUserBranch(Branch prevBranch, RequestServiceFactory requestService) {
         super(prevBranch, requestService);
     }
 
@@ -70,10 +69,11 @@ public class DeleteUserBranch extends Branch {
         List<Response<?>> responses = new ArrayList<>();
         //dissociate user on server
         try {
-            requestService.deleteUserOnServer(userEntity.getId().toString());
-        } catch (UserNotFoundException | RequestService5xxException e) {
+            requestService.USER_REQUEST_SERVICE.deleteUserOnServer(userEntity.getId());
+        } catch (ModelNotFoundException e) {
             throw new BranchCriticalException("Internal error");
         }
+
         //Notify user and route to init branch
         SendMessage sendMessage = new SendMessage(message.getChatId().toString(), submitText);
         responses.add(new Response<>(ResponseType.SendText, sendMessage));
