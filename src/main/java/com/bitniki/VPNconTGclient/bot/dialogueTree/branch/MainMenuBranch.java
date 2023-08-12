@@ -5,7 +5,7 @@ import com.bitniki.VPNconTGclient.bot.dialogueTree.branch.FAQ.GeneralFaqBranch;
 import com.bitniki.VPNconTGclient.bot.dialogueTree.branch.PeerBranches.PeerMenuBranch;
 import com.bitniki.VPNconTGclient.bot.dialogueTree.branch.SubsBranch.SubsBranch;
 import com.bitniki.VPNconTGclient.bot.exception.BranchBadUpdateProvidedException;
-import com.bitniki.VPNconTGclient.bot.requestHandler.RequestService;
+import com.bitniki.VPNconTGclient.bot.requestHandler.tmp.RequestService.RequestServiceFactory;
 import com.bitniki.VPNconTGclient.bot.response.Response;
 import com.bitniki.VPNconTGclient.bot.response.ResponseType;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
@@ -28,7 +28,7 @@ public class MainMenuBranch extends Branch {
     private final String subsBranchButton = "Оплатить подписку";
     private final String faqButton = "О проекте";
 
-    public MainMenuBranch(Branch prevBranch, RequestService requestService) {
+    public MainMenuBranch(Branch prevBranch, RequestServiceFactory requestService) {
         super(prevBranch, requestService);
         this.branchState = BranchState.InitState;
     }

@@ -1,13 +1,13 @@
 package com.bitniki.VPNconTGclient.bot.dialogueTree;
 
-import com.bitniki.VPNconTGclient.bot.exception.BranchCriticalException;
-import com.bitniki.VPNconTGclient.bot.exception.validationFailedException.EntityValidationFailedException;
-import com.bitniki.VPNconTGclient.bot.response.Response;
 import com.bitniki.VPNconTGclient.bot.dialogueTree.branch.Branch;
 import com.bitniki.VPNconTGclient.bot.dialogueTree.branch.InitBranch;
-import com.bitniki.VPNconTGclient.bot.requestHandler.RequestService;
-import com.bitniki.VPNconTGclient.bot.response.ResponseType;
 import com.bitniki.VPNconTGclient.bot.exception.BranchBadUpdateProvidedException;
+import com.bitniki.VPNconTGclient.bot.exception.BranchCriticalException;
+import com.bitniki.VPNconTGclient.bot.exception.validationFailedException.EntityValidationFailedException;
+import com.bitniki.VPNconTGclient.bot.requestHandler.tmp.RequestService.RequestServiceFactory;
+import com.bitniki.VPNconTGclient.bot.response.Response;
+import com.bitniki.VPNconTGclient.bot.response.ResponseType;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Update;
 
@@ -18,13 +18,13 @@ import java.util.List;
 @SuppressWarnings("FieldCanBeLocal")
 public class Tree {
     private Branch currentBranch;
-    private final RequestService requestService;
+    private final RequestServiceFactory requestService;
     private int badRequestCount;
 
     private final String criticalErrorText = "Что-то пошло не так. Давай начнём сначала\n"
             + "Напиши мне: @BITniki";
 
-    public Tree(RequestService requestService) {
+    public Tree(RequestServiceFactory requestService) {
         this.requestService = requestService;
         this.currentBranch = new InitBranch(null, requestService);
     }
@@ -46,7 +46,7 @@ public class Tree {
             try {
                 currentBranch.setNextBranch(
                         currentBranch.getClass().getConstructor(
-                                Branch.class, RequestService.class
+                                Branch.class, RequestServiceFactory.class
                         ).newInstance(currentBranch, requestService)
                 );
             } catch (NoSuchMethodException | InvocationTargetException | InstantiationException |
