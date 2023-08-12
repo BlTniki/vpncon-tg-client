@@ -2,7 +2,7 @@ package com.bitniki.VPNconTGclient.bot.dialogueTree.branch;
 
 import com.bitniki.VPNconTGclient.bot.exception.BranchBadUpdateProvidedException;
 import com.bitniki.VPNconTGclient.bot.exception.BranchCriticalException;
-import com.bitniki.VPNconTGclient.bot.requestHandler.RequestService;
+import com.bitniki.VPNconTGclient.bot.requestHandler.tmp.RequestService.RequestServiceFactory;
 import com.bitniki.VPNconTGclient.bot.response.Response;
 import org.telegram.telegrambots.meta.api.objects.Update;
 
@@ -14,7 +14,7 @@ public abstract class AuthBranch extends Branch{
     private final String returnText = "Главная";
     private final String errorText = "Что-то я не смог тебя понять. Попробуй ещё раз. " +
             "Ну или напиши мне: @BITniki";
-    public AuthBranch(Branch prevBranch, RequestService requestService) {
+    public AuthBranch(Branch prevBranch, RequestServiceFactory requestService) {
         super(prevBranch, requestService);
     }
 

@@ -3,10 +3,10 @@ package com.bitniki.VPNconTGclient.bot.dialogueTree.branch;
 import com.bitniki.VPNconTGclient.bot.dialogueTree.branch.SignBranches.SignInBranch;
 import com.bitniki.VPNconTGclient.bot.dialogueTree.branch.SignBranches.SignUpBranch;
 import com.bitniki.VPNconTGclient.bot.exception.BranchBadUpdateProvidedException;
-import com.bitniki.VPNconTGclient.bot.requestHandler.requestEntity.UserEntity;
+import com.bitniki.VPNconTGclient.bot.requestHandler.tmp.Model.impl.UserEntity;
+import com.bitniki.VPNconTGclient.bot.requestHandler.tmp.RequestService.RequestServiceFactory;
 import com.bitniki.VPNconTGclient.bot.response.Response;
 import com.bitniki.VPNconTGclient.bot.response.ResponseType;
-import com.bitniki.VPNconTGclient.bot.requestHandler.RequestService;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
@@ -32,7 +32,7 @@ public class InitBranch extends AuthBranch {
     private final String regButtonText = "Регистрация";
     private final String authButtonText = "Авторизация";
 
-    public InitBranch(Branch prevBranch, RequestService requestService) {
+    public InitBranch(Branch prevBranch, RequestServiceFactory requestService) {
         super(prevBranch, requestService);
         this.branchState = BranchState.InitState;
     }
@@ -71,7 +71,7 @@ public class InitBranch extends AuthBranch {
         List<Response<?>> responses = new ArrayList<>();
         //make hi message
         SendMessage sendMessage = new SendMessage(message.getChatId().toString(),
-                recognizedInitText + userEntity.getTelegramUsername()
+                recognizedInitText + userEntity.getTelegramNickname()
         );
         responses.add(new Response<>(ResponseType.SendText, sendMessage));
         //route to main menu

@@ -1,13 +1,11 @@
 package com.bitniki.VPNconTGclient.bot.dialogueTree.branch;
 
-import com.bitniki.VPNconTGclient.bot.exception.BranchCriticalException;
-import com.bitniki.VPNconTGclient.bot.exception.notFoundException.UserNotFoundException;
-import com.bitniki.VPNconTGclient.bot.exception.requestHandlerException.RequestServiceException;
-import com.bitniki.VPNconTGclient.bot.exception.validationFailedException.UserValidationFailedException;
-import com.bitniki.VPNconTGclient.bot.requestHandler.requestEntity.UserEntity;
-import com.bitniki.VPNconTGclient.bot.response.Response;
-import com.bitniki.VPNconTGclient.bot.requestHandler.RequestService;
 import com.bitniki.VPNconTGclient.bot.exception.BranchBadUpdateProvidedException;
+import com.bitniki.VPNconTGclient.bot.exception.BranchCriticalException;
+import com.bitniki.VPNconTGclient.bot.requestHandler.tmp.Model.impl.UserEntity;
+import com.bitniki.VPNconTGclient.bot.requestHandler.tmp.RequestService.RequestServiceFactory;
+import com.bitniki.VPNconTGclient.bot.requestHandler.tmp.exception.ModelNotFoundException;
+import com.bitniki.VPNconTGclient.bot.response.Response;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMarkup;
@@ -25,17 +23,17 @@ public abstract class Branch {
     private Branch prevBranch;
     private Branch nextBranch;
     private boolean isBranchWantChangeBranch;
-    protected RequestService requestService;
+    protected RequestServiceFactory requestService;
 
     private final String errorText = "Что-то я не смог тебя понять. Попробуй ещё раз. " +
             "Ну или напиши мне: @BITniki";
     protected final String returnText = "Главная";
 
-    public Branch(RequestService requestService) {
+    public Branch(RequestServiceFactory requestService) {
         this.requestService = requestService;
     }
 
-    public Branch(Branch prevBranch, RequestService requestService) {
+    public Branch(Branch prevBranch, RequestServiceFactory requestService) {
         this.prevBranch = prevBranch;
         this.requestService = requestService;
     }
@@ -93,11 +91,11 @@ public abstract class Branch {
         return isBranchWantChangeBranch;
     }
 
-    public RequestService getRequestService() {
+    public RequestServiceFactory getRequestService() {
         return requestService;
     }
 
-    public void setRequestService(RequestService requestService) {
+    public void setRequestService(RequestServiceFactory requestService) {
         this.requestService = requestService;
     }
 
@@ -167,14 +165,14 @@ public abstract class Branch {
     }
 
     protected UserEntity loadUserByTelegramId(Long telegramId)
-            throws RequestServiceException, UserNotFoundException, UserValidationFailedException {
-        return requestService.getUserByTelegramId(telegramId);
+            throws ModelNotFoundException {
+        return requestService.USER_REQUEST_SERVICE.getUserByTelegramId(telegramId);
     }
 
     protected void authorizeUser(Update update) throws BranchCriticalException {
         try {
             userEntity = loadUserByTelegramId(update.getMessage().getFrom().getId());
-        } catch (BranchBadUpdateProvidedException | RequestServiceException e) {
+        } catch (ModelNotFoundException e) {
             throw new BranchCriticalException("Cant authenticate");
         }
     }
