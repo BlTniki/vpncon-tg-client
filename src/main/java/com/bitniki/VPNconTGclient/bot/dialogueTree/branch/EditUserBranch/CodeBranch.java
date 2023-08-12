@@ -3,9 +3,9 @@ package com.bitniki.VPNconTGclient.bot.dialogueTree.branch.EditUserBranch;
 import com.bitniki.VPNconTGclient.bot.dialogueTree.branch.Branch;
 import com.bitniki.VPNconTGclient.bot.exception.BranchBadUpdateProvidedException;
 import com.bitniki.VPNconTGclient.bot.exception.BranchCriticalException;
-import com.bitniki.VPNconTGclient.bot.exception.notFoundException.EntityNotFoundException;
-import com.bitniki.VPNconTGclient.bot.exception.requestHandlerException.RequestService5xxException;
-import com.bitniki.VPNconTGclient.bot.requestHandler.RequestService;
+import com.bitniki.VPNconTGclient.bot.requestHandler.tmp.ModelForRequest.impl.MetacodeForRequest;
+import com.bitniki.VPNconTGclient.bot.requestHandler.tmp.RequestService.RequestServiceFactory;
+import com.bitniki.VPNconTGclient.bot.requestHandler.tmp.exception.ModelNotFoundException;
 import com.bitniki.VPNconTGclient.bot.response.Response;
 import com.bitniki.VPNconTGclient.bot.response.ResponseType;
 import io.micrometer.common.lang.Nullable;
@@ -28,7 +28,7 @@ public class CodeBranch extends Branch{
     private final String errorText = "Неверный промокод, попробуй ещё раз";
     private final String successText = "Успех!";
 
-    public CodeBranch(Branch prevBranch, RequestService requestService) {
+    public CodeBranch(Branch prevBranch, RequestServiceFactory requestService) {
         super(prevBranch, requestService);
     }
 
@@ -68,11 +68,12 @@ public class CodeBranch extends Branch{
         //Use code on server
         String token = getTextFrom(message);
         try {
-            requestService.useCodeOnServer(userEntity.getId().toString(), token);
-        } catch (EntityNotFoundException e) {
+            requestService.METACODE_REQUEST_SERVICE.useCodeOnServerByLogin(
+                    userEntity.getLogin(),
+                    MetacodeForRequest.builder().code(token).build()
+            );
+        } catch (ModelNotFoundException e) {
             throw new BranchBadUpdateProvidedException(errorText);
-        } catch (RequestService5xxException e) {
-            throw new BranchCriticalException("internal error");
         }
 
         //respond
