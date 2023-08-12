@@ -50,10 +50,9 @@ public interface UserRequestService {
      * Отвязка телеграмм аккаунта к юзеру.
      * @param login Логин юзера.
      * @return Обновлённую сущность юзера.
-     * @throws ModelValidationFailedException Если поля не прошли валидацию.
      * @throws ModelNotFoundException Если юзер с данным логином не найден.
      */
-    UserEntity dissociateTelegramIdFromUser(String login) throws ModelValidationFailedException, ModelNotFoundException;
+    UserEntity dissociateTelegramIdFromUser(String login) throws ModelNotFoundException;
 
     /**
      * Обновление юзера на сервере.

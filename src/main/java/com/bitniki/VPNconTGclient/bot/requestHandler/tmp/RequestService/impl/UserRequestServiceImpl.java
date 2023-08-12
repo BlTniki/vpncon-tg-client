@@ -75,14 +75,12 @@ public class UserRequestServiceImpl implements UserRequestService {
     }
 
     @Override
-    public UserEntity dissociateTelegramIdFromUser(String login) throws ModelValidationFailedException, ModelNotFoundException {
+    public UserEntity dissociateTelegramIdFromUser(String login) throws ModelNotFoundException {
         final String ENDPOINT = "/users/tg/" + login;
 
         // dissociate user on server
         try {
             return requestHandler.DELETE(ENDPOINT, UserEntity.class);
-        } catch (RequestHandler400Exception e) {
-            throw new ModelValidationFailedException("Некоторые данные указаны неверно:\n" + e.getMessage());
         } catch (RequestHandler404Exception e) {
             throw new ModelNotFoundException("Не смог найти юзера с логином %s".formatted(login));
         }
