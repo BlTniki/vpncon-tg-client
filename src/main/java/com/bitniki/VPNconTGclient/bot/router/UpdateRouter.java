@@ -1,9 +1,9 @@
 package com.bitniki.VPNconTGclient.bot.router;
 
 import com.bitniki.VPNconTGclient.bot.dialogueTree.Tree;
-import com.bitniki.VPNconTGclient.bot.response.Response;
 import com.bitniki.VPNconTGclient.bot.exception.UpdateRouterException;
-import com.bitniki.VPNconTGclient.bot.requestHandler.RequestService;
+import com.bitniki.VPNconTGclient.bot.requestHandler.tmp.RequestService.RequestServiceFactory;
+import com.bitniki.VPNconTGclient.bot.response.Response;
 import org.telegram.telegrambots.meta.api.objects.Update;
 
 import java.util.HashMap;
@@ -17,9 +17,9 @@ import java.util.List;
 public class UpdateRouter {
     private final HashMap<Long, Tree> chatTreeMap;
     private final HashMap<Long, TreeKiller> treeKillerMap;
-    private final RequestService requestService;
+    private final RequestServiceFactory requestService;
 
-    public UpdateRouter(RequestService requestService) {
+    public UpdateRouter(RequestServiceFactory requestService) {
         this.chatTreeMap = new HashMap<>();
         this.treeKillerMap = new HashMap<>();
         this.requestService = requestService;
