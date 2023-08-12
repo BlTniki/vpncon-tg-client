@@ -2,7 +2,7 @@ package com.bitniki.VPNconTGclient.bot.dialogueTree.branch.FAQ;
 
 import com.bitniki.VPNconTGclient.bot.dialogueTree.branch.Branch;
 import com.bitniki.VPNconTGclient.bot.exception.BranchCriticalException;
-import com.bitniki.VPNconTGclient.bot.requestHandler.RequestService;
+import com.bitniki.VPNconTGclient.bot.requestHandler.tmp.RequestService.RequestServiceFactory;
 import com.bitniki.VPNconTGclient.bot.response.Response;
 import com.bitniki.VPNconTGclient.bot.response.ResponseType;
 import org.telegram.telegrambots.meta.api.methods.ParseMode;
@@ -40,7 +40,7 @@ public class AboutSubsBranch extends Branch {
 
     private final String aboutSubsPhotoPath = "static/image/aboutSubs.png";
 
-    public AboutSubsBranch(Branch prevBranch, RequestService requestService) {
+    public AboutSubsBranch(Branch prevBranch, RequestServiceFactory requestService) {
         super(prevBranch, requestService);
     }
 

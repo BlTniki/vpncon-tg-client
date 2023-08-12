@@ -2,7 +2,7 @@ package com.bitniki.VPNconTGclient.bot.dialogueTree.branch.FAQ;
 
 import com.bitniki.VPNconTGclient.bot.dialogueTree.branch.Branch;
 import com.bitniki.VPNconTGclient.bot.exception.BranchCriticalException;
-import com.bitniki.VPNconTGclient.bot.requestHandler.RequestService;
+import com.bitniki.VPNconTGclient.bot.requestHandler.tmp.RequestService.RequestServiceFactory;
 import com.bitniki.VPNconTGclient.bot.response.Response;
 import com.bitniki.VPNconTGclient.bot.response.ResponseType;
 import org.telegram.telegrambots.meta.api.methods.ParseMode;
@@ -30,7 +30,7 @@ public class AboutWireguardBranch extends Branch {
             """;
     private final String aboutWireguardPhotoPath = "static/image/aboutWireguard.png";
 
-    public AboutWireguardBranch(Branch prevBranch, RequestService requestService) {
+    public AboutWireguardBranch(Branch prevBranch, RequestServiceFactory requestService) {
         super(prevBranch, requestService);
     }
 

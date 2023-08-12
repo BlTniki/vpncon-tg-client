@@ -2,7 +2,7 @@ package com.bitniki.VPNconTGclient.bot.dialogueTree.branch.FAQ;
 
 import com.bitniki.VPNconTGclient.bot.dialogueTree.branch.Branch;
 import com.bitniki.VPNconTGclient.bot.exception.BranchCriticalException;
-import com.bitniki.VPNconTGclient.bot.requestHandler.RequestService;
+import com.bitniki.VPNconTGclient.bot.requestHandler.tmp.RequestService.RequestServiceFactory;
 import com.bitniki.VPNconTGclient.bot.response.Response;
 import com.bitniki.VPNconTGclient.bot.response.ResponseType;
 import org.telegram.telegrambots.meta.api.methods.ParseMode;
@@ -32,7 +32,7 @@ public class GeneralFaqBranch extends Branch {
     private final String aboutCreatePeerButton = "Как создать конфиг?";
     private final String aboutWireguardButton = "Как скачать Wireguard открыть в нём конфиг?";
 
-    public GeneralFaqBranch(Branch prevBranch, RequestService requestService) {
+    public GeneralFaqBranch(Branch prevBranch, RequestServiceFactory requestService) {
         super(prevBranch, requestService);
     }
 
