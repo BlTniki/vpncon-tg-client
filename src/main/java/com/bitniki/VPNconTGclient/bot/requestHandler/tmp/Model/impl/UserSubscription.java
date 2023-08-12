@@ -13,7 +13,7 @@ import java.time.LocalDate;
 public class UserSubscription extends Model {
     private Long id;
 
-    private User user;
+    private UserEntity user;
 
     private Subscription subscription;
 

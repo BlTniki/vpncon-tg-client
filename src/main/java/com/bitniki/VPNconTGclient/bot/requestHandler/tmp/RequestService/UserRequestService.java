@@ -1,6 +1,6 @@
 package com.bitniki.VPNconTGclient.bot.requestHandler.tmp.RequestService;
 
-import com.bitniki.VPNconTGclient.bot.requestHandler.tmp.Model.impl.User;
+import com.bitniki.VPNconTGclient.bot.requestHandler.tmp.Model.impl.UserEntity;
 import com.bitniki.VPNconTGclient.bot.requestHandler.tmp.Model.impl.UserValidatorRegex;
 import com.bitniki.VPNconTGclient.bot.requestHandler.tmp.ModelForRequest.impl.UserForRequest;
 import com.bitniki.VPNconTGclient.bot.requestHandler.tmp.exception.ModelNotFoundException;
@@ -13,7 +13,7 @@ public interface UserRequestService {
      * @return Сущность юзера.
      * @throws ModelNotFoundException Если юзер с таким логином не найден.
      */
-    User getUserByLogin(String login) throws ModelNotFoundException;
+    UserEntity getUserByLogin(String login) throws ModelNotFoundException;
 
     /**
      * Получение юзера с сервера по его telegramId.
@@ -21,7 +21,7 @@ public interface UserRequestService {
      * @return Сущность Юзера.
      * @throws ModelNotFoundException Если юзер не найден по-данному telegramId.
      */
-    User getUserByTelegramId(Long telegramId) throws ModelNotFoundException;
+    UserEntity getUserByTelegramId(Long telegramId) throws ModelNotFoundException;
 
     /**
      * Получение паттерна валидации для полей юзера с сервера
@@ -35,7 +35,7 @@ public interface UserRequestService {
      * @return Сущность юзера.
      * @throws ModelValidationFailedException Если поля не прошли валидацию.
      */
-    User createUserOnServer(UserForRequest model) throws ModelValidationFailedException;
+    UserEntity createUserOnServer(UserForRequest model) throws ModelValidationFailedException;
 
     /**
      * Привязка телеграмм аккаунта к юзеру.
@@ -44,7 +44,7 @@ public interface UserRequestService {
      * @throws ModelValidationFailedException Если поля не прошли валидацию.
      * @throws ModelNotFoundException Если юзер с данным логином не найден.
      */
-    User associateTelegramIdWithUser(UserForRequest model) throws ModelValidationFailedException, ModelNotFoundException;
+    UserEntity associateTelegramIdWithUser(UserForRequest model) throws ModelValidationFailedException, ModelNotFoundException;
 
     /**
      * Отвязка телеграмм аккаунта к юзеру.
@@ -53,7 +53,7 @@ public interface UserRequestService {
      * @throws ModelValidationFailedException Если поля не прошли валидацию.
      * @throws ModelNotFoundException Если юзер с данным логином не найден.
      */
-    User dissociateTelegramIdFromUser(String login) throws ModelValidationFailedException, ModelNotFoundException;
+    UserEntity dissociateTelegramIdFromUser(String login) throws ModelValidationFailedException, ModelNotFoundException;
 
     /**
      * Обновление юзера на сервере.
@@ -63,7 +63,7 @@ public interface UserRequestService {
      * @throws ModelValidationFailedException Если поля не прошли валидацию.
      * @throws ModelNotFoundException Если юзер с данным Id не найден.
      */
-    User updateUserOnServer(Long userId, UserForRequest model) throws ModelValidationFailedException, ModelNotFoundException;
+    UserEntity updateUserOnServer(Long userId, UserForRequest model) throws ModelValidationFailedException, ModelNotFoundException;
 
     /**
      * Удаление юзера на сервере.
@@ -71,5 +71,5 @@ public interface UserRequestService {
      * @return Удалённую сущность юзера.
      * @throws ModelNotFoundException Если юзер с данным Id не найден.
      */
-    User deleteUserOnServer(Long userId) throws ModelNotFoundException;
+    UserEntity deleteUserOnServer(Long userId) throws ModelNotFoundException;
 }

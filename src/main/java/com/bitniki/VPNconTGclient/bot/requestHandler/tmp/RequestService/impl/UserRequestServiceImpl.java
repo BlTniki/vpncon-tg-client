@@ -1,6 +1,6 @@
 package com.bitniki.VPNconTGclient.bot.requestHandler.tmp.RequestService.impl;
 
-import com.bitniki.VPNconTGclient.bot.requestHandler.tmp.Model.impl.User;
+import com.bitniki.VPNconTGclient.bot.requestHandler.tmp.Model.impl.UserEntity;
 import com.bitniki.VPNconTGclient.bot.requestHandler.tmp.Model.impl.UserValidatorRegex;
 import com.bitniki.VPNconTGclient.bot.requestHandler.tmp.ModelForRequest.impl.UserForRequest;
 import com.bitniki.VPNconTGclient.bot.requestHandler.tmp.RequestService.UserRequestService;
@@ -18,23 +18,23 @@ public class UserRequestServiceImpl implements UserRequestService {
     }
 
     @Override
-    public User getUserByLogin(String login) throws ModelNotFoundException {
+    public UserEntity getUserByLogin(String login) throws ModelNotFoundException {
         final String ENDPOINT = "/users/byLogin/" + login;
 
         // check for uniques
         try {
-            return requestHandler.GET(ENDPOINT, User.class);
+            return requestHandler.GET(ENDPOINT, UserEntity.class);
         } catch (RequestHandler404Exception e) {
             throw new ModelNotFoundException("Не смог найти юзера с логином %s".formatted(login));
         }
     }
 
     @Override
-    public User getUserByTelegramId(Long telegramId) throws ModelNotFoundException {
+    public UserEntity getUserByTelegramId(Long telegramId) throws ModelNotFoundException {
         final String ENDPOINT = "/users/tg/" + telegramId;
 
         try {
-            return requestHandler.GET(ENDPOINT, User.class);
+            return requestHandler.GET(ENDPOINT, UserEntity.class);
         } catch (RequestHandler404Exception e) {
             throw new ModelNotFoundException("Не смог найти юзера с telegramId = %d".formatted(telegramId));
         }
@@ -48,24 +48,24 @@ public class UserRequestServiceImpl implements UserRequestService {
     }
 
     @Override
-    public User createUserOnServer(UserForRequest model) throws ModelValidationFailedException {
+    public UserEntity createUserOnServer(UserForRequest model) throws ModelValidationFailedException {
         final String ENDPOINT = "/users";
 
         // create user on server
         try {
-            return requestHandler.POST(ENDPOINT, model, User.class);
+            return requestHandler.POST(ENDPOINT, model, UserEntity.class);
         } catch (RequestHandler400Exception e) {
             throw new ModelValidationFailedException("Некоторые данные указаны неверно:\n" + e.getMessage());
         }
     }
 
     @Override
-    public User associateTelegramIdWithUser(UserForRequest model) throws ModelValidationFailedException, ModelNotFoundException {
+    public UserEntity associateTelegramIdWithUser(UserForRequest model) throws ModelValidationFailedException, ModelNotFoundException {
         final String ENDPOINT = "/users/tg";
 
         // associate user on server
         try {
-            return requestHandler.POST(ENDPOINT, model, User.class);
+            return requestHandler.POST(ENDPOINT, model, UserEntity.class);
         } catch (RequestHandler400Exception e) {
             throw new ModelValidationFailedException("Некоторые данные указаны неверно:\n" + e.getMessage());
         } catch (RequestHandler404Exception e) {
@@ -74,12 +74,12 @@ public class UserRequestServiceImpl implements UserRequestService {
     }
 
     @Override
-    public User dissociateTelegramIdFromUser(String login) throws ModelValidationFailedException, ModelNotFoundException {
+    public UserEntity dissociateTelegramIdFromUser(String login) throws ModelValidationFailedException, ModelNotFoundException {
         final String ENDPOINT = "/users/tg/" + login;
 
         // dissociate user on server
         try {
-            return requestHandler.DELETE(ENDPOINT, User.class);
+            return requestHandler.DELETE(ENDPOINT, UserEntity.class);
         } catch (RequestHandler400Exception e) {
             throw new ModelValidationFailedException("Некоторые данные указаны неверно:\n" + e.getMessage());
         } catch (RequestHandler404Exception e) {
@@ -88,12 +88,12 @@ public class UserRequestServiceImpl implements UserRequestService {
     }
 
     @Override
-    public User updateUserOnServer(Long userId, UserForRequest model) throws ModelValidationFailedException, ModelNotFoundException {
+    public UserEntity updateUserOnServer(Long userId, UserForRequest model) throws ModelValidationFailedException, ModelNotFoundException {
         final String ENDPOINT = "/users/" + userId;
 
         // create user on server
         try {
-            return requestHandler.PUT(ENDPOINT, model, User.class);
+            return requestHandler.PUT(ENDPOINT, model, UserEntity.class);
         } catch (RequestHandler400Exception e) {
             throw new ModelValidationFailedException("Некоторые данные указаны неверно:\n" + e.getMessage());
         } catch (RequestHandler404Exception e) {
@@ -102,12 +102,12 @@ public class UserRequestServiceImpl implements UserRequestService {
     }
 
     @Override
-    public User deleteUserOnServer(Long userId) throws ModelNotFoundException {
+    public UserEntity deleteUserOnServer(Long userId) throws ModelNotFoundException {
         final String ENDPOINT = "/users/" + userId;
 
         // dissociate user on server
         try {
-            return requestHandler.DELETE(ENDPOINT, User.class);
+            return requestHandler.DELETE(ENDPOINT, UserEntity.class);
         }  catch (RequestHandler404Exception e) {
             throw new ModelNotFoundException("Не смог найти юзера с id %d".formatted(userId));
         }
