@@ -39,6 +39,8 @@ public class RequestHandlerImpl implements RequestHandler {
         this.BOT_PASSWORD = BOT_PASSWORD;
 
         this.restTemplate = new RestTemplate();
+
+        SignInAndMakeHeaders();
     }
 
     /**

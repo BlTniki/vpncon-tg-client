@@ -26,7 +26,7 @@ public class SubscriptionRequestServiceImpl implements SubscriptionRequestServic
 
     @Override
     public UserSubscription getUserSubscriptionByUserId(Long userId) throws ModelNotFoundException {
-        final String ENDPOINT = "/subs/" + userId;
+        final String ENDPOINT = "/userSubs/" + userId;
 
         try {
             return requestHandler.GET(ENDPOINT, UserSubscription.class);

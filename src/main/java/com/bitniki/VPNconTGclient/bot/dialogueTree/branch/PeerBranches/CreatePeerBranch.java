@@ -42,6 +42,7 @@ public class CreatePeerBranch extends Branch {
             "\nНапиши число 0, если тебе неважно." +
             "\nНапиши число от 2 до 254 и мы проверим доступность.";
     private final String wrongOctetText = "Число не 0 и не в промежутке от 2 до 254";
+    private final String peerIpAreNotAvailableText = "Этот IP занят(\nВыбери другое число или напиши 0 и подберём тебе свободный";
     private final String askConfNameText = "Отлично!\nА теперь придумай название конфигу.\nПодойдёт имя состоящие из латиницы и/или цифр";
     private final String showConfText = "Создал! Вот он:\n";
 
@@ -184,7 +185,7 @@ public class CreatePeerBranch extends Branch {
 
             // check for peerIp uniques
             if (requestService.PEER_REQUEST_SERVICE.isPeerIpAlreadyExistOnHost(peerIp, peerForRequest.getHostId())) {
-                throw new BranchBadUpdateProvidedException(wrongOctetText);
+                throw new BranchBadUpdateProvidedException(peerIpAreNotAvailableText);
             }
         } else {
             throw new BranchBadUpdateProvidedException(wrongOctetText);

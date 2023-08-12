@@ -26,9 +26,9 @@ public class SubsBranch extends Branch {
     }
     private BranchState branchState = BranchState.InitState;
     private final String showSubsText = "Вот твоя подписка:\n%s\nДата окончания подписки: %s";
-    //private final String subsText = "Вот доступные тебе подписки.\nПеред совершением оплаты, пожалуйста, ознакомтесь с разделом '*О проекте*'.";
-    private final String subsText = "*!!!К сожалению, возникли проблемы с [QIWI](https://incrussia.ru/news/qiwi-ogranichila-vyvod-sredstv/)!!!*\n\n Поэтому для оплаты подписки прошу писать мне напрямую: @BITniki";
-    private final String subsCardText = "*Подписка*\n%s\n\n%s";
+    private final String subsText = "Вот доступные тебе подписки.\nПеред совершением оплаты, пожалуйста, ознакомтесь с разделом '*О проекте*'.";
+//    private final String subsText = "*!!!К сожалению, возникли проблемы с [QIWI](https://incrussia.ru/news/qiwi-ogranichila-vyvod-sredstv/)!!!*\n\n Поэтому для оплаты подписки прошу писать мне напрямую: @BITniki";
+    private final String subsCardText = "*Подписка*\n%s\n\nОплата по [ссылке](%s)";
     public SubsBranch(Branch prevBranch, RequestServiceFactory requestService) {
         super(prevBranch, requestService);
     }

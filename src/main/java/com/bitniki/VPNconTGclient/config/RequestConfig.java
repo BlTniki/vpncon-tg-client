@@ -15,6 +15,8 @@ import org.springframework.scheduling.annotation.Scheduled;
 public class RequestConfig {
     @Value("${VPNconServer.address}")
     private String VPNCON_ADDRESS;
+    @Value("${VPNconServer.domain}")
+    private String VPNCON_DOMAIN;
     @Value("${VPNconServer.login}")
     private String BOT_LOGIN;
     @Value("${VPNconServer.password}")
@@ -42,6 +44,6 @@ public class RequestConfig {
 
     @Bean
     public RequestServiceFactory requestServiceFactoryBean(RequestHandler requestHandler) {
-        return new RequestServiceFactory(requestHandler, VPNCON_ADDRESS);
+        return new RequestServiceFactory(requestHandler, VPNCON_DOMAIN);
     }
 }
