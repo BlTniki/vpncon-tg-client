@@ -6,7 +6,7 @@ import java.util.List;
 
 public interface ReminderRequestService {
     /**
-     * Получает напоминания об оплате с сервера.
+     * Получает непрочитанные напоминания об оплате с сервера.
      * @return Список напоминаний.
      */
     List<Reminder> getRemindersFromServer();
