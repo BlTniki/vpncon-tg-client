@@ -1,5 +1,6 @@
 package com.bitniki.VPNconTGclient.config;
 
+import com.bitniki.VPNconTGclient.bot.requestHandler.tmp.RequestService.RequestServiceFactory;
 import com.bitniki.VPNconTGclient.bot.requestHandler.tmp.exception.requestHandler.RequestHandlerException;
 import com.bitniki.VPNconTGclient.bot.requestHandler.tmp.requestHandle.RequestHandler;
 import com.bitniki.VPNconTGclient.bot.requestHandler.tmp.requestHandle.impl.RequestHandlerImpl;
@@ -21,6 +22,8 @@ public class RequestConfig {
 
     private RequestHandler requestHandler;
 
+    private RequestServiceFactory requestServiceFactory;
+
     @Bean
     public RequestHandler requestHandlerBean() {
         this.requestHandler =  new RequestHandlerImpl(
@@ -39,14 +42,8 @@ public class RequestConfig {
         requestHandler.SignInAndMakeHeaders();
     }
 
-//    private RequestService requestService;
-
-//    /**
-//     * Configure Request bean
-//     */
-//    @Bean
-//    public RequestService requestServiceBean() {
-//        requestService = new RequestService(VPNconAddress, VPNconDomain, botLogin, botPassword);
-//        return requestService;
-//    }
+    @Bean
+    public RequestServiceFactory requestServiceFactoryBean(RequestHandler requestHandler) {
+        return new RequestServiceFactory(requestHandler, VPNCON_ADDRESS);
+    }
 }
