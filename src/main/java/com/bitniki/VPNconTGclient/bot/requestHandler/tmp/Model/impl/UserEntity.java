@@ -9,7 +9,7 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class User extends Model {
+public class UserEntity extends Model {
     private Long id;
 
     private String login;
