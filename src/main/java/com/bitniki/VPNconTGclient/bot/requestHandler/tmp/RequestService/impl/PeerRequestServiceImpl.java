@@ -123,4 +123,16 @@ public class PeerRequestServiceImpl implements PeerRequestService {
             throw new ModelNotFoundException("Пир с id %d не найден".formatted(peerId));
         }
     }
+
+    @Override
+    public Boolean isPeerIpAlreadyExistOnHost(String peerIp, Long hostId) {
+        try {
+            getPeerByPeerIpAndHostId(peerIp, hostId);
+            // on success to load an entity return true
+            return Boolean.TRUE;
+        } catch (ModelNotFoundException e) {
+            // else return false
+            return Boolean.FALSE;
+        }
+    }
 }

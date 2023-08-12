@@ -71,4 +71,12 @@ public interface PeerRequestService {
      * @throws ModelNotFoundException Если пир не найден.
      */
     Peer deletePeerOnServer(Long peerId) throws ModelNotFoundException;
+
+    /**
+     * Проверка занят ли peerIp на хосте
+     * @param peerIp IP пира.
+     * @param hostId Id хоста.
+     * @return True если занят.
+     */
+    Boolean isPeerIpAlreadyExistOnHost(String peerIp, Long hostId);
 }
