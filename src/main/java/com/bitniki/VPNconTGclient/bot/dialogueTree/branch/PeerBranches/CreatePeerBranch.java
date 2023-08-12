@@ -3,12 +3,16 @@ package com.bitniki.VPNconTGclient.bot.dialogueTree.branch.PeerBranches;
 import com.bitniki.VPNconTGclient.bot.dialogueTree.branch.Branch;
 import com.bitniki.VPNconTGclient.bot.exception.BranchBadUpdateProvidedException;
 import com.bitniki.VPNconTGclient.bot.exception.BranchCriticalException;
-import com.bitniki.VPNconTGclient.bot.exception.notFoundException.EntityNotFoundException;
-import com.bitniki.VPNconTGclient.bot.exception.requestHandlerException.RequestService5xxException;
 import com.bitniki.VPNconTGclient.bot.exception.validationFailedException.EntityValidationFailedException;
-import com.bitniki.VPNconTGclient.bot.requestHandler.RequestService;
-import com.bitniki.VPNconTGclient.bot.requestHandler.requestEntity.HostEntity;
-import com.bitniki.VPNconTGclient.bot.requestHandler.requestEntity.PeerEntity;
+import com.bitniki.VPNconTGclient.bot.requestHandler.tmp.Model.impl.Host;
+import com.bitniki.VPNconTGclient.bot.requestHandler.tmp.Model.impl.Peer;
+import com.bitniki.VPNconTGclient.bot.requestHandler.tmp.Model.impl.PeerValidatorRegex;
+import com.bitniki.VPNconTGclient.bot.requestHandler.tmp.ModelForRequest.impl.PeerForRequest;
+import com.bitniki.VPNconTGclient.bot.requestHandler.tmp.RequestService.RequestServiceFactory;
+import com.bitniki.VPNconTGclient.bot.requestHandler.tmp.exception.ModelNotFoundException;
+import com.bitniki.VPNconTGclient.bot.requestHandler.tmp.exception.ModelValidationFailedException;
+import com.bitniki.VPNconTGclient.bot.requestHandler.tmp.exception.requestHandler.RequestHandler5xxException;
+import com.bitniki.VPNconTGclient.bot.requestHandler.tmp.exception.requestHandler.RequestHandlerException;
 import com.bitniki.VPNconTGclient.bot.response.Response;
 import com.bitniki.VPNconTGclient.bot.response.ResponseType;
 import org.telegram.telegrambots.meta.api.methods.send.SendDocument;
@@ -29,8 +33,9 @@ public class CreatePeerBranch extends Branch {
     }
     private BranchState branchState;
 
-    private PeerEntity peerEntity;
-
+    private Peer peer;
+    private PeerForRequest peerForRequest;
+    private final PeerValidatorRegex validator;
     private final String hostListText = "Выбери локацию сервера:";
     private final String availablePeersText ="/254 доступно";
     private final String askPeerIpText = "Выберем тебе айпишник:" +
@@ -40,9 +45,10 @@ public class CreatePeerBranch extends Branch {
     private final String askConfNameText = "Отлично!\nА теперь придумай название конфигу.\nПодойдёт имя состоящие из латиницы и/или цифр";
     private final String showConfText = "Создал! Вот он:\n";
 
-    public CreatePeerBranch(Branch prevBranch, RequestService requestService) {
+    public CreatePeerBranch(Branch prevBranch, RequestServiceFactory requestService) {
         super(prevBranch, requestService);
         this.branchState = BranchState.InitState;
+        this.validator = requestService.PEER_REQUEST_SERVICE.getValidatorFields();
     }
 
     @Override
@@ -83,15 +89,24 @@ public class CreatePeerBranch extends Branch {
         );
 
         //Get host list
-        List<HostEntity> hostList ;
+        List<Host> hostList ;
         try {
-            hostList = requestService.getHostsFromServer();
-        } catch (RequestService5xxException e) {
+            hostList = requestService.HOST_REQUEST_SERVICE.getHostsFromServer();
+        } catch (RequestHandlerException e) {
             throw new BranchCriticalException(e.getMessage());
         }
         String[] hostListNames = hostList
                 .stream()
-                .map(host -> host.getName() + "\n" + host.getAvailablePeersCount() + availablePeersText)
+                .map(host -> {
+                    Integer availablePeersCount;
+                    try {
+                        availablePeersCount = requestService.HOST_REQUEST_SERVICE.countAvailablePeersOnHost(host.getId());
+                    } catch (ModelNotFoundException e) {
+                        throw new RuntimeException(e);
+                    }
+
+                    return host.getName() + "\n" + availablePeersCount + availablePeersText;
+                })
                 .toList()
                 .toArray(new String[0]);
         //set nav buttons
@@ -109,24 +124,30 @@ public class CreatePeerBranch extends Branch {
         //Init Responses
         List<Response<?>> responses = new ArrayList<>();
 
-        //Validate host name and get host entity
+        //Extrude host name
         String hostName = getTextFrom(message).substring(
                 0,
                 getTextFrom(message).indexOf('\n') // Cut available peers text
-                );
+        );
+
         //load host list and find host with given hostName or throw exception
-        HostEntity hostEntity;
+        Host hostEntity;
         try {
-            hostEntity = requestService.getHostsFromServer().stream()
+            hostEntity = requestService.HOST_REQUEST_SERVICE.getHostsFromServer().stream()
                     .filter(host -> host.getName().equals(hostName)).findFirst()
                     .orElseThrow(() -> new BranchBadUpdateProvidedException("No such host"));
-        } catch (RequestService5xxException e) {
+        } catch (RequestHandler5xxException e) {
             throw new BranchCriticalException(e.getMessage());
         }
 
         //init peerEntity and set host
-        peerEntity = new PeerEntity();
-        peerEntity.setHost(hostEntity);
+        peer = new Peer();
+        peerForRequest = PeerForRequest.builder()
+                .hostId(hostEntity.getId())
+                .userId(userEntity.getId())
+                .build();
+        peer.setHost(hostEntity);
+        peer.setUser(this.userEntity);
 
         SendMessage sendMessage = new SendMessage(message.getChatId().toString(), askPeerIpText);
         sendMessage.setReplyMarkup(makeKeyboardMarkupWithMainButton());
@@ -150,10 +171,21 @@ public class CreatePeerBranch extends Branch {
         }
         if(lastOctet == 0) {
             //peerIp will be generated on server
-            peerEntity.setPeerIp(null);
+            peer.setPeerIp(null);
         } else if (lastOctet >= 2 && lastOctet <= 254) {
             //Build peerIp and set to peerEntity
-            peerEntity.setPeerIp("10.8.0." + lastOctet);
+            String hostSubNetPrefix = peer.getHost().getHostInternalNetworkPrefix();
+            hostSubNetPrefix = hostSubNetPrefix.substring(0, hostSubNetPrefix.length() - 1);//cut last octet;
+            String peerIp = hostSubNetPrefix + lastOctet;
+
+            // set to entity
+            peer.setPeerIp(peerIp);
+            peerForRequest.setPeerIp(peerIp);
+
+            // check for peerIp uniques
+            if (requestService.PEER_REQUEST_SERVICE.isPeerIpAlreadyExistOnHost(peerIp, peerForRequest.getHostId())) {
+                throw new BranchBadUpdateProvidedException(wrongOctetText);
+            }
         } else {
             throw new BranchBadUpdateProvidedException(wrongOctetText);
         }
@@ -172,31 +204,42 @@ public class CreatePeerBranch extends Branch {
         //Init Responses
         List<Response<?>> responses = new ArrayList<>();
 
+        // extrude peerConfName
+        String peerConfName = getTextFrom(message);
+
+        // validate peer conf name
+        if (validator.isPeerConfNameNotValid(peerConfName)) {
+            throw new BranchBadUpdateProvidedException("Название конфига некорректно, давай ещё раз");
+        }
+
         //Set conf name to peerEntity
-        peerEntity.setPeerConfName(getTextFrom(message));
+        peer.setPeerConfName(getTextFrom(message));
+        peerForRequest.setPeerConfName(getTextFrom(message));
 
         //try to create peer on server
         try {
-            peerEntity = requestService.createPeerOnServer(
-                    peerEntity,
-                    userEntity.getId(), //User ID
-                    peerEntity.getHost().getId() //Host ID
+            peer = requestService.PEER_REQUEST_SERVICE.createPeerOnServer(
+                    peerForRequest
             );
-        } catch (EntityValidationFailedException | EntityNotFoundException e) {
+        } catch (ModelNotFoundException | ModelValidationFailedException e) {
             throw new EntityValidationFailedException("Нашёл ошибку:\n" +
-                                                        e.getMessage() +
-                                                        "\nПопробуй ещё раз");
-        } catch (RequestService5xxException e) {
+                    e.getMessage() +
+                    "\nПопробуй ещё раз");
+        } catch (RequestHandlerException e) {
             throw new BranchCriticalException("Server fails");
         }
 
         SendMessage sendMessage = new SendMessage(message.getChatId().toString(), showConfText);
         responses.add(new Response<>(ResponseType.SendText, sendMessage));
+
         //Provide conf file
         SendDocument sendDocument;
         try {
-            sendDocument = new SendDocument(message.getChatId().toString(), requestService.getFileFromServer(peerEntity));
-        } catch (RequestService5xxException e) {
+            sendDocument = new SendDocument(
+                    message.getChatId().toString(),
+                    requestService.PEER_REQUEST_SERVICE.getConfigFileFromServer(peer)
+            );
+        } catch (RequestHandlerException | ModelNotFoundException e) {
             throw new BranchCriticalException("Server fails");
         }
         sendDocument.setReplyMarkup(makeKeyboardMarkupWithMainButton());
