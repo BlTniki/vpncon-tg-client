@@ -31,4 +31,10 @@ public class Subscription extends Model {
      * Длительность подписки в кол-ве дней
      */
     private Integer durationDays = 0;
+
+    public String describe() {
+        return  "Цена в рублях: " + priceInRub +
+                ". \nКол-во доступных конфигов: " + peersAvailable +
+                ". \nКол-во дней: " + durationDays;
+    }
 }
