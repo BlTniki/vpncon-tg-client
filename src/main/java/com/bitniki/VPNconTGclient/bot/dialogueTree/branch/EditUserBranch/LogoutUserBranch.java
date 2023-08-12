@@ -3,9 +3,8 @@ package com.bitniki.VPNconTGclient.bot.dialogueTree.branch.EditUserBranch;
 import com.bitniki.VPNconTGclient.bot.dialogueTree.branch.Branch;
 import com.bitniki.VPNconTGclient.bot.dialogueTree.branch.InitBranch;
 import com.bitniki.VPNconTGclient.bot.exception.BranchCriticalException;
-import com.bitniki.VPNconTGclient.bot.exception.notFoundException.UserNotFoundException;
-import com.bitniki.VPNconTGclient.bot.exception.requestHandlerException.RequestService5xxException;
-import com.bitniki.VPNconTGclient.bot.requestHandler.RequestService;
+import com.bitniki.VPNconTGclient.bot.requestHandler.tmp.RequestService.RequestServiceFactory;
+import com.bitniki.VPNconTGclient.bot.requestHandler.tmp.exception.ModelNotFoundException;
 import com.bitniki.VPNconTGclient.bot.response.Response;
 import com.bitniki.VPNconTGclient.bot.response.ResponseType;
 import io.micrometer.common.lang.Nullable;
@@ -29,7 +28,7 @@ public class LogoutUserBranch extends Branch {
     private final String submitText = "Вы успешно вышли из аккаунта";
     private final String submitButton = "Да";
 
-    public LogoutUserBranch(Branch prevBranch, RequestService requestService) {
+    public LogoutUserBranch(Branch prevBranch, RequestServiceFactory requestService) {
         super(prevBranch, requestService);
     }
 
@@ -68,12 +67,14 @@ public class LogoutUserBranch extends Branch {
     private List<Response<?>> logoutUser(Message message) throws BranchCriticalException {
         //Init Responses
         List<Response<?>> responses = new ArrayList<>();
+
         //dissociate user on server
         try {
-            requestService.dissociateTelegramIdFromUser(userEntity);
-        } catch (UserNotFoundException | RequestService5xxException e) {
-            throw new BranchCriticalException("Internal error");
+            requestService.USER_REQUEST_SERVICE.dissociateTelegramIdFromUser(userEntity.getLogin());
+        } catch (ModelNotFoundException e) {
+            throw new BranchCriticalException(e.getMessage());
         }
+
         //Notify user and route to init branch
         SendMessage sendMessage = new SendMessage(message.getChatId().toString(), submitText);
         responses.add(new Response<>(ResponseType.SendText, sendMessage));
