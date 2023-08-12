@@ -1,10 +1,10 @@
 package com.bitniki.VPNconTGclient.bot.dialogueTree.branch.PeerBranches;
 
 import com.bitniki.VPNconTGclient.bot.dialogueTree.branch.Branch;
-import com.bitniki.VPNconTGclient.bot.requestHandler.RequestService;
+import com.bitniki.VPNconTGclient.bot.exception.BranchBadUpdateProvidedException;
+import com.bitniki.VPNconTGclient.bot.requestHandler.tmp.RequestService.RequestServiceFactory;
 import com.bitniki.VPNconTGclient.bot.response.Response;
 import com.bitniki.VPNconTGclient.bot.response.ResponseType;
-import com.bitniki.VPNconTGclient.bot.exception.BranchBadUpdateProvidedException;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
@@ -23,7 +23,7 @@ public class PeerMenuBranch extends Branch {
     private final String createText = "Создать новый конфиг";
     private final String editText = "Показать созданные";
 
-    public PeerMenuBranch(Branch prevBranch, RequestService requestService) {
+    public PeerMenuBranch(Branch prevBranch, RequestServiceFactory requestService) {
         super(prevBranch, requestService);
         this.branchState = BranchState.InitState;
     }
