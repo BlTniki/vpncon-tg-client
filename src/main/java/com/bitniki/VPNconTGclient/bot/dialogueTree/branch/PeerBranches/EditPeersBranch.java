@@ -106,7 +106,13 @@ public class EditPeersBranch extends Branch {
         );
 
         //Provide buttons
-        sendMessage.setReplyMarkup(makeKeyboardMarkupWithMainButton(deleteButton));
+        String activateDeactivateButton;
+        if (peerEntity.getIsActivated()) {
+            activateDeactivateButton = deactivateButton;
+        } else {
+            activateDeactivateButton = activateButton;
+        }
+        sendMessage.setReplyMarkup(makeKeyboardMarkupWithMainButton(activateDeactivateButton, deleteButton));
         responses.add(new Response<>(ResponseType.SendText, sendMessage));
 
         //Provide file
