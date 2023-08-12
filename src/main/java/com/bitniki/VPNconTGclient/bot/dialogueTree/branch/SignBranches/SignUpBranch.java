@@ -3,14 +3,16 @@ package com.bitniki.VPNconTGclient.bot.dialogueTree.branch.SignBranches;
 import com.bitniki.VPNconTGclient.bot.dialogueTree.branch.AuthBranch;
 import com.bitniki.VPNconTGclient.bot.dialogueTree.branch.Branch;
 import com.bitniki.VPNconTGclient.bot.dialogueTree.branch.InitBranch;
+import com.bitniki.VPNconTGclient.bot.exception.BranchBadUpdateProvidedException;
 import com.bitniki.VPNconTGclient.bot.exception.BranchCriticalException;
-import com.bitniki.VPNconTGclient.bot.requestHandler.RequestService;
-import com.bitniki.VPNconTGclient.bot.requestHandler.requestEntity.UserEntity;
+import com.bitniki.VPNconTGclient.bot.requestHandler.tmp.Model.impl.UserEntity;
+import com.bitniki.VPNconTGclient.bot.requestHandler.tmp.Model.impl.UserValidatorRegex;
+import com.bitniki.VPNconTGclient.bot.requestHandler.tmp.ModelForRequest.impl.UserForRequest;
+import com.bitniki.VPNconTGclient.bot.requestHandler.tmp.RequestService.RequestServiceFactory;
+import com.bitniki.VPNconTGclient.bot.requestHandler.tmp.exception.ModelNotFoundException;
+import com.bitniki.VPNconTGclient.bot.requestHandler.tmp.exception.ModelValidationFailedException;
 import com.bitniki.VPNconTGclient.bot.response.Response;
 import com.bitniki.VPNconTGclient.bot.response.ResponseType;
-import com.bitniki.VPNconTGclient.bot.exception.BranchBadUpdateProvidedException;
-import com.bitniki.VPNconTGclient.bot.exception.requestHandlerException.RequestService5xxException;
-import com.bitniki.VPNconTGclient.bot.exception.validationFailedException.UserValidationFailedException;
 import org.telegram.telegrambots.meta.api.methods.ParseMode;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Message;
@@ -28,6 +30,8 @@ public class SignUpBranch extends AuthBranch {
     }
     private BranchState branchState = BranchState.InitState;
     private UserEntity userEntity;
+    private UserForRequest credentials;
+    private final UserValidatorRegex validator;
     private final String loginText = "Придумай себе логин. Длиной до 20 символов и может состоять из:\n" +
             "- Заглавного и строчного латинского алфавита\n" +
             "- Цифр\n" +
@@ -39,8 +43,9 @@ public class SignUpBranch extends AuthBranch {
                                         ;
     private final String endText = "Создал тебе аккаунт! вот он:\n";
 
-    public SignUpBranch(Branch prevBranch, RequestService requestService) {
+    public SignUpBranch(Branch prevBranch, RequestServiceFactory requestService) {
         super(prevBranch, requestService);
+        this.validator = requestService.USER_REQUEST_SERVICE.getValidatorFields();
     }
 
     @Override
@@ -69,12 +74,15 @@ public class SignUpBranch extends AuthBranch {
         //Init Responses
         List<Response<?>> responses = new ArrayList<>();
 
+        // init entities
+        this.userEntity = new UserEntity();
+        this.credentials = new UserForRequest();
+
         //Make Response
         SendMessage sendMessage = new SendMessage(message.getChatId().toString(), loginText);
         sendMessage.setParseMode(ParseMode.MARKDOWN);
         sendMessage.setReplyMarkup(makeKeyboardMarkupWithMainButton());
         responses.add(new Response<>(ResponseType.SendText, sendMessage));
-        this.userEntity = new UserEntity();
 
         //Change Branch state
         branchState = BranchState.WaitForLogin;
@@ -85,14 +93,29 @@ public class SignUpBranch extends AuthBranch {
         //Init Responses
         List<Response<?>> responses = new ArrayList<>();
 
-        //Make Response
-        userEntity.setLogin(getTextFrom(message));
-        SendMessage sendMessage = new SendMessage(message.getChatId().toString(), passwordText);
-        sendMessage.setReplyMarkup(makeKeyboardMarkupWithMainButton());
-        responses.add(new Response<>(ResponseType.SendText, sendMessage));
+        // valid and set login
+        String login = getTextFrom(message);
+        if (validator.isLoginNotValid(login)) {
+            //Make error Response
+            SendMessage sendMessage = new SendMessage(message.getChatId().toString(), "Неподходящий логин. Давай придумаем другой");
+            sendMessage.setReplyMarkup(makeKeyboardMarkupWithMainButton());
+            responses.add(new Response<>(ResponseType.SendText, sendMessage));
+        } else if (requestService.USER_REQUEST_SERVICE.isLoginIsNotUnique(login)) {
+            //Make error Response
+            SendMessage sendMessage = new SendMessage(message.getChatId().toString(), "Такой логин уже существует. Давай придумаем другой");
+            sendMessage.setReplyMarkup(makeKeyboardMarkupWithMainButton());
+            responses.add(new Response<>(ResponseType.SendText, sendMessage));
+        } else {
+            this.credentials.setLogin(login);
 
-        //Change Branch state
-        branchState = BranchState.WaitForPassword;
+            //Make Response
+            SendMessage sendMessage = new SendMessage(message.getChatId().toString(), passwordText);
+            sendMessage.setReplyMarkup(makeKeyboardMarkupWithMainButton());
+            responses.add(new Response<>(ResponseType.SendText, sendMessage));
+            //Change Branch state
+            this.branchState = BranchState.WaitForPassword;
+        }
+
         return responses;
     }
 
@@ -101,21 +124,33 @@ public class SignUpBranch extends AuthBranch {
         //Init Responses
         List<Response<?>> responses = new ArrayList<>();
 
-        //end build entity
-        userEntity.setPassword(getTextFrom(message));
-        userEntity.setTelegramId(message.getFrom().getId());
-        userEntity.setTelegramUsername(message.getFrom().getFirstName());
+        // valid and set password
+        String password = getTextFrom(message);
+        if (validator.isPasswordNotValid(password)) {
+            //Make error Response
+            SendMessage sendMessage = new SendMessage(message.getChatId().toString(), "Неподходящий пароль. Давай придумаем другой");
+            sendMessage.setReplyMarkup(makeKeyboardMarkupWithMainButton());
+            responses.add(new Response<>(ResponseType.SendText, sendMessage));
+            return responses;
+        }
 
-        //try to create user on server
+        //end build credentials
+        this.credentials.setPassword(password);
+        this.credentials.setTelegramId(message.getFrom().getId());
+        this.credentials.setTelegramNickname(message.getFrom().getUserName());
+
+
+        //try to create user and associate on server
         try {
-            this.userEntity = requestService.createUserOnServer(this.userEntity);
-        } catch (UserValidationFailedException e) {
-            throw new UserValidationFailedException("Нашёл ошибку:\n" +
-                                                    e.getMessage() +
-                                                    "\nПопробуй ещё раз");
-        } catch (RequestService5xxException e) {
+            // create
+            requestService.USER_REQUEST_SERVICE.createUserOnServer(credentials);
+            // associate
+            this.userEntity = requestService.USER_REQUEST_SERVICE.associateTelegramIdWithUser(credentials);
+        } catch (ModelValidationFailedException | ModelNotFoundException e) {
+            // we don't expect any error here, so
             throw new BranchCriticalException(e.getMessage());
         }
+
         //Make Response
         SendMessage sendMessage = new SendMessage(message.getChatId().toString(),
                 endText + "\n" + userEntity);
