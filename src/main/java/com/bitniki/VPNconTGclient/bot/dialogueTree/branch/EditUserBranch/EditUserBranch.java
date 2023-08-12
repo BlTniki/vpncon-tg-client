@@ -3,10 +3,11 @@ package com.bitniki.VPNconTGclient.bot.dialogueTree.branch.EditUserBranch;
 import com.bitniki.VPNconTGclient.bot.dialogueTree.branch.Branch;
 import com.bitniki.VPNconTGclient.bot.dialogueTree.branch.InitBranch;
 import com.bitniki.VPNconTGclient.bot.exception.BranchCriticalException;
-import com.bitniki.VPNconTGclient.bot.exception.requestHandlerException.RequestService5xxException;
 import com.bitniki.VPNconTGclient.bot.exception.validationFailedException.UserValidationFailedException;
-import com.bitniki.VPNconTGclient.bot.requestHandler.RequestService;
-import com.bitniki.VPNconTGclient.bot.requestHandler.requestEntity.UserEntity;
+import com.bitniki.VPNconTGclient.bot.requestHandler.tmp.ModelForRequest.impl.UserForRequest;
+import com.bitniki.VPNconTGclient.bot.requestHandler.tmp.RequestService.RequestServiceFactory;
+import com.bitniki.VPNconTGclient.bot.requestHandler.tmp.exception.ModelNotFoundException;
+import com.bitniki.VPNconTGclient.bot.requestHandler.tmp.exception.ModelValidationFailedException;
 import com.bitniki.VPNconTGclient.bot.response.Response;
 import com.bitniki.VPNconTGclient.bot.response.ResponseType;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
@@ -36,7 +37,7 @@ public class EditUserBranch extends Branch {
     private final String editPasswordButton = "Изменить пароль";
     private final String deleteButton = "Удалить аккаунт";
 
-    public EditUserBranch(Branch prevBranch, RequestService requestService) {
+    public EditUserBranch(Branch prevBranch, RequestServiceFactory requestService) {
         super(prevBranch, requestService);
     }
 
@@ -134,12 +135,12 @@ public class EditUserBranch extends Branch {
         List<Response<?>> responses = new ArrayList<>();
 
         //Update login on server
-        UserEntity newUser = new UserEntity(getTextFrom(message), null);
+        UserForRequest credentials = UserForRequest.builder().login(getTextFrom(message)).build();
         try {
-            requestService.updateUserOnServer(userEntity.getId().toString(),newUser);
-        } catch (UserValidationFailedException e) {
+            requestService.USER_REQUEST_SERVICE.updateUserOnServer(userEntity.getId(), credentials);
+        } catch (ModelValidationFailedException e) {
             throw new UserValidationFailedException(String.format(editErrorText,e.getMessage()));
-        } catch (RequestService5xxException e) {
+        } catch (ModelNotFoundException e) {
             throw new BranchCriticalException(e.getMessage());
         }
 
@@ -154,25 +155,28 @@ public class EditUserBranch extends Branch {
         //Init Responses
         List<Response<?>> responses = new ArrayList<>();
 
-        //Update login on server
-        UserEntity newUser = new UserEntity(null, getTextFrom(message));
+        //Update password on server
+        UserForRequest credentials = UserForRequest.builder().password(getTextFrom(message)).build();
         try {
-            requestService.updateUserOnServer(userEntity.getId().toString(),newUser);
-        } catch (UserValidationFailedException e) {
+            requestService.USER_REQUEST_SERVICE.updateUserOnServer(userEntity.getId(), credentials);
+        } catch (ModelValidationFailedException e) {
             throw new UserValidationFailedException(String.format(editErrorText,e.getMessage()));
-        } catch (RequestService5xxException e) {
+        } catch (ModelNotFoundException e) {
             throw new BranchCriticalException(e.getMessage());
         }
 
-        //notify user on success and logout
+        //notify user on success
         SendMessage sendMessage = new SendMessage(message.getChatId().toString(), editSuccessText);
         responses.add(new Response<>(ResponseType.SendText, sendMessage));
+
+        // and logout
         try {
-            requestService.dissociateTelegramIdFromUser(userEntity);
-        } catch (RequestService5xxException e) {
+            requestService.USER_REQUEST_SERVICE.dissociateTelegramIdFromUser(userEntity.getLogin());
+        } catch (ModelNotFoundException e) {
             throw new BranchCriticalException(e.getMessage());
         }
         setNextBranch(new InitBranch(this, requestService));
+
         return responses;
     }
 }
