@@ -2,9 +2,11 @@ package com.bitniki.VPNconTGclient.bot.dialogueTree.branch.SubsBranch;
 
 import com.bitniki.VPNconTGclient.bot.dialogueTree.branch.Branch;
 import com.bitniki.VPNconTGclient.bot.exception.BranchCriticalException;
-import com.bitniki.VPNconTGclient.bot.exception.requestHandlerException.RequestService5xxException;
-import com.bitniki.VPNconTGclient.bot.requestHandler.RequestService;
-import com.bitniki.VPNconTGclient.bot.requestHandler.requestEntity.SubscriptionEntity;
+import com.bitniki.VPNconTGclient.bot.requestHandler.tmp.Model.impl.Subscription;
+import com.bitniki.VPNconTGclient.bot.requestHandler.tmp.Model.impl.UserSubscription;
+import com.bitniki.VPNconTGclient.bot.requestHandler.tmp.RequestService.RequestServiceFactory;
+import com.bitniki.VPNconTGclient.bot.requestHandler.tmp.exception.ModelNotFoundException;
+import com.bitniki.VPNconTGclient.bot.requestHandler.tmp.exception.requestHandler.RequestHandler5xxException;
 import com.bitniki.VPNconTGclient.bot.response.Response;
 import com.bitniki.VPNconTGclient.bot.response.ResponseType;
 import org.telegram.telegrambots.meta.api.methods.ParseMode;
@@ -13,7 +15,6 @@ import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
 
 import javax.annotation.Nullable;
-import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -27,8 +28,8 @@ public class SubsBranch extends Branch {
     private final String showSubsText = "Вот твоя подписка:\n%s\nДата окончания подписки: %s";
     //private final String subsText = "Вот доступные тебе подписки.\nПеред совершением оплаты, пожалуйста, ознакомтесь с разделом '*О проекте*'.";
     private final String subsText = "*!!!К сожалению, возникли проблемы с [QIWI](https://incrussia.ru/news/qiwi-ogranichila-vyvod-sredstv/)!!!*\n\n Поэтому для оплаты подписки прошу писать мне напрямую: @BITniki";
-    private final String subsCardText = "*Подписка*\n%s\n\n*Оплата НЕДОСТУПНА*";
-    public SubsBranch(Branch prevBranch, RequestService requestService) {
+    private final String subsCardText = "*Подписка*\n%s\n\n%s";
+    public SubsBranch(Branch prevBranch, RequestServiceFactory requestService) {
         super(prevBranch, requestService);
     }
 
@@ -43,8 +44,16 @@ public class SubsBranch extends Branch {
             return provideSubsList(message);
         }
         if(branchState.equals(BranchState.WaitingForPayment)) {
-            return showSubs(message);
+            try {
+                return showSubs(
+                        message,
+                        requestService.SUBS_REQUEST_SERVICE.getUserSubscriptionByUserId(userEntity.getId())
+                );
+            } catch (ModelNotFoundException e) {
+                return provideSubsList(message);
+            }
         }
+
         return null;
     }
 
@@ -52,49 +61,59 @@ public class SubsBranch extends Branch {
         //Init Responses
         List<Response<?>> responses = new ArrayList<>();
 
-        if(userEntity.getSubscription() != null) {
-            responses.addAll(showSubs(message));
+        // show user sub if exist
+        try {
+            responses.addAll(showSubs(
+                    message,
+                    requestService.SUBS_REQUEST_SERVICE.getUserSubscriptionByUserId(userEntity.getId())
+            ));
+        } catch (ModelNotFoundException e) {
+            // do none
         }
 
         String chatId = message.getChatId().toString();
+
         //Greet user
         SendMessage sendMessage = new SendMessage(chatId, subsText);
         sendMessage.setParseMode(ParseMode.MARKDOWN);
         sendMessage.setReplyMarkup(makeKeyboardMarkupWithMainButton());
         responses.add(new Response<>(ResponseType.SendText, sendMessage));
+
         //Load subs by user role
-        List<SubscriptionEntity> subscriptions;
+        List<Subscription> subscriptions;
         try {
-            subscriptions = requestService.getSubsByRole(userEntity.getRole());
-        } catch (RequestService5xxException e) {
+            subscriptions = requestService.SUBS_REQUEST_SERVICE.getSubsByRole(userEntity.getRole());
+        } catch (RequestHandler5xxException e) {
             throw new BranchCriticalException("Critical error occurred");
         }
+
         //Make subs cards
-        for (SubscriptionEntity subscription: subscriptions) {
+        for (Subscription subscription: subscriptions) {
             //make pay url
-//            String payUrl;
-//            try {
-//                 payUrl = requestService.makePaymentUrl(
-//                        subscription.getId(),
-//                        userEntity.getId()
-//                );
-//            } catch (URISyntaxException e) {
-//                continue;
-//            }
+            String payUrl;
+            try {
+                 payUrl = requestService.PAYMENT_REQUEST_SERVICE.makePaymentUrl(
+                         userEntity.getId(),
+                         subscription.getId()
+                );
+            } catch (ModelNotFoundException e) {
+                continue;
+            }
             SendMessage subsCard = new SendMessage(
                     chatId,
-                    String.format(subsCardText, subscription.describe())//, payUrl)
+                    String.format(subsCardText, subscription.describe(), payUrl)
                     );
             subsCard.setParseMode(ParseMode.MARKDOWN);
             responses.add(new Response<>(ResponseType.SendText, subsCard));
 
         }
+
         //Change state
         branchState = BranchState.WaitingForPayment;
         return responses;
     }
 
-    private List<Response<?>> showSubs(Message message) {
+    private List<Response<?>> showSubs(Message message, UserSubscription userSubscription) {
         //Init Responses
         List<Response<?>> responses = new ArrayList<>();
         String chatId = message.getChatId().toString();
@@ -103,8 +122,8 @@ public class SubsBranch extends Branch {
                 chatId,
                 String.format(
                         showSubsText,
-                        userEntity.getSubscription().describe(),
-                        userEntity.getSubscriptionExpirationDay().toString()
+                        userSubscription.getSubscription().describe(),
+                        userSubscription.getExpirationDay().toString()
                 )
         );
         sendMessage.setReplyMarkup(makeKeyboardMarkupWithMainButton());
