@@ -8,11 +8,8 @@ import com.bitniki.VPNconTGclient.bot.requestHandler.tmp.exception.ModelNotFound
 import com.bitniki.VPNconTGclient.bot.requestHandler.tmp.exception.ModelValidationFailedException;
 import com.bitniki.VPNconTGclient.bot.requestHandler.tmp.exception.requestHandler.RequestHandler400Exception;
 import com.bitniki.VPNconTGclient.bot.requestHandler.tmp.exception.requestHandler.RequestHandler404Exception;
-import com.bitniki.VPNconTGclient.bot.requestHandler.tmp.exception.requestHandler.RequestHandlerException;
 import com.bitniki.VPNconTGclient.bot.requestHandler.tmp.requestHandle.RequestHandler;
-import lombok.extern.slf4j.Slf4j;
 
-@Slf4j
 public class UserRequestServiceImpl implements UserRequestService {
     private final RequestHandler requestHandler;
 
@@ -29,9 +26,6 @@ public class UserRequestServiceImpl implements UserRequestService {
             return requestHandler.GET(ENDPOINT, User.class);
         } catch (RequestHandler404Exception e) {
             throw new ModelNotFoundException("Не смог найти юзера с логином %s".formatted(login));
-        } catch (RequestHandlerException e) {
-            log.error("Неожиданная ошибка при попытке получить юзера по логину:\n" + e.getMessage());
-            throw e;
         }
     }
 
@@ -43,9 +37,6 @@ public class UserRequestServiceImpl implements UserRequestService {
             return requestHandler.GET(ENDPOINT, User.class);
         } catch (RequestHandler404Exception e) {
             throw new ModelNotFoundException("Не смог найти юзера с telegramId = %d".formatted(telegramId));
-        } catch (RequestHandlerException e) {
-            log.error("Неожиданная ошибка при попытке получить юзера по telegramId:\n" + e.getMessage());
-            throw e;
         }
     }
 
@@ -53,12 +44,7 @@ public class UserRequestServiceImpl implements UserRequestService {
     public UserValidatorRegex getValidatorFields() {
         final String ENDPOINT = "/users/validator";
 
-        try {
-            return requestHandler.GET(ENDPOINT, UserValidatorRegex.class);
-        } catch (RequestHandlerException e) {
-            log.error("Неожиданная ошибка при попытке получить правила валидации юзера:\n" + e.getMessage());
-            throw e;
-        }
+        return requestHandler.GET(ENDPOINT, UserValidatorRegex.class);
     }
 
     @Override
@@ -70,9 +56,6 @@ public class UserRequestServiceImpl implements UserRequestService {
             return requestHandler.POST(ENDPOINT, model, User.class);
         } catch (RequestHandler400Exception e) {
             throw new ModelValidationFailedException("Некоторые данные указаны неверно:\n" + e.getMessage());
-        } catch (RequestHandlerException e) {
-            log.error("Неожиданная ошибка при попытке создать юзера:\n" + e.getMessage());
-            throw e;
         }
     }
 
@@ -87,9 +70,6 @@ public class UserRequestServiceImpl implements UserRequestService {
             throw new ModelValidationFailedException("Некоторые данные указаны неверно:\n" + e.getMessage());
         } catch (RequestHandler404Exception e) {
             throw new ModelNotFoundException("Не смог найти юзера с логином %s".formatted(model.getLogin()));
-        } catch (RequestHandlerException e) {
-            log.error("Неожиданная ошибка при попытке создать юзера:\n" + e.getMessage());
-            throw e;
         }
     }
 
@@ -104,9 +84,6 @@ public class UserRequestServiceImpl implements UserRequestService {
             throw new ModelValidationFailedException("Некоторые данные указаны неверно:\n" + e.getMessage());
         } catch (RequestHandler404Exception e) {
             throw new ModelNotFoundException("Не смог найти юзера с логином %s".formatted(login));
-        } catch (RequestHandlerException e) {
-            log.error("Неожиданная ошибка при попытке создать юзера:\n" + e.getMessage());
-            throw e;
         }
     }
 
@@ -121,9 +98,6 @@ public class UserRequestServiceImpl implements UserRequestService {
             throw new ModelValidationFailedException("Некоторые данные указаны неверно:\n" + e.getMessage());
         } catch (RequestHandler404Exception e) {
             throw new ModelNotFoundException("Не смог найти юзера с id %d".formatted(userId));
-        } catch (RequestHandlerException e) {
-            log.error("Неожиданная ошибка при попытке создать юзера:\n" + e.getMessage());
-            throw e;
         }
     }
 
@@ -136,9 +110,6 @@ public class UserRequestServiceImpl implements UserRequestService {
             return requestHandler.DELETE(ENDPOINT, User.class);
         }  catch (RequestHandler404Exception e) {
             throw new ModelNotFoundException("Не смог найти юзера с id %d".formatted(userId));
-        } catch (RequestHandlerException e) {
-            log.error("Неожиданная ошибка при попытке создать юзера:\n" + e.getMessage());
-            throw e;
         }
     }
 }

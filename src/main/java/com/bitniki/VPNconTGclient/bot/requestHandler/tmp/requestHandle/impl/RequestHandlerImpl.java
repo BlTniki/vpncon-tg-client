@@ -85,7 +85,7 @@ public class RequestHandlerImpl implements RequestHandler {
     }
 
     @Override
-    public <T extends Model> T GET(String endpoint, Class<T> responseBodyClass) throws RequestHandlerException {
+    public <T> T GET(String endpoint, Class<T> responseBodyClass) throws RequestHandlerException {
         final String URI = this.VPNCON_ADDRESS + endpoint;
 
         try {
@@ -100,8 +100,10 @@ public class RequestHandlerImpl implements RequestHandler {
                 throw new RequestHandler400Exception(e.getMessage());
             if(e.getStatusCode().value() == 404)
                 throw new RequestHandler404Exception(e.getMessage());
-            if(e.getStatusCode().is5xxServerError())
+            if(e.getStatusCode().is5xxServerError()) {
+                log.error("Поймал неожиданную ошибку при попытке совершить GET запрос на " + URI + "\n\n" + e);
                 throw new RequestHandler5xxException("Problems with server occurred");
+            }
             throw e;
         }
     }
@@ -122,14 +124,16 @@ public class RequestHandlerImpl implements RequestHandler {
                 throw new RequestHandler400Exception(e.getMessage());
             if(e.getStatusCode().value() == 404)
                 throw new RequestHandler404Exception(e.getMessage());
-            if(e.getStatusCode().is5xxServerError())
+            if(e.getStatusCode().is5xxServerError()) {
+                log.error("Поймал неожиданную ошибку при попытке совершить DELETE запрос на " + URI + "\n\n" + e);
                 throw new RequestHandler5xxException("Problems with server occurred");
+            }
             throw e;
         }
     }
 
     @Override
-    public <K extends ModelForRequest, T extends Model> T POST(String endpoint, K requestBody, Class<T> responseBodyClass)
+    public <K extends ModelForRequest, T> T POST(String endpoint, K requestBody, Class<T> responseBodyClass)
             throws RequestHandlerException {
         final String URI = this.VPNCON_ADDRESS + endpoint;
 
@@ -145,8 +149,10 @@ public class RequestHandlerImpl implements RequestHandler {
                 throw new RequestHandler400Exception(e.getMessage());
             if(e.getStatusCode().value() == 404)
                 throw new RequestHandler404Exception(e.getMessage());
-            if(e.getStatusCode().is5xxServerError())
+            if(e.getStatusCode().is5xxServerError()) {
+                log.error("Поймал неожиданную ошибку при попытке совершить POST запрос на " + URI + "\n\n" + e);
                 throw new RequestHandler5xxException("Problems with server occurred");
+            }
             throw e;
         }
     }
@@ -168,8 +174,10 @@ public class RequestHandlerImpl implements RequestHandler {
                 throw new RequestHandler400Exception(e.getMessage());
             if(e.getStatusCode().value() == 404)
                 throw new RequestHandler404Exception(e.getMessage());
-            if(e.getStatusCode().is5xxServerError())
+            if(e.getStatusCode().is5xxServerError()) {
+                log.error("Поймал неожиданную ошибку при попытке совершить GET запрос на " + URI + "\n\n" + e);
                 throw new RequestHandler5xxException("Problems with server occurred");
+            }
             throw e;
         }
     }

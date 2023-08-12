@@ -8,16 +8,13 @@ import com.bitniki.VPNconTGclient.bot.requestHandler.tmp.exception.ModelNotFound
 import com.bitniki.VPNconTGclient.bot.requestHandler.tmp.exception.ModelValidationFailedException;
 import com.bitniki.VPNconTGclient.bot.requestHandler.tmp.exception.requestHandler.RequestHandler400Exception;
 import com.bitniki.VPNconTGclient.bot.requestHandler.tmp.exception.requestHandler.RequestHandler404Exception;
-import com.bitniki.VPNconTGclient.bot.requestHandler.tmp.exception.requestHandler.RequestHandlerException;
 import com.bitniki.VPNconTGclient.bot.requestHandler.tmp.requestHandle.RequestHandler;
-import lombok.extern.slf4j.Slf4j;
 import org.telegram.telegrambots.meta.api.objects.InputFile;
 
 import java.io.IOException;
 import java.net.URL;
 import java.util.List;
 
-@Slf4j
 public class PeerRequestServiceImpl implements PeerRequestService {
     private final RequestHandler requestHandler;
 
@@ -29,12 +26,7 @@ public class PeerRequestServiceImpl implements PeerRequestService {
     public List<Peer> getPeersByUserId(Long userId) {
         final String ENDPOINT = "/peers/byUser/" + userId;
 
-        try {
-            return List.of(requestHandler.GET(ENDPOINT, Peer[].class));
-        } catch (RequestHandlerException e) {
-            log.error("Неожиданная ошибка при попытке получить юзера по логину:\n" + e.getMessage());
-            throw e;
-        }
+        return List.of(requestHandler.GET(ENDPOINT, Peer[].class));
     }
 
     @Override
@@ -47,9 +39,6 @@ public class PeerRequestServiceImpl implements PeerRequestService {
             throw new ModelNotFoundException(
                     "Не смог найти пира с peerIp = %s и hostId = %d".formatted(peerIp, hostId)
             );
-        } catch (RequestHandlerException e) {
-            log.error("Неожиданная ошибка при попытке получить юзера по логину:\n" + e.getMessage());
-            throw e;
         }
     }
 
@@ -57,12 +46,7 @@ public class PeerRequestServiceImpl implements PeerRequestService {
     public PeerValidatorRegex getValidatorFields() {
         final String ENDPOINT = "/peers/validator";
 
-        try {
-            return requestHandler.GET(ENDPOINT, PeerValidatorRegex.class);
-        } catch (RequestHandlerException e) {
-            log.error("Неожиданная ошибка при попытке получить правила валидации юзера:\n" + e.getMessage());
-            throw e;
-        }
+        return requestHandler.GET(ENDPOINT, PeerValidatorRegex.class);
     }
 
     @Override
@@ -75,9 +59,6 @@ public class PeerRequestServiceImpl implements PeerRequestService {
             throw new ModelValidationFailedException("Некоторые данные указаны неверно:\n" + e.getMessage());
         } catch (RequestHandler404Exception e) {
             throw new ModelNotFoundException(e.getMessage());
-        } catch (RequestHandlerException e) {
-            log.error("Неожиданная ошибка при попытке получить правила валидации юзера:\n" + e.getMessage());
-            throw e;
         }
     }
 
@@ -89,9 +70,6 @@ public class PeerRequestServiceImpl implements PeerRequestService {
             return requestHandler.POST(ENDPOINT, null, Boolean.class);
         } catch (RequestHandler404Exception e) {
             throw new ModelNotFoundException("Пир с id %d не найден".formatted(peerId));
-        } catch (RequestHandlerException e) {
-            log.error("Неожиданная ошибка при попытке получить правила валидации юзера:\n" + e.getMessage());
-            throw e;
         }
     }
 
@@ -103,9 +81,6 @@ public class PeerRequestServiceImpl implements PeerRequestService {
             return requestHandler.POST(ENDPOINT, null, Boolean.class);
         } catch (RequestHandler404Exception e) {
             throw new ModelNotFoundException("Пир с id %d не найден".formatted(peerId));
-        } catch (RequestHandlerException e) {
-            log.error("Неожиданная ошибка при попытке получить правила валидации юзера:\n" + e.getMessage());
-            throw e;
         }
     }
 
@@ -119,9 +94,6 @@ public class PeerRequestServiceImpl implements PeerRequestService {
             downloadToken = requestHandler.GET(DOWNLOAD_TOKEN_ENDPOINT, String.class);
         } catch (RequestHandler404Exception e) {
             throw new ModelNotFoundException("Пир с id %d не найден".formatted(peer.getId()));
-        } catch (RequestHandlerException e) {
-            log.error("Неожиданная ошибка при попытке получить правила валидации юзера:\n" + e.getMessage());
-            throw e;
         }
 
         final String FILE_URI = "http://"
@@ -149,9 +121,6 @@ public class PeerRequestServiceImpl implements PeerRequestService {
             return requestHandler.DELETE(ENDPOINT, Peer.class);
         } catch (RequestHandler404Exception e) {
             throw new ModelNotFoundException("Пир с id %d не найден".formatted(peerId));
-        } catch (RequestHandlerException e) {
-            log.error("Неожиданная ошибка при попытке получить правила валидации юзера:\n" + e.getMessage());
-            throw e;
         }
     }
 }
