@@ -2,11 +2,11 @@ package com.bitniki.VPNconTGclient.bot.dialogueTree.branch.SubsBranch;
 
 import com.bitniki.VPNconTGclient.bot.dialogueTree.branch.Branch;
 import com.bitniki.VPNconTGclient.bot.exception.BranchCriticalException;
-import com.bitniki.VPNconTGclient.bot.requestHandler.tmp.Model.impl.Subscription;
-import com.bitniki.VPNconTGclient.bot.requestHandler.tmp.Model.impl.UserSubscription;
-import com.bitniki.VPNconTGclient.bot.requestHandler.tmp.RequestService.RequestServiceFactory;
-import com.bitniki.VPNconTGclient.bot.requestHandler.tmp.exception.ModelNotFoundException;
-import com.bitniki.VPNconTGclient.bot.requestHandler.tmp.exception.requestHandler.RequestHandler5xxException;
+import com.bitniki.VPNconTGclient.bot.request.Model.impl.Subscription;
+import com.bitniki.VPNconTGclient.bot.request.Model.impl.UserSubscription;
+import com.bitniki.VPNconTGclient.bot.request.RequestService.RequestServiceFactory;
+import com.bitniki.VPNconTGclient.bot.request.exception.ModelNotFoundException;
+import com.bitniki.VPNconTGclient.bot.request.exception.requestHandler.RequestHandler5xxException;
 import com.bitniki.VPNconTGclient.bot.response.Response;
 import com.bitniki.VPNconTGclient.bot.response.ResponseType;
 import org.telegram.telegrambots.meta.api.methods.ParseMode;

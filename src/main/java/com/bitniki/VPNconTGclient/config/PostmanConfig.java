@@ -2,7 +2,7 @@ package com.bitniki.VPNconTGclient.config;
 
 import com.bitniki.VPNconTGclient.bot.BasicTelegramBot;
 import com.bitniki.VPNconTGclient.bot.postman.Postman;
-import com.bitniki.VPNconTGclient.bot.requestHandler.tmp.RequestService.RequestServiceFactory;
+import com.bitniki.VPNconTGclient.bot.request.RequestService.RequestServiceFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.EnableScheduling;

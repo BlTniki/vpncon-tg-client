@@ -5,7 +5,7 @@ import com.bitniki.VPNconTGclient.bot.dialogueTree.branch.FAQ.GeneralFaqBranch;
 import com.bitniki.VPNconTGclient.bot.dialogueTree.branch.PeerBranches.PeerMenuBranch;
 import com.bitniki.VPNconTGclient.bot.dialogueTree.branch.SubsBranch.SubsBranch;
 import com.bitniki.VPNconTGclient.bot.exception.BranchBadUpdateProvidedException;
-import com.bitniki.VPNconTGclient.bot.requestHandler.tmp.RequestService.RequestServiceFactory;
+import com.bitniki.VPNconTGclient.bot.request.RequestService.RequestServiceFactory;
 import com.bitniki.VPNconTGclient.bot.response.Response;
 import com.bitniki.VPNconTGclient.bot.response.ResponseType;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;

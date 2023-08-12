@@ -1,9 +1,9 @@
 package com.bitniki.VPNconTGclient.config;
 
-import com.bitniki.VPNconTGclient.bot.requestHandler.tmp.RequestService.RequestServiceFactory;
-import com.bitniki.VPNconTGclient.bot.requestHandler.tmp.exception.requestHandler.RequestHandlerException;
-import com.bitniki.VPNconTGclient.bot.requestHandler.tmp.requestHandle.RequestHandler;
-import com.bitniki.VPNconTGclient.bot.requestHandler.tmp.requestHandle.impl.RequestHandlerImpl;
+import com.bitniki.VPNconTGclient.bot.request.RequestService.RequestServiceFactory;
+import com.bitniki.VPNconTGclient.bot.request.exception.requestHandler.RequestHandlerException;
+import com.bitniki.VPNconTGclient.bot.request.requestHandle.RequestHandler;
+import com.bitniki.VPNconTGclient.bot.request.requestHandle.impl.RequestHandlerImpl;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -21,8 +21,6 @@ public class RequestConfig {
     private String BOT_PASSWORD;
 
     private RequestHandler requestHandler;
-
-    private RequestServiceFactory requestServiceFactory;
 
     @Bean
     public RequestHandler requestHandlerBean() {

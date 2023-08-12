@@ -1,6 +1,6 @@
 package com.bitniki.VPNconTGclient.config;
 
-import com.bitniki.VPNconTGclient.bot.requestHandler.tmp.RequestService.RequestServiceFactory;
+import com.bitniki.VPNconTGclient.bot.request.RequestService.RequestServiceFactory;
 import com.bitniki.VPNconTGclient.bot.router.UpdateRouter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Component;

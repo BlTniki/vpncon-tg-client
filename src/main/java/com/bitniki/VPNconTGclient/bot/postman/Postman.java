@@ -1,8 +1,8 @@
 package com.bitniki.VPNconTGclient.bot.postman;
 
 import com.bitniki.VPNconTGclient.bot.BasicTelegramBot;
-import com.bitniki.VPNconTGclient.bot.requestHandler.tmp.Model.impl.Reminder;
-import com.bitniki.VPNconTGclient.bot.requestHandler.tmp.RequestService.RequestServiceFactory;
+import com.bitniki.VPNconTGclient.bot.request.Model.impl.Reminder;
+import com.bitniki.VPNconTGclient.bot.request.RequestService.RequestServiceFactory;
 import org.springframework.scheduling.annotation.Scheduled;
 
 import java.util.List;
