@@ -1,7 +1,7 @@
 #!/bin/sh
 mkdir BOOT-INF
 mkdir BOOT-INF/classes
-echo "server.port = ${SERVER_PORT}" >> BOOT-INF/classes/application.properties
+echo "server.port = ${SERVER_PORT}" > BOOT-INF/classes/application.properties
 echo "tg.botToken = ${TG_BOT_TOKEN}" >> BOOT-INF/classes/application.properties
 echo "tg.botUsername = ${TG_BOT_USERNAME}" >> BOOT-INF/classes/application.properties
 echo "VPNconServer.address = ${VPNCONSERVER_ADDRESS}" >> BOOT-INF/classes/application.properties
