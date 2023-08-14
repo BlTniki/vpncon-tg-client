@@ -3,8 +3,10 @@ package com.bitniki.VPNconTGclient.bot.dialogueTree.branch;
 import com.bitniki.VPNconTGclient.bot.exception.BranchBadUpdateProvidedException;
 import com.bitniki.VPNconTGclient.bot.exception.BranchCriticalException;
 import com.bitniki.VPNconTGclient.bot.request.Model.impl.UserEntity;
+import com.bitniki.VPNconTGclient.bot.request.ModelForRequest.impl.UserForRequest;
 import com.bitniki.VPNconTGclient.bot.request.RequestService.RequestServiceFactory;
 import com.bitniki.VPNconTGclient.bot.request.exception.ModelNotFoundException;
+import com.bitniki.VPNconTGclient.bot.request.exception.ModelValidationFailedException;
 import com.bitniki.VPNconTGclient.bot.response.Response;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
@@ -172,7 +174,19 @@ public abstract class Branch {
     protected void authorizeUser(Update update) throws BranchCriticalException {
         try {
             userEntity = loadUserByTelegramId(update.getMessage().getFrom().getId());
-        } catch (ModelNotFoundException e) {
+
+            // if update was a message check for entity from old version vpncon
+            if (update.getMessage() != null && userEntity.getTelegramNickname() == null) {
+                // and them fix it
+                userEntity = requestService.USER_REQUEST_SERVICE.associateTelegramIdWithUser(
+                        UserForRequest.builder()
+                                .login(userEntity.getLogin())
+                                .telegramId(userEntity.getTelegramId())
+                                .telegramNickname(update.getMessage().getFrom().getUserName())
+                                .build()
+                );
+            }
+        } catch (ModelNotFoundException | ModelValidationFailedException e) {
             throw new BranchCriticalException("Cant authenticate");
         }
     }
