@@ -115,7 +115,7 @@ public class PeerRequestServiceImpl implements PeerRequestService {
 
     @Override
     public Peer deletePeerOnServer(Long peerId) throws ModelNotFoundException {
-        final String ENDPOINT = "/peers";
+        final String ENDPOINT = "/peers/" + peerId;
 
         try {
             return requestHandler.DELETE(ENDPOINT, Peer.class);
